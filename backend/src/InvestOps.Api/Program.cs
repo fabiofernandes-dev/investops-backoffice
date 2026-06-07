@@ -18,6 +18,8 @@ app.UseSerilogRequestLogging();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
+
 app.MapHealthChecks("/health");
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = h => h.Tags.Contains("ready") });
