@@ -1,0 +1,46 @@
+# ---------- .NET ----------
+bin/
+obj/
+*.user
+*.suo
+.vs/
+artifacts/
+[Tt]est[Rr]esults/
+*.trx
+*.coverage
+coverage/
+*.nupkg
+
+# ---------- Node / Angular ----------
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+yarn-error.log
+*.tsbuildinfo
+
+# ---------- Go ----------
+worker-go/bin/
+*.exe
+*.test
+*.out
+vendor/
+
+# ---------- IDE ----------
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db
+
+# ---------- Env / secrets ----------
+.env
+*.local
+appsettings.*.Local.json
+
+# ---------- Claude Code (harness local config) ----------
+.claude/
