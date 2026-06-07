@@ -15,10 +15,13 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
-app.UseSwagger();
-app.UseSwaggerUI();
 
-app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
+}
 
 app.MapHealthChecks("/health");
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
