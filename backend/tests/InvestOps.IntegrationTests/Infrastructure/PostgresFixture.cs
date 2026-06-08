@@ -1,3 +1,4 @@
+using InvestOps.Infrastructure.Persistence.Dapper;
 using InvestOps.Migrator;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -16,6 +17,7 @@ public sealed class PostgresFixture : IAsyncLifetime
         await _container.StartAsync();
         var result = MigrationRunner.Run(ConnectionString, includeSeed: false);
         if (!result.Successful) throw result.Error!;
+        DapperConfig.Register();
     }
 
     public Task DisposeAsync() => _container.DisposeAsync().AsTask();

@@ -13,6 +13,8 @@ public static class DapperConfig
 
         DefaultTypeMap.MatchNamesWithUnderscores = true;
 
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+
         SqlMapper.AddTypeHandler(new EnumStringHandler<InvestorProfile>());
         SqlMapper.AddTypeHandler(new EnumStringHandler<CustomerStatus>());
         SqlMapper.AddTypeHandler(new EnumStringHandler<AccountStatus>());
