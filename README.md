@@ -1,5 +1,7 @@
 # InvestOps Backoffice
 
+[![CI](https://github.com/fabiofernandes-dev/investops-backoffice/actions/workflows/ci.yml/badge.svg)](https://github.com/fabiofernandes-dev/investops-backoffice/actions/workflows/ci.yml)
+
 Plataforma fullstack de backoffice para operações de investimento, construída como ambiente de estudo para uma vaga sênior fullstack.
 
 > **Status:** em construção — Fase 1 (fundação). Veja o [SPEC.md](SPEC.md) para a visão completa.
