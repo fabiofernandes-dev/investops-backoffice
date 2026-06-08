@@ -34,6 +34,7 @@ jobs:
 
       - name: Upload test results
         if: always()
+        continue-on-error: true   # não falhar o job por cota de artifacts esgotada
         uses: actions/upload-artifact@v4
         with:
           name: test-results
