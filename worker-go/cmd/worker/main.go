@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,6 +11,7 @@ import (
 	"investops/worker/internal/database"
 	"investops/worker/internal/messaging"
 	"investops/worker/internal/observability"
+	"investops/worker/internal/operations"
 )
 
 func main() {
@@ -38,12 +40,18 @@ func main() {
 	}
 	defer consumer.Close()
 
+	processor := operations.NewProcessor(database.NewStore(pool), logger)
+
 	logger.Info("worker iniciado", "queue", cfg.Queue, "exchange", cfg.Exchange)
 
-	// Processamento entra na P3.4; por ora apenas registra o evento recebido.
 	handler := func(ctx context.Context, body []byte) error {
-		logger.Info("evento recebido", "bytes", len(body))
-		return nil
+		var evt operations.OperationImportedEvent
+		if err := json.Unmarshal(body, &evt); err != nil {
+			// payload malformado: logar e descartar (ack) — requeue não resolveria.
+			logger.Error("evento inválido; descartando", "error", err)
+			return nil
+		}
+		return processor.Process(ctx, evt)
 	}
 
 	if err := consumer.Consume(ctx, handler); err != nil && ctx.Err() == nil {
