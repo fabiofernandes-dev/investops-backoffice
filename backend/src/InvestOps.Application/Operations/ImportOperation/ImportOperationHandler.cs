@@ -8,7 +8,7 @@ using InvestOps.Domain.Operations;
 namespace InvestOps.Application.Operations.ImportOperation;
 
 public sealed class ImportOperationHandler(
-    IDbConnectionFactory connectionFactory,
+    IUnitOfWork unitOfWork,
     IOperationRepository operations,
     IFinancialProductRepository products,
     IInvestmentAccountRepository accounts,
@@ -19,16 +19,14 @@ public sealed class ImportOperationHandler(
     public async Task<ImportOperationResult> HandleAsync(
         ImportOperationRequest request, Guid correlationId, CancellationToken ct)
     {
-        await using var conn = await connectionFactory.OpenConnectionAsync(ct);
-
-        var existing = await operations.GetByExternalIdAsync(conn, request.ExternalId, ct);
+        var existing = await operations.GetByExternalIdAsync(request.ExternalId, ct);
         if (existing is not null)
             return new ImportOperationResult(existing.Id, existing.Status.ToString(), Created: false);
 
-        var product = await products.GetByIdAsync(conn, request.ProductId, ct)
+        var product = await products.GetByIdAsync(request.ProductId, ct)
             ?? throw new ReferenceNotFoundException($"Produto {request.ProductId} não encontrado");
 
-        if (!await accounts.ExistsAsync(conn, request.AccountId, ct))
+        if (!await accounts.ExistsAsync(request.AccountId, ct))
             throw new ReferenceNotFoundException($"Conta {request.AccountId} não encontrada");
 
         var now = clock.GetUtcNow();
@@ -87,11 +85,19 @@ public sealed class ImportOperationHandler(
             CreatedAt = now
         };
 
-        await using var tx = await conn.BeginTransactionAsync(ct);
-        await operations.InsertAsync(conn, tx, operation, ct);
-        await outbox.InsertAsync(conn, tx, outboxMessage, ct);
-        await audit.InsertAsync(conn, tx, auditLog, ct);
-        await tx.CommitAsync(ct);
+        await unitOfWork.BeginAsync(ct);
+        try
+        {
+            await operations.InsertAsync(operation, ct);
+            await outbox.InsertAsync(outboxMessage, ct);
+            await audit.InsertAsync(auditLog, ct);
+            await unitOfWork.CommitAsync(ct);
+        }
+        catch
+        {
+            await unitOfWork.RollbackAsync(ct);
+            throw;
+        }
 
         return new ImportOperationResult(operation.Id, operation.Status.ToString(), Created: true);
     }

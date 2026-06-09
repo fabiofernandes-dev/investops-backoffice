@@ -1,14 +1,15 @@
-using System.Data.Common;
 using Dapper;
 using InvestOps.Application.Abstractions;
 
 namespace InvestOps.Infrastructure.Persistence.Repositories;
 
-public sealed class InvestmentAccountRepository : IInvestmentAccountRepository
+public sealed class InvestmentAccountRepository(IDbSession session) : IInvestmentAccountRepository
 {
-    public Task<bool> ExistsAsync(DbConnection conn, Guid id, CancellationToken ct)
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken ct)
     {
         const string sql = "SELECT EXISTS(SELECT 1 FROM investment_accounts WHERE id = @id);";
-        return conn.ExecuteScalarAsync<bool>(new CommandDefinition(sql, new { id }, cancellationToken: ct));
+        var conn = await session.GetConnectionAsync(ct);
+        return await conn.ExecuteScalarAsync<bool>(
+            new CommandDefinition(sql, new { id }, session.Transaction, cancellationToken: ct));
     }
 }
