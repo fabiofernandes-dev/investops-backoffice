@@ -2,11 +2,16 @@ package messaging
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
+
+// tempo máximo que uma mensagem em voo tem para terminar após um shutdown.
+const handlerTimeout = 30 * time.Second
 
 type Handler func(ctx context.Context, body []byte) error
 
@@ -68,15 +73,34 @@ func (c *Consumer) Consume(ctx context.Context, handler Handler) error {
 			return ctx.Err()
 		case delivery, ok := <-deliveries:
 			if !ok {
-				return nil
+				// shutdown em andamento → encerramento gracioso
+				if ctx.Err() != nil {
+					return ctx.Err()
+				}
+				// fechamento inesperado (RabbitMQ caiu/reiniciou): retorna erro para
+				// o processo sair != 0 e o orquestrador reiniciar (reconnect in-process: Fase 5).
+				return errors.New("canal de entregas fechado inesperadamente")
 			}
-			if err := handler(ctx, delivery.Body); err != nil {
-				c.logger.Error("falha ao processar mensagem", "error", err)
-				_ = delivery.Nack(false, true)
-			} else {
-				_ = delivery.Ack(false)
-			}
+			c.handle(ctx, handler, delivery)
 		}
+	}
+}
+
+func (c *Consumer) handle(ctx context.Context, handler Handler, delivery amqp.Delivery) {
+	// O handler recebe um contexto que sobrevive ao shutdown (com timeout), para a
+	// mensagem em voo terminar graciosamente em vez de ser cancelada por um SIGTERM.
+	msgCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), handlerTimeout)
+	defer cancel()
+
+	if err := handler(msgCtx, delivery.Body); err != nil {
+		c.logger.Error("falha ao processar mensagem", "error", err)
+		if nackErr := delivery.Nack(false, true); nackErr != nil {
+			c.logger.Error("falha ao nack", "error", nackErr)
+		}
+		return
+	}
+	if ackErr := delivery.Ack(false); ackErr != nil {
+		c.logger.Error("falha ao ack (mensagem pode ser reentregue)", "error", ackErr)
 	}
 }
 
