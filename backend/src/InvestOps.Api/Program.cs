@@ -13,6 +13,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddControllers();
+
 var connectionString = builder.Configuration.GetConnectionString("Postgres")!;
 builder.Services.AddHealthChecks()
     .AddNpgSql(connectionString, name: "postgres", tags: new[] { "ready" });
@@ -27,6 +29,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 }
+
+app.MapControllers();
 
 app.MapHealthChecks("/health");
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
