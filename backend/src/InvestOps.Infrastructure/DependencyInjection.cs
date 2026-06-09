@@ -1,4 +1,5 @@
 using InvestOps.Application.Abstractions;
+using InvestOps.Infrastructure.Messaging;
 using InvestOps.Infrastructure.Persistence;
 using InvestOps.Infrastructure.Persistence.Dapper;
 using InvestOps.Infrastructure.Persistence.Repositories;
@@ -21,6 +22,11 @@ public static class DependencyInjection
         services.AddSingleton<IInvestmentAccountRepository, InvestmentAccountRepository>();
         services.AddSingleton<IOutboxRepository, OutboxRepository>();
         services.AddSingleton<IAuditRepository, AuditRepository>();
+
+        var rabbitOptions = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>() ?? new RabbitMqOptions();
+        services.AddSingleton(rabbitOptions);
+        services.AddSingleton<IEventBus, RabbitMqEventBus>();
+        services.AddHostedService<OutboxPublisher>();
 
         return services;
     }
