@@ -17,11 +17,15 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("Postgres")!;
         services.AddSingleton<IDbConnectionFactory>(new NpgsqlConnectionFactory(connectionString));
 
-        services.AddSingleton<IOperationRepository, OperationRepository>();
-        services.AddSingleton<IFinancialProductRepository, FinancialProductRepository>();
-        services.AddSingleton<IInvestmentAccountRepository, InvestmentAccountRepository>();
-        services.AddSingleton<IOutboxRepository, OutboxRepository>();
-        services.AddSingleton<IAuditRepository, AuditRepository>();
+        // Sessão e Unit of Work são scoped: repos compartilham a mesma conexão/transação no escopo.
+        services.AddScoped<IDbSession, DbSession>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddScoped<IOperationRepository, OperationRepository>();
+        services.AddScoped<IFinancialProductRepository, FinancialProductRepository>();
+        services.AddScoped<IInvestmentAccountRepository, InvestmentAccountRepository>();
+        services.AddScoped<IOutboxRepository, OutboxRepository>();
+        services.AddScoped<IAuditRepository, AuditRepository>();
 
         var rabbitOptions = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>() ?? new RabbitMqOptions();
         services.AddSingleton(rabbitOptions);

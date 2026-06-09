@@ -1,13 +1,12 @@
-using System.Data.Common;
 using Dapper;
 using InvestOps.Application.Abstractions;
 using InvestOps.Domain.Entities;
 
 namespace InvestOps.Infrastructure.Persistence.Repositories;
 
-public sealed class OutboxRepository : IOutboxRepository
+public sealed class OutboxRepository(IDbSession session) : IOutboxRepository
 {
-    public async Task InsertAsync(DbConnection conn, DbTransaction tx, OutboxMessage message, CancellationToken ct)
+    public async Task InsertAsync(OutboxMessage message, CancellationToken ct)
     {
         const string sql = """
             INSERT INTO outbox_messages (id, event_type, version, payload, status, attempts, created_at)
@@ -23,10 +22,11 @@ public sealed class OutboxRepository : IOutboxRepository
             message.Attempts,
             message.CreatedAt
         };
-        await conn.ExecuteAsync(new CommandDefinition(sql, parameters, tx, cancellationToken: ct));
+        var conn = await session.GetConnectionAsync(ct);
+        await conn.ExecuteAsync(new CommandDefinition(sql, parameters, session.Transaction, cancellationToken: ct));
     }
 
-    public async Task<IReadOnlyList<OutboxMessage>> GetPendingAsync(DbConnection conn, int batchSize, CancellationToken ct)
+    public async Task<IReadOnlyList<OutboxMessage>> GetPendingAsync(int batchSize, CancellationToken ct)
     {
         const string sql = """
             SELECT id, event_type, version, payload, status, attempts, created_at, published_at, last_error
@@ -35,19 +35,23 @@ public sealed class OutboxRepository : IOutboxRepository
             ORDER BY created_at
             LIMIT @batchSize;
             """;
-        var rows = await conn.QueryAsync<OutboxMessage>(new CommandDefinition(sql, new { batchSize }, cancellationToken: ct));
+        var conn = await session.GetConnectionAsync(ct);
+        var rows = await conn.QueryAsync<OutboxMessage>(
+            new CommandDefinition(sql, new { batchSize }, session.Transaction, cancellationToken: ct));
         return rows.AsList();
     }
 
-    public async Task MarkPublishedAsync(DbConnection conn, Guid id, DateTimeOffset publishedAt, CancellationToken ct)
+    public async Task MarkPublishedAsync(Guid id, DateTimeOffset publishedAt, CancellationToken ct)
     {
         const string sql = "UPDATE outbox_messages SET status = 'Published', published_at = @publishedAt WHERE id = @id;";
-        await conn.ExecuteAsync(new CommandDefinition(sql, new { id, publishedAt }, cancellationToken: ct));
+        var conn = await session.GetConnectionAsync(ct);
+        await conn.ExecuteAsync(new CommandDefinition(sql, new { id, publishedAt }, session.Transaction, cancellationToken: ct));
     }
 
-    public async Task MarkFailedAsync(DbConnection conn, Guid id, string error, CancellationToken ct)
+    public async Task MarkFailedAsync(Guid id, string error, CancellationToken ct)
     {
         const string sql = "UPDATE outbox_messages SET attempts = attempts + 1, last_error = @error WHERE id = @id;";
-        await conn.ExecuteAsync(new CommandDefinition(sql, new { id, error }, cancellationToken: ct));
+        var conn = await session.GetConnectionAsync(ct);
+        await conn.ExecuteAsync(new CommandDefinition(sql, new { id, error }, session.Transaction, cancellationToken: ct));
     }
 }

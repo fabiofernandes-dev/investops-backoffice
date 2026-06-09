@@ -1,6 +1,6 @@
 using System.Data.Common;
 
-namespace InvestOps.Application.Abstractions;
+namespace InvestOps.Infrastructure.Persistence;
 
 public interface IDbConnectionFactory
 {

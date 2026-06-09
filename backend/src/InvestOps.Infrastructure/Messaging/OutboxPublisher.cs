@@ -1,12 +1,12 @@
 using InvestOps.Application.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace InvestOps.Infrastructure.Messaging;
 
 public sealed class OutboxPublisher(
-    IDbConnectionFactory connectionFactory,
-    IOutboxRepository outbox,
+    IServiceScopeFactory scopeFactory,
     IEventBus bus,
     RabbitMqOptions options,
     TimeProvider clock,
@@ -31,8 +31,10 @@ public sealed class OutboxPublisher(
 
     public async Task<int> PublishPendingAsync(CancellationToken ct)
     {
-        await using var conn = await connectionFactory.OpenConnectionAsync(ct);
-        var pending = await outbox.GetPendingAsync(conn, options.BatchSize, ct);
+        // BackgroundService é singleton; o repositório (e sua sessão) é scoped → cria um escopo por ciclo.
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var outbox = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
+        var pending = await outbox.GetPendingAsync(options.BatchSize, ct);
 
         var published = 0;
         foreach (var message in pending)
@@ -40,12 +42,12 @@ public sealed class OutboxPublisher(
             try
             {
                 await bus.PublishAsync(message.EventType, message.Payload, ct);
-                await outbox.MarkPublishedAsync(conn, message.Id, clock.GetUtcNow(), ct);
+                await outbox.MarkPublishedAsync(message.Id, clock.GetUtcNow(), ct);
                 published++;
             }
             catch (Exception ex)
             {
-                await outbox.MarkFailedAsync(conn, message.Id, ex.Message, ct);
+                await outbox.MarkFailedAsync(message.Id, ex.Message, ct);
                 logger.LogWarning(ex, "Falha ao publicar outbox {OutboxId}", message.Id);
             }
         }

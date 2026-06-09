@@ -9,12 +9,21 @@ using Xunit;
 namespace InvestOps.IntegrationTests;
 
 [Collection(nameof(PostgresCollection))]
-public class OperationsReadTests(PostgresFixture fixture)
+public class OperationsReadTests(PostgresFixture fixture) : IAsyncLifetime
 {
     private readonly NpgsqlConnectionFactory _factory = new(fixture.ConnectionString);
+    private DbSession _session = null!;
 
-    private GetOperationByIdHandler GetByIdHandler() => new(_factory, new OperationRepository());
-    private ListOperationsHandler ListHandler() => new(_factory, new OperationRepository());
+    public Task InitializeAsync()
+    {
+        _session = new DbSession(_factory);
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync() => _session.DisposeAsync().AsTask();
+
+    private GetOperationByIdHandler GetByIdHandler() => new(new OperationRepository(_session));
+    private ListOperationsHandler ListHandler() => new(new OperationRepository(_session));
 
     private async Task<(Guid AccountId, Guid ProductId)> SeedReferencesAsync()
     {

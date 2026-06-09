@@ -1,5 +1,4 @@
 using System.Data.Common;
-using InvestOps.Application.Abstractions;
 using Npgsql;
 
 namespace InvestOps.Infrastructure.Persistence;
