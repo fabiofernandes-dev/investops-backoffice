@@ -40,3 +40,27 @@ jobs:
           name: test-results
           path: TestResults
           if-no-files-found: ignore
+
+  worker:
+    name: Worker (Go) build & tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker-go
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: worker-go/go.mod
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test ./...   # integração via testcontainers (Docker disponível no runner)
