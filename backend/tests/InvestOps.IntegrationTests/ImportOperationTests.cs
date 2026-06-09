@@ -12,13 +12,13 @@ public class ImportOperationTests(PostgresFixture fixture)
 {
     private readonly NpgsqlConnectionFactory _factory = new(fixture.ConnectionString);
 
-    private ImportOperationHandler BuildHandler() => new(
-        _factory,
-        new OperationRepository(),
-        new FinancialProductRepository(),
-        new InvestmentAccountRepository(),
-        new OutboxRepository(),
-        new AuditRepository(),
+    private static ImportOperationHandler BuildHandler(IDbSession session) => new(
+        new UnitOfWork(session),
+        new OperationRepository(session),
+        new FinancialProductRepository(session),
+        new InvestmentAccountRepository(session),
+        new OutboxRepository(session),
+        new AuditRepository(session),
         TimeProvider.System);
 
     private async Task<(Guid AccountId, Guid ProductId)> SeedReferencesAsync()
@@ -50,10 +50,14 @@ public class ImportOperationTests(PostgresFixture fixture)
         var (accountId, productId) = await SeedReferencesAsync();
         var externalId = $"EXT-{Guid.NewGuid():N}";
 
-        var result = await BuildHandler().HandleAsync(Request(accountId, productId, externalId), Guid.NewGuid(), default);
-
-        Assert.True(result.Created);
-        Assert.Equal("Imported", result.Status);
+        Guid resultId;
+        await using (var session = new DbSession(_factory))
+        {
+            var result = await BuildHandler(session).HandleAsync(Request(accountId, productId, externalId), Guid.NewGuid(), default);
+            Assert.True(result.Created);
+            Assert.Equal("Imported", result.Status);
+            resultId = result.Id;
+        }
 
         await using var conn = await _factory.OpenConnectionAsync();
         var op = await conn.QuerySingleAsync<(string Status, decimal GrossValue, DateOnly SettlementDate)>(
@@ -66,11 +70,11 @@ public class ImportOperationTests(PostgresFixture fixture)
         // payload é o envelope serializado em PascalCase (System.Text.Json default): Payload.OperationId
         var outboxCount = await conn.ExecuteScalarAsync<long>(
             "SELECT count(*) FROM outbox_messages WHERE event_type='OperationImported' AND status='Pending' AND payload->'Payload'->>'OperationId' = @id;",
-            new { id = result.Id.ToString() });
+            new { id = resultId.ToString() });
         Assert.Equal(1L, outboxCount);
 
         var auditCount = await conn.ExecuteScalarAsync<long>(
-            "SELECT count(*) FROM audit_logs WHERE entity_id = @id;", new { id = result.Id.ToString() });
+            "SELECT count(*) FROM audit_logs WHERE entity_id = @id;", new { id = resultId.ToString() });
         Assert.Equal(1L, auditCount);
     }
 
@@ -79,7 +83,9 @@ public class ImportOperationTests(PostgresFixture fixture)
     {
         var (accountId, productId) = await SeedReferencesAsync();
         var externalId = $"EXT-{Guid.NewGuid():N}";
-        var handler = BuildHandler();
+
+        await using var session = new DbSession(_factory);
+        var handler = BuildHandler(session);
 
         var first = await handler.HandleAsync(Request(accountId, productId, externalId), Guid.NewGuid(), default);
         var second = await handler.HandleAsync(Request(accountId, productId, externalId), Guid.NewGuid(), default);
@@ -100,7 +106,8 @@ public class ImportOperationTests(PostgresFixture fixture)
         var (accountId, _) = await SeedReferencesAsync();
         var request = Request(accountId, Guid.NewGuid(), $"EXT-{Guid.NewGuid():N}");
 
+        await using var session = new DbSession(_factory);
         await Assert.ThrowsAsync<ReferenceNotFoundException>(
-            () => BuildHandler().HandleAsync(request, Guid.NewGuid(), default));
+            () => BuildHandler(session).HandleAsync(request, Guid.NewGuid(), default));
     }
 }
