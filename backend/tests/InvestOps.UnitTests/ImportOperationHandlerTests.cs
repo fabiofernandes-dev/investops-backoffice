@@ -1,4 +1,3 @@
-using System.Data.Common;
 using InvestOps.Application.Abstractions;
 using InvestOps.Application.Operations.ImportOperation;
 using InvestOps.Domain.Entities;
@@ -14,7 +13,7 @@ public class ImportOperationHandlerTests
 
     private sealed class Mocks
     {
-        public IDbConnectionFactory ConnectionFactory { get; } = Substitute.For<IDbConnectionFactory>();
+        public IUnitOfWork UnitOfWork { get; } = Substitute.For<IUnitOfWork>();
         public IOperationRepository Operations { get; } = Substitute.For<IOperationRepository>();
         public IFinancialProductRepository Products { get; } = Substitute.For<IFinancialProductRepository>();
         public IInvestmentAccountRepository Accounts { get; } = Substitute.For<IInvestmentAccountRepository>();
@@ -26,17 +25,12 @@ public class ImportOperationHandlerTests
         Operation? existing = null, FinancialProduct? product = null, bool accountExists = true)
     {
         var m = new Mocks();
-        m.ConnectionFactory.OpenConnectionAsync(Arg.Any<CancellationToken>())
-            .Returns(Substitute.For<DbConnection>());
-        m.Operations.GetByExternalIdAsync(Arg.Any<DbConnection>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(existing);
-        m.Products.GetByIdAsync(Arg.Any<DbConnection>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(product);
-        m.Accounts.ExistsAsync(Arg.Any<DbConnection>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(accountExists);
+        m.Operations.GetByExternalIdAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(existing);
+        m.Products.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(product);
+        m.Accounts.ExistsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(accountExists);
 
         var handler = new ImportOperationHandler(
-            m.ConnectionFactory, m.Operations, m.Products, m.Accounts, m.Outbox, m.Audit, TimeProvider.System);
+            m.UnitOfWork, m.Operations, m.Products, m.Accounts, m.Outbox, m.Audit, TimeProvider.System);
         return (handler, m);
     }
 
@@ -50,8 +44,24 @@ public class ImportOperationHandlerTests
 
         Assert.False(result.Created);
         Assert.Equal(existing.Id, result.Id);
-        await mocks.Operations.DidNotReceive()
-            .InsertAsync(Arg.Any<DbConnection>(), Arg.Any<DbTransaction>(), Arg.Any<Operation>(), Arg.Any<CancellationToken>());
+        await mocks.Operations.DidNotReceive().InsertAsync(Arg.Any<Operation>(), Arg.Any<CancellationToken>());
+        await mocks.UnitOfWork.DidNotReceive().BeginAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Commits_operation_outbox_and_audit_on_happy_path()
+    {
+        var product = new FinancialProduct { Id = Guid.NewGuid(), LiquidityDays = 2 };
+        var (handler, mocks) = Build(existing: null, product: product, accountExists: true);
+
+        var result = await handler.HandleAsync(ValidRequest(), Guid.NewGuid(), default);
+
+        Assert.True(result.Created);
+        await mocks.UnitOfWork.Received(1).BeginAsync(Arg.Any<CancellationToken>());
+        await mocks.Operations.Received(1).InsertAsync(Arg.Any<Operation>(), Arg.Any<CancellationToken>());
+        await mocks.Outbox.Received(1).InsertAsync(Arg.Any<OutboxMessage>(), Arg.Any<CancellationToken>());
+        await mocks.Audit.Received(1).InsertAsync(Arg.Any<AuditLog>(), Arg.Any<CancellationToken>());
+        await mocks.UnitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

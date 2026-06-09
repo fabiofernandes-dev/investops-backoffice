@@ -1,10 +1,12 @@
 using System.Text;
 using System.Text.Json;
 using Dapper;
+using InvestOps.Application.Abstractions;
 using InvestOps.Infrastructure.Messaging;
 using InvestOps.Infrastructure.Persistence;
 using InvestOps.Infrastructure.Persistence.Repositories;
 using InvestOps.IntegrationTests.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using RabbitMQ.Client;
 using Xunit;
@@ -54,9 +56,19 @@ public class OutboxPublisherTests(PostgresFixture pg, RabbitMqFixture mq) : ICla
                 new { outboxId, payload });
         }
 
+        // o publisher resolve o repositório (scoped) via IServiceScopeFactory
+        var services = new ServiceCollection();
+        services.AddSingleton<IDbConnectionFactory>(dbFactory);
+        services.AddScoped<IDbSession, DbSession>();
+        services.AddScoped<IOutboxRepository, OutboxRepository>();
+        await using var provider = services.BuildServiceProvider();
+
         var publisher = new OutboxPublisher(
-            dbFactory, new OutboxRepository(), new RabbitMqEventBus(options), options,
-            TimeProvider.System, NullLogger<OutboxPublisher>.Instance);
+            provider.GetRequiredService<IServiceScopeFactory>(),
+            new RabbitMqEventBus(options),
+            options,
+            TimeProvider.System,
+            NullLogger<OutboxPublisher>.Instance);
 
         var published = await publisher.PublishPendingAsync(default);
         Assert.True(published >= 1);
