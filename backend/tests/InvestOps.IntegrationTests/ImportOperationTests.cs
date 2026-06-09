@@ -67,9 +67,9 @@ public class ImportOperationTests(PostgresFixture fixture)
         Assert.Equal(2540.00m, op.GrossValue);
         Assert.Equal(new DateOnly(2026, 6, 9), op.SettlementDate); // 2026-06-07 + 2 dias
 
-        // payload é o envelope serializado em PascalCase (System.Text.Json default): Payload.OperationId
+        // payload é o envelope serializado em camelCase (EventJson.Options): payload.operationId
         var outboxCount = await conn.ExecuteScalarAsync<long>(
-            "SELECT count(*) FROM outbox_messages WHERE event_type='OperationImported' AND status='Pending' AND payload->'Payload'->>'OperationId' = @id;",
+            "SELECT count(*) FROM outbox_messages WHERE event_type='OperationImported' AND status='Pending' AND payload->'payload'->>'operationId' = @id;",
             new { id = resultId.ToString() });
         Assert.Equal(1L, outboxCount);
 

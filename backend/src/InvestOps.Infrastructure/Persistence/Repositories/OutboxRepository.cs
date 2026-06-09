@@ -31,7 +31,7 @@ public sealed class OutboxRepository(IDbSession session) : IOutboxRepository
         const string sql = """
             SELECT id, event_type, version, payload, status, attempts, created_at, published_at, last_error
             FROM outbox_messages
-            WHERE status = 'Pending'
+            WHERE status = 'Pending' AND source = 'api'
             ORDER BY created_at
             LIMIT @batchSize;
             """;

@@ -67,7 +67,7 @@ public sealed class ImportOperationHandler(
             Id = Guid.NewGuid(),
             EventType = OperationImportedV1.EventType,
             Version = OperationImportedV1.Version,
-            Payload = JsonSerializer.Serialize(envelope),
+            Payload = JsonSerializer.Serialize(envelope, EventJson.Options),
             Status = OutboxStatus.Pending,
             Attempts = 0,
             CreatedAt = now
