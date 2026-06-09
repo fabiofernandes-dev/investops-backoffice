@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OperationImported v1",
+  "description": "Evento publicado quando uma operação é importada com sucesso pela API.",
+  "type": "object",
+  "required": ["eventId", "eventType", "version", "occurredAt", "correlationId", "payload"],
+  "properties": {
+    "eventId": { "type": "string", "format": "uuid" },
+    "eventType": { "type": "string", "const": "OperationImported" },
+    "version": { "type": "integer", "const": 1 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "correlationId": { "type": "string", "format": "uuid" },
+    "payload": {
+      "type": "object",
+      "required": ["operationId", "externalId", "accountId", "productId", "operationType", "quantity", "unitPrice", "operationDate"],
+      "properties": {
+        "operationId": { "type": "string", "format": "uuid" },
+        "externalId": { "type": "string" },
+        "accountId": { "type": "string", "format": "uuid" },
+        "productId": { "type": "string", "format": "uuid" },
+        "operationType": { "type": "string", "enum": ["Buy", "Sell", "Deposit", "Withdraw", "Income", "Fee"] },
+        "quantity": { "type": "number" },
+        "unitPrice": { "type": "number" },
+        "operationDate": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}
