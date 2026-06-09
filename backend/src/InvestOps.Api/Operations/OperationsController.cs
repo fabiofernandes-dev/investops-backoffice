@@ -1,5 +1,7 @@
 using FluentValidation;
+using InvestOps.Application.Operations.GetOperationById;
 using InvestOps.Application.Operations.ImportOperation;
+using InvestOps.Application.Operations.ListOperations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvestOps.Api.Operations;
@@ -8,7 +10,9 @@ namespace InvestOps.Api.Operations;
 [Route("api/operations")]
 public sealed class OperationsController(
     ImportOperationHandler importHandler,
-    IValidator<ImportOperationRequest> importValidator) : ControllerBase
+    IValidator<ImportOperationRequest> importValidator,
+    GetOperationByIdHandler getByIdHandler,
+    ListOperationsHandler listHandler) : ControllerBase
 {
     [HttpPost("import")]
     public async Task<IActionResult> Import(ImportOperationRequest request, CancellationToken ct)
@@ -26,13 +30,27 @@ public sealed class OperationsController(
         {
             var result = await importHandler.HandleAsync(request, correlationId, ct);
             return result.Created
-                ? Created($"/api/operations/{result.Id}", result)
+                ? CreatedAtAction(nameof(GetById), new { id = result.Id }, result)
                 : Ok(result);
         }
         catch (ReferenceNotFoundException ex)
         {
             return UnprocessableEntity(new ProblemDetails { Title = "Referência inválida", Detail = ex.Message });
         }
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+    {
+        var operation = await getByIdHandler.HandleAsync(id, ct);
+        return operation is null ? NotFound() : Ok(operation);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> List([FromQuery] ListOperationsQuery query, CancellationToken ct)
+    {
+        var result = await listHandler.HandleAsync(query, ct);
+        return Ok(result);
     }
 
     private Guid GetCorrelationId() =>
