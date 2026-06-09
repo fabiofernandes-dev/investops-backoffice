@@ -23,6 +23,18 @@ public class SwaggerGatingTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task Swagger_is_available_in_staging()
+    {
+        var client = _factory.WithWebHostBuilder(b => b.UseEnvironment("Staging")).CreateClient();
+
+        var swagger = await client.GetAsync("/swagger/index.html");
+        var root = await client.GetAsync("/");
+
+        Assert.Equal(HttpStatusCode.OK, swagger.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, root.StatusCode);
+    }
+
+    [Fact]
     public async Task Swagger_is_disabled_in_production()
     {
         var client = _factory.WithWebHostBuilder(b => b.UseEnvironment("Production")).CreateClient();

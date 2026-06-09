@@ -23,7 +23,7 @@ var app = builder.Build();
 
 app.UseSerilogRequestLogging();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
     app.UseSwagger();
     app.UseSwaggerUI();

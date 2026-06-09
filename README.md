@@ -75,10 +75,38 @@ cd backend
 dotnet run --project src/InvestOps.Api
 ```
 
-- Swagger: <http://localhost:5000/swagger> (a raiz `/` redireciona para o Swagger em Development)
+- Swagger: <http://localhost:5000/swagger> (a raiz `/` redireciona para o Swagger em Development/Staging)
 - Health: <http://localhost:5000/health> · liveness `/health/live` · readiness `/health/ready`
 
 > Em `Production` o Swagger é desabilitado; apenas `/health` fica exposto.
+
+### Ambientes
+
+A configuração é separada por ambiente via `ASPNETCORE_ENVIRONMENT`, carregando `appsettings.{Environment}.json` sobre o `appsettings.json` base.
+
+| Ambiente | Arquivo | Serilog | Swagger |
+|----------|---------|---------|---------|
+| Development | `appsettings.Development.json` | Debug | ✅ |
+| Staging (homologação) | `appsettings.Staging.json` | Information | ✅ |
+| Production | `appsettings.Production.json` | Warning | ❌ |
+
+Rodar em um ambiente específico (perfis em `launchSettings.json`):
+
+```bash
+dotnet run --project src/InvestOps.Api --launch-profile staging
+dotnet run --project src/InvestOps.Api --launch-profile production
+# ou direto:
+ASPNETCORE_ENVIRONMENT=Staging dotnet run --project src/InvestOps.Api
+```
+
+**Segredos (Staging/Production)** não ficam nos arquivos — vêm de **variáveis de ambiente**, que sobrescrevem o appsettings (`__` separa seções):
+
+```bash
+export ConnectionStrings__Postgres="Host=...;Database=...;Username=...;Password=..."
+export RabbitMq__Host="rabbit.prod.interno"
+export RabbitMq__Username="..."
+export RabbitMq__Password="..."
+```
 
 ### 4. Rodar os testes
 
