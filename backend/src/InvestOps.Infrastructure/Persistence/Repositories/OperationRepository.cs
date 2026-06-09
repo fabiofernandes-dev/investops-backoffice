@@ -1,6 +1,7 @@
 using System.Data.Common;
 using Dapper;
 using InvestOps.Application.Abstractions;
+using InvestOps.Application.Operations.ListOperations;
 using InvestOps.Domain.Entities;
 
 namespace InvestOps.Infrastructure.Persistence.Repositories;
@@ -11,6 +12,42 @@ public sealed class OperationRepository : IOperationRepository
     {
         const string sql = "SELECT * FROM operations WHERE external_id = @externalId;";
         return conn.QuerySingleOrDefaultAsync<Operation>(new CommandDefinition(sql, new { externalId }, cancellationToken: ct));
+    }
+
+    public async Task<(IReadOnlyList<Operation> Items, int Total)> ListAsync(DbConnection conn, ListOperationsQuery query, CancellationToken ct)
+    {
+        var filters = new List<string>();
+        var parameters = new DynamicParameters();
+        var join = query.CustomerId.HasValue ? "JOIN investment_accounts a ON a.id = o.account_id" : string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(query.Status))
+        {
+            filters.Add("o.status = @Status");
+            parameters.Add("Status", query.Status);
+        }
+        if (query.ProductId.HasValue)
+        {
+            filters.Add("o.product_id = @ProductId");
+            parameters.Add("ProductId", query.ProductId.Value);
+        }
+        if (query.CustomerId.HasValue)
+        {
+            filters.Add("a.customer_id = @CustomerId");
+            parameters.Add("CustomerId", query.CustomerId.Value);
+        }
+
+        var where = filters.Count > 0 ? "WHERE " + string.Join(" AND ", filters) : string.Empty;
+        var orderBy = SortClauseBuilder.Build(query.Sort); // coluna validada por whitelist (anti-injection)
+
+        var countSql = $"SELECT count(*) FROM operations o {join} {where};";
+        var total = await conn.ExecuteScalarAsync<long>(new CommandDefinition(countSql, parameters, cancellationToken: ct));
+
+        parameters.Add("Limit", query.NormalizedPageSize);
+        parameters.Add("Offset", query.Offset);
+        var itemsSql = $"SELECT o.* FROM operations o {join} {where} ORDER BY {orderBy} LIMIT @Limit OFFSET @Offset;";
+        var items = (await conn.QueryAsync<Operation>(new CommandDefinition(itemsSql, parameters, cancellationToken: ct))).AsList();
+
+        return (items, (int)total);
     }
 
     public Task<Operation?> GetByIdAsync(DbConnection conn, Guid id, CancellationToken ct)
