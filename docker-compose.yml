@@ -33,6 +33,17 @@ services:
       timeout: 5s
       retries: 10
 
+  worker:
+    build: ./worker-go
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-investops}:${POSTGRES_PASSWORD:-investops}@postgres:5432/${POSTGRES_DB:-investops}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-investops}:${RABBITMQ_PASSWORD:-investops}@rabbitmq:5672/
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
 volumes:
   pgdata:
   rabbitmqdata:
