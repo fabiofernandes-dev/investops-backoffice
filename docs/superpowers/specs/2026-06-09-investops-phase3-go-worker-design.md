@@ -153,5 +153,7 @@ Envelope idêntico ao da Fase 2 (`eventId/eventType/version/occurredAt/correlati
 - Retry com limite, DLQ e evento `OperationFailed` (Fase 5).
 - Reprocessamento manual de `Failed` via API (depende de DLQ/Fase 5).
 - "Claim-then-publish" para alto volume e multi-instância de relay (Fase 5).
+- **Endpoint de health do worker** (HTTP `/health` liveness/readiness) para liveness/readiness probes do K8s — o worker hoje não expõe HTTP (Fase 5). Inclui readiness checando Postgres/RabbitMQ.
+- **Reconnect in-process** do consumer/relay (com backoff) em vez de só crash-and-restart (Fase 5).
 - OpenTelemetry/tracing distribuído completo (Fase 5).
 - Frontend (Fase 4).
