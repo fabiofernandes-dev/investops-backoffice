@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OperationRejected v1",
+  "description": "Evento publicado pelo worker quando uma operação é rejeitada por uma regra de negócio.",
+  "type": "object",
+  "required": ["eventId", "eventType", "version", "occurredAt", "correlationId", "payload"],
+  "properties": {
+    "eventId": { "type": "string", "format": "uuid" },
+    "eventType": { "type": "string", "const": "OperationRejected" },
+    "version": { "type": "integer", "const": 1 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "correlationId": { "type": "string", "format": "uuid" },
+    "payload": {
+      "type": "object",
+      "required": ["operationId", "reason"],
+      "properties": {
+        "operationId": { "type": "string", "format": "uuid" },
+        "reason": { "type": "string", "enum": ["InvestorProfileNotCompatible", "InsufficientPosition", "DuplicateExternalId"] }
+      }
+    }
+  }
+}
