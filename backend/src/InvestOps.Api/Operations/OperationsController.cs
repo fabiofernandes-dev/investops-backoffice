@@ -1,5 +1,7 @@
 using FluentValidation;
+using InvestOps.Application.Operations.GetOperationAudit;
 using InvestOps.Application.Operations.GetOperationById;
+using InvestOps.Application.Operations.GetOperationEvents;
 using InvestOps.Application.Operations.ImportOperation;
 using InvestOps.Application.Operations.ListOperations;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +14,9 @@ public sealed class OperationsController(
     ImportOperationHandler importHandler,
     IValidator<ImportOperationRequest> importValidator,
     GetOperationByIdHandler getByIdHandler,
-    ListOperationsHandler listHandler) : ControllerBase
+    ListOperationsHandler listHandler,
+    GetOperationEventsHandler eventsHandler,
+    GetOperationAuditHandler auditHandler) : ControllerBase
 {
     [HttpPost("import")]
     public async Task<IActionResult> Import(ImportOperationRequest request, CancellationToken ct)
@@ -52,6 +56,14 @@ public sealed class OperationsController(
         var result = await listHandler.HandleAsync(query, ct);
         return Ok(result);
     }
+
+    [HttpGet("{id:guid}/events")]
+    public async Task<IActionResult> Events(Guid id, CancellationToken ct)
+        => Ok(await eventsHandler.HandleAsync(id, ct));
+
+    [HttpGet("{id:guid}/audit")]
+    public async Task<IActionResult> Audit(Guid id, CancellationToken ct)
+        => Ok(await auditHandler.HandleAsync(id, ct));
 
     private Guid GetCorrelationId() =>
         Request.Headers.TryGetValue("X-Correlation-Id", out var value) && Guid.TryParse(value, out var id)
