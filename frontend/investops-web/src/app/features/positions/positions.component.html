@@ -1,10 +1,7 @@
-<h1>Posições</h1>
+<app-page-header title="Posições" />
 
 @if (error()) {
-  <div class="state">
-    <p>{{ error() }}</p>
-    <button mat-stroked-button color="primary" (click)="reload()">Tentar novamente</button>
-  </div>
+  <app-error-state [message]="error()!" (retry)="reload()" />
 } @else {
   <table mat-table [dataSource]="items()" matSort matSortActive="updatedAt" matSortDirection="desc" (matSortChange)="onSort($event)">
     <ng-container matColumnDef="customerName">
@@ -47,7 +44,7 @@
   </table>
 
   @if (!loading() && items().length === 0) {
-    <div class="state">Nenhuma posição encontrada.</div>
+    <app-empty-state message="Nenhuma posição encontrada." />
   }
 
   <mat-paginator [length]="total()" [pageSize]="pageSize" [pageIndex]="pageIndex" [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />

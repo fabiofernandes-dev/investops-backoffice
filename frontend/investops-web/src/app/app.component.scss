@@ -1,0 +1,15 @@
+.layout {
+  height: calc(100vh - 64px);
+}
+
+.sidenav {
+  width: 220px;
+}
+
+.active {
+  background: var(--mat-sys-secondary-container, rgba(0, 0, 0, 0.06));
+}
+
+.page {
+  padding: 24px;
+}

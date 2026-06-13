@@ -57,22 +57,7 @@ import { LoadingService } from './core/state/loading.service';
       </mat-sidenav-content>
     </mat-sidenav-container>
   `,
-  styles: [
-    `
-      .layout {
-        height: calc(100vh - 64px);
-      }
-      .sidenav {
-        width: 220px;
-      }
-      .active {
-        background: rgba(0, 0, 0, 0.06);
-      }
-      .page {
-        padding: 24px;
-      }
-    `,
-  ],
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   readonly loading = inject(LoadingService);

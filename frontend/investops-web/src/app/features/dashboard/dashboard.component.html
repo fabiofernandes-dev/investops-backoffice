@@ -1,14 +1,11 @@
-<h1>Dashboard</h1>
+<app-page-header title="Dashboard" />
 
 @if (loading()) {
   <mat-progress-bar mode="indeterminate" />
 }
 
 @if (error()) {
-  <div class="state">
-    <p>{{ error() }}</p>
-    <button mat-stroked-button color="primary" (click)="reload()">Tentar novamente</button>
-  </div>
+  <app-error-state [message]="error()!" (retry)="reload()" />
 }
 
 <div class="cards" *ngIf="summary() as s">
