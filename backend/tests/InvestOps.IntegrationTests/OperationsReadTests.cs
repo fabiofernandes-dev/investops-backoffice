@@ -115,4 +115,18 @@ public class OperationsReadTests(PostgresFixture fixture) : IAsyncLifetime
         Assert.Equal(0, result.Total);
         Assert.Empty(result.Items);
     }
+
+    [Fact]
+    public async Task List_filters_by_external_id()
+    {
+        var (accountId, productId) = await SeedReferencesAsync();
+        var id = await InsertOperationAsync(accountId, productId, "Imported");
+        await InsertOperationAsync(accountId, productId, "Imported");
+        var externalId = $"EXT-{id:N}";
+
+        var result = await ListHandler().HandleAsync(new ListOperationsQuery(ExternalId: externalId), default);
+
+        Assert.Equal(1, result.Total);
+        Assert.Equal(externalId, result.Items[0].ExternalId);
+    }
 }
