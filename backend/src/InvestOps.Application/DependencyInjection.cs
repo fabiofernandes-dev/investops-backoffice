@@ -1,5 +1,7 @@
 using FluentValidation;
+using InvestOps.Application.Operations.GetOperationAudit;
 using InvestOps.Application.Operations.GetOperationById;
+using InvestOps.Application.Operations.GetOperationEvents;
 using InvestOps.Application.Operations.ImportOperation;
 using InvestOps.Application.Operations.ListOperations;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,8 @@ public static class DependencyInjection
         services.AddScoped<ImportOperationHandler>();
         services.AddScoped<GetOperationByIdHandler>();
         services.AddScoped<ListOperationsHandler>();
+        services.AddScoped<GetOperationEventsHandler>();
+        services.AddScoped<GetOperationAuditHandler>();
         services.AddValidatorsFromAssemblyContaining<ImportOperationValidator>();
         return services;
     }
