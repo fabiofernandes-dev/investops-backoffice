@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IOutboxRepository, OutboxRepository>();
         services.AddScoped<IAuditRepository, AuditRepository>();
         services.AddScoped<IProcessingEventReadRepository, ProcessingEventReadRepository>();
+        services.AddScoped<IPositionReadRepository, PositionReadRepository>();
 
         var rabbitOptions = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>() ?? new RabbitMqOptions();
         services.AddSingleton(rabbitOptions);
