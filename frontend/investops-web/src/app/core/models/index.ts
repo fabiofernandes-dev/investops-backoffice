@@ -106,6 +106,7 @@ export interface OperationsQuery {
   status?: string;
   productId?: string;
   customerId?: string;
+  externalId?: string;
 }
 
 export interface PositionsQuery {

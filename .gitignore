@@ -45,3 +45,4 @@ appsettings.*.Local.json
 # ---------- Claude Code (harness local config) ----------
 .claude/
 .superpowers/
+.playwright-mcp/
