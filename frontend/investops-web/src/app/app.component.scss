@@ -1,13 +1,31 @@
+.toolbar {
+  // M3: color="primary" não preenche mais a toolbar; aplica via system tokens.
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  gap: 8px;
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
 .layout {
   height: calc(100vh - 64px);
 }
 
 .sidenav {
   width: 220px;
+  background: var(--mat-sys-surface-container-low);
+  border-right: 1px solid var(--mat-sys-outline-variant);
 }
 
 .active {
-  background: var(--mat-sys-secondary-container, rgba(0, 0, 0, 0.06));
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
 }
 
 .page {
