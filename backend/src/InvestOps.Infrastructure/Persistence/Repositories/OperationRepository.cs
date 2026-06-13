@@ -84,6 +84,11 @@ public sealed class OperationRepository(IDbSession session) : IOperationReposito
             filters.Add("a.customer_id = @CustomerId");
             parameters.Add("CustomerId", query.CustomerId.Value);
         }
+        if (!string.IsNullOrWhiteSpace(query.ExternalId))
+        {
+            filters.Add("o.external_id ILIKE @ExternalId");
+            parameters.Add("ExternalId", $"%{query.ExternalId}%");
+        }
 
         var where = filters.Count > 0 ? "WHERE " + string.Join(" AND ", filters) : string.Empty;
         var orderBy = SortClauseBuilder.Build(query.Sort); // coluna validada por whitelist (anti-injection), qualificada com o.

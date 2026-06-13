@@ -1,0 +1,100 @@
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { of } from 'rxjs';
+import { LookupsApi } from '../../../core/api/lookups.api';
+import { OperationListItem } from '../../../core/models';
+import { selectError, selectItems, selectLoading, selectTotal } from '../state/operations.feature';
+import { OperationsListComponent } from './operations-list.component';
+
+function makeItem(id: string, status: string): OperationListItem {
+  return {
+    id,
+    externalId: `EXT-${id}`,
+    accountId: 'a',
+    productId: 'p',
+    customerName: 'Cliente',
+    accountNumber: 'ACC',
+    productName: 'Produto',
+    ticker: null,
+    operationType: 'Buy',
+    quantity: 1,
+    unitPrice: 1,
+    grossValue: 1,
+    netValue: 1,
+    operationDate: '2026-06-10',
+    settlementDate: '2026-06-12',
+    status,
+    rejectionReason: null,
+  };
+}
+
+const lookupsStub = { products: () => of([]), customers: () => of([]) };
+
+describe('OperationsListComponent', () => {
+  let store: MockStore;
+  let fixture: ComponentFixture<OperationsListComponent>;
+
+  function setup(): void {
+    TestBed.configureTestingModule({
+      imports: [OperationsListComponent],
+      providers: [
+        provideNoopAnimations(),
+        provideRouter([]),
+        provideMockStore(),
+        { provide: LookupsApi, useValue: lookupsStub },
+      ],
+    });
+    store = TestBed.inject(MockStore);
+    store.overrideSelector(selectItems, []);
+    store.overrideSelector(selectTotal, 0);
+    store.overrideSelector(selectLoading, false);
+    store.overrideSelector(selectError, null);
+    fixture = TestBed.createComponent(OperationsListComponent);
+  }
+
+  it('renders one row per item', () => {
+    setup();
+    store.overrideSelector(selectItems, [makeItem('1', 'Processed'), makeItem('2', 'Failed')]);
+    store.refreshState();
+    fixture.detectChanges();
+
+    const rows = fixture.nativeElement.querySelectorAll('tr[mat-row]');
+    expect(rows.length).toBe(2);
+  });
+
+  it('dispatches load only after the debounce when searching', fakeAsync(() => {
+    setup();
+    fixture.detectChanges(); // ngOnInit: initial load + subscribes to search
+    const dispatch = jest.spyOn(store, 'dispatch');
+
+    fixture.componentInstance.searchControl.setValue('EXT-9');
+    tick(299);
+    expect(dispatch).not.toHaveBeenCalled();
+
+    tick(1);
+    expect(dispatch).toHaveBeenCalledTimes(1);
+  }));
+
+  it('shows the reprocess button only for Failed rows', () => {
+    setup();
+    store.overrideSelector(selectItems, [makeItem('1', 'Processed'), makeItem('2', 'Failed')]);
+    store.refreshState();
+    fixture.detectChanges();
+
+    const replayIcons = Array.from(fixture.nativeElement.querySelectorAll('mat-icon')).filter(
+      (icon) => (icon as HTMLElement).textContent?.trim() === 'replay',
+    );
+    expect(replayIcons.length).toBe(1);
+  });
+
+  it('shows the error state when there is an error', () => {
+    setup();
+    store.overrideSelector(selectError, 'Falha ao carregar operações.');
+    store.refreshState();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Falha ao carregar operações.');
+  });
+});
