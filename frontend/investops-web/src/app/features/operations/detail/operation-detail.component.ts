@@ -16,33 +16,7 @@ import { selectAudit, selectDetail, selectDetailError, selectDetailLoading, sele
   standalone: true,
   imports: [CommonModule, RouterLink, MatTabsModule, MatTableModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatTooltipModule],
   templateUrl: './operation-detail.component.html',
-  styles: [
-    `
-      .header {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
-      }
-      table {
-        width: 100%;
-      }
-      dl {
-        display: grid;
-        grid-template-columns: 200px 1fr;
-        gap: 8px 16px;
-        max-width: 640px;
-      }
-      dt {
-        color: rgba(0, 0, 0, 0.6);
-      }
-      .state {
-        padding: 24px;
-        text-align: center;
-        color: rgba(0, 0, 0, 0.6);
-      }
-    `,
-  ],
+  styleUrl: './operation-detail.component.scss',
 })
 export class OperationDetailComponent implements OnInit {
   private readonly store = inject(Store);
