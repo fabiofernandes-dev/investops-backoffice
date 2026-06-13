@@ -2,15 +2,17 @@ namespace InvestOps.Application.Operations.ListOperations;
 
 public static class SortClauseBuilder
 {
-    public const string Default = "created_at DESC";
+    // Colunas qualificadas com o alias "o" (operations): a lista faz join com customers/accounts,
+    // que também têm created_at/status — sem o prefixo o ORDER BY seria ambíguo (42702).
+    public const string Default = "o.created_at DESC";
 
     private static readonly IReadOnlyDictionary<string, string> Columns =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            ["operationDate"] = "operation_date",
-            ["createdAt"] = "created_at",
-            ["grossValue"] = "gross_value",
-            ["status"] = "status"
+            ["operationDate"] = "o.operation_date",
+            ["createdAt"] = "o.created_at",
+            ["grossValue"] = "o.gross_value",
+            ["status"] = "o.status"
         };
 
     public static string Build(string? sort)
