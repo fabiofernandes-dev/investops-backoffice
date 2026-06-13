@@ -117,8 +117,9 @@ Grid de `MatCard` com `summary` (importadas hoje, processadas, rejeitadas, falha
 | 4b.3 | `feature/web-operations` | feature Operações: NgRx + lista (tabela/paginação/sort/filtros/debounce/loading/error) + detalhe (abas) + testes §13 |
 | 4b.4 | `feature/web-positions` | feature Posições: NgRx + tabela paginada + testes |
 | 4b.5 | `feature/web-dashboard` | feature Dashboard: NgRx + cards (summary/metrics) + testes |
+| 4b.6 | `feature/web-theme` | **Tema corporativo + polish**: tema Material custom (paleta/densidade/tipografia), locale pt-BR global, componentes compartilhados (status-chip/page-header/empty-state/error-state), polish das 3 telas |
 
-**Ordem:** 4b.1 → 4b.2 → 4b.3 → 4b.4 → 4b.5. Cada uma um PR para `developer`.
+**Ordem:** 4b.1 → 4b.2 → 4b.3 → 4b.4 → 4b.5 → 4b.6. Cada uma um PR para `developer`. As telas (4b.3–4b.5) já trazem os essenciais visuais (chips por status, formatação pt-BR, loading/erro/vazio); a 4b.6 eleva à identidade corporativa.
 
 ## 9. Jest no Angular 19 (nota de setup p/ 4b.2)
 - `ng new` gera Karma/Jasmine → **remover** e configurar `jest-preset-angular` (jest.config, setup-jest, `tsconfig.spec`, script `"test": "jest"`).
