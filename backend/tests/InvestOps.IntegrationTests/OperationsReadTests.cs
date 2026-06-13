@@ -90,6 +90,9 @@ public class OperationsReadTests(PostgresFixture fixture) : IAsyncLifetime
         Assert.Equal(2, page1.Items.Count);
         Assert.Equal(3, page2.Total);
         Assert.Single(page2.Items);
+        Assert.Equal("R", page1.Items[0].CustomerName);
+        Assert.Equal("ACC-R", page1.Items[0].AccountNumber);
+        Assert.Equal("R", page1.Items[0].ProductName);
     }
 
     [Fact]

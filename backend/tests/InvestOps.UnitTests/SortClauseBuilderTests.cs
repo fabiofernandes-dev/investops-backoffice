@@ -5,10 +5,10 @@ namespace InvestOps.UnitTests;
 public class SortClauseBuilderTests
 {
     [Theory]
-    [InlineData("operationDate:desc", "operation_date DESC")]
-    [InlineData("operationDate:asc", "operation_date ASC")]
-    [InlineData("grossValue", "gross_value DESC")]
-    [InlineData("status:asc", "status ASC")]
+    [InlineData("operationDate:desc", "o.operation_date DESC")]
+    [InlineData("operationDate:asc", "o.operation_date ASC")]
+    [InlineData("grossValue", "o.gross_value DESC")]
+    [InlineData("status:asc", "o.status ASC")]
     public void Build_maps_whitelisted_columns(string sort, string expected)
         => Assert.Equal(expected, SortClauseBuilder.Build(sort));
 

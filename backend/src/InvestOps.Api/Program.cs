@@ -15,6 +15,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
 
+const string DevCorsPolicy = "dev-cors";
+builder.Services.AddCors(options => options.AddPolicy(DevCorsPolicy, policy =>
+    policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+
 var connectionString = builder.Configuration.GetConnectionString("Postgres")!;
 builder.Services.AddHealthChecks()
     .AddNpgSql(connectionString, name: "postgres", tags: new[] { "ready" });
@@ -22,6 +26,9 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
+
+if (app.Environment.IsDevelopment())
+    app.UseCors(DevCorsPolicy);
 
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
