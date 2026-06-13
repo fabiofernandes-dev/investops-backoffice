@@ -5,11 +5,14 @@ import * as operationsEffects from './features/operations/state/operations.effec
 import { operationsFeature } from './features/operations/state/operations.feature';
 import * as positionsEffects from './features/positions/state/positions.effects';
 import { positionsFeature } from './features/positions/state/positions.feature';
+import * as dashboardEffects from './features/dashboard/state/dashboard.effects';
+import { dashboardFeature } from './features/dashboard/state/dashboard.feature';
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
+    providers: [provideState(dashboardFeature), provideEffects(dashboardEffects)],
     loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
   },
   {
