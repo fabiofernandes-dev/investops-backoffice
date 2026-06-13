@@ -1,5 +1,5 @@
 import { createActionGroup, props } from '@ngrx/store';
-import { AuditLog, OperationDetail, OperationListItem, OperationsQuery, Paged, ProcessingEvent } from '../../../core/models';
+import { AuditLog, ImportOperationRequest, OperationDetail, OperationListItem, OperationsQuery, Paged, ProcessingEvent } from '../../../core/models';
 
 export const OperationsActions = createActionGroup({
   source: 'Operations',
@@ -10,5 +10,8 @@ export const OperationsActions = createActionGroup({
     'Load Detail': props<{ id: string }>(),
     'Load Detail Success': props<{ detail: OperationDetail; events: ProcessingEvent[]; audit: AuditLog[] }>(),
     'Load Detail Failure': props<{ error: string }>(),
+    'Import Operation': props<{ request: ImportOperationRequest }>(),
+    'Import Operation Success': props<{ id: string }>(),
+    'Import Operation Failure': props<{ error: string }>(),
   },
 });

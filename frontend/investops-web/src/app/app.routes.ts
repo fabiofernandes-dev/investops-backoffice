@@ -24,6 +24,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/operations/list/operations-list.component').then((m) => m.OperationsListComponent),
       },
       {
+        path: 'new',
+        loadComponent: () => import('./features/operations/import/operation-import.component').then((m) => m.OperationImportComponent),
+      },
+      {
         path: ':id',
         loadComponent: () => import('./features/operations/detail/operation-detail.component').then((m) => m.OperationDetailComponent),
       },
