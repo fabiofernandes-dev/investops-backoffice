@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CustomerLookup, ProductLookup } from '../models';
+import { AccountLookup, CustomerLookup, ProductLookup } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class LookupsApi {
@@ -15,5 +15,9 @@ export class LookupsApi {
 
   customers(): Observable<CustomerLookup[]> {
     return this.http.get<CustomerLookup[]>(`${this.baseUrl}/customers`);
+  }
+
+  accounts(): Observable<AccountLookup[]> {
+    return this.http.get<AccountLookup[]>(`${this.baseUrl}/accounts`);
   }
 }
