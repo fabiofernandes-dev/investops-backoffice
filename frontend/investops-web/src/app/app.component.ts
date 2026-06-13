@@ -32,9 +32,13 @@ import { LoadingService } from './core/state/loading.service';
             <mat-icon matListItemIcon>dashboard</mat-icon>
             <span matListItemTitle>Dashboard</span>
           </a>
-          <a mat-list-item routerLink="/operations" routerLinkActive="active">
+          <a mat-list-item routerLink="/operations" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <mat-icon matListItemIcon>receipt_long</mat-icon>
             <span matListItemTitle>Operações</span>
+          </a>
+          <a mat-list-item routerLink="/operations/new" routerLinkActive="active">
+            <mat-icon matListItemIcon>add_circle</mat-icon>
+            <span matListItemTitle>Importar</span>
           </a>
           <a mat-list-item routerLink="/positions" routerLinkActive="active">
             <mat-icon matListItemIcon>account_balance_wallet</mat-icon>

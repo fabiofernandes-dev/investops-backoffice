@@ -13,6 +13,8 @@ export interface OperationsState {
   audit: AuditLog[];
   detailLoading: boolean;
   detailError: string | null;
+  importing: boolean;
+  importError: string | null;
 }
 
 export const initialOperationsState: OperationsState = {
@@ -26,6 +28,8 @@ export const initialOperationsState: OperationsState = {
   audit: [],
   detailLoading: false,
   detailError: null,
+  importing: false,
+  importError: null,
 };
 
 export const operationsFeature = createFeature({
@@ -56,6 +60,9 @@ export const operationsFeature = createFeature({
       detailLoading: false,
     })),
     on(OperationsActions.loadDetailFailure, (state, { error }) => ({ ...state, detailLoading: false, detailError: error })),
+    on(OperationsActions.importOperation, (state) => ({ ...state, importing: true, importError: null })),
+    on(OperationsActions.importOperationSuccess, (state) => ({ ...state, importing: false })),
+    on(OperationsActions.importOperationFailure, (state, { error }) => ({ ...state, importing: false, importError: error })),
   ),
 });
 
@@ -70,4 +77,6 @@ export const {
   selectAudit,
   selectDetailLoading,
   selectDetailError,
+  selectImporting,
+  selectImportError,
 } = operationsFeature;
