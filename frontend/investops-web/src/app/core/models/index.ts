@@ -99,6 +99,22 @@ export interface CustomerLookup {
   name: string;
 }
 
+export interface AccountLookup {
+  id: string;
+  accountNumber: string;
+  customerName: string;
+}
+
+export interface ImportOperationRequest {
+  externalId: string;
+  accountId: string;
+  productId: string;
+  operationType: string;
+  quantity: number;
+  unitPrice: number;
+  operationDate: string;
+}
+
 export interface OperationsQuery {
   page: number;
   pageSize: number;

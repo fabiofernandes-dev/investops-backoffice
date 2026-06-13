@@ -1,0 +1,87 @@
+<div class="header">
+  <a mat-icon-button routerLink="/operations" matTooltip="Voltar">
+    <mat-icon>arrow_back</mat-icon>
+  </a>
+  <h1>Importar operação</h1>
+</div>
+
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <mat-form-field appearance="outline">
+        <mat-label>ExternalId</mat-label>
+        <input matInput formControlName="externalId" placeholder="EXT-..." />
+        @if (form.controls.externalId.hasError('required') && form.controls.externalId.touched) {
+          <mat-error>Obrigatório</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Conta</mat-label>
+        <mat-select formControlName="accountId">
+          @for (a of accounts(); track a.id) {
+            <mat-option [value]="a.id">{{ a.accountNumber }} — {{ a.customerName }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.accountId.hasError('required') && form.controls.accountId.touched) {
+          <mat-error>Obrigatório</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Produto</mat-label>
+        <mat-select formControlName="productId">
+          @for (p of products(); track p.id) {
+            <mat-option [value]="p.id">{{ p.name }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.productId.hasError('required') && form.controls.productId.touched) {
+          <mat-error>Obrigatório</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="operationType">
+          @for (t of operationTypes; track t) {
+            <mat-option [value]="t">{{ t }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Quantidade</mat-label>
+        <input matInput type="number" formControlName="quantity" />
+        @if (form.controls.quantity.invalid && form.controls.quantity.touched) {
+          <mat-error>Informe um valor maior que zero</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Preço unitário</mat-label>
+        <input matInput type="number" formControlName="unitPrice" />
+        @if (form.controls.unitPrice.invalid && form.controls.unitPrice.touched) {
+          <mat-error>Informe um valor maior que zero</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Data da operação</mat-label>
+        <input matInput type="date" formControlName="operationDate" />
+        @if (form.controls.operationDate.hasError('required') && form.controls.operationDate.touched) {
+          <mat-error>Obrigatório</mat-error>
+        }
+      </mat-form-field>
+
+      @if (importError()) {
+        <p class="error">{{ importError() }}</p>
+      }
+
+      <div class="actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || importing()">
+          Importar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

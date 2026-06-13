@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<Dashboard.GetProcessingMetricsHandler>();
         services.AddScoped<Lookups.ListProductsHandler>();
         services.AddScoped<Lookups.ListCustomersHandler>();
+        services.AddScoped<Lookups.ListAccountsHandler>();
         services.AddValidatorsFromAssemblyContaining<ImportOperationValidator>();
         return services;
     }
