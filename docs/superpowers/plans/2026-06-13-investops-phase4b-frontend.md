@@ -208,6 +208,30 @@ export const appConfig: ApplicationConfig = {
 
 ---
 
+## Chunk 5: Tema corporativo + polish (4b.6)
+
+> As telas 4b.3–4b.5 já entregam os **essenciais visuais por componente** (status chips coloridos por status, formatação pt-BR de moeda/data, estados de loading/erro/vazio). A 4b.6 é o **passe de identidade visual + polish global**, feito depois das telas.
+
+### Task 4b.6: Tema custom + locale pt-BR + componentes compartilhados de UI
+
+**Files:** `src/styles.scss`, `src/app/app.config.ts`, `src/app/shared/**`, ajustes nas telas
+
+- [ ] **Step 1: Branch** `feature/web-theme`.
+
+- [ ] **Step 2: Tema Material custom** — em `styles.scss`, substituir o prebuilt `azure-blue` por um tema definido via API do Material 19 (`@use '@angular/material' as mat;` + `mat.theme(...)` ou `define-theme`): paleta primária/terciária corporativa, **densidade compacta** (`-1`/`-2`, adequada a tabelas de backoffice) e tipografia. Remover a linha do prebuilt do `angular.json`.
+
+- [ ] **Step 3: Locale pt-BR (global)** — `registerLocaleData(localePt)` + `{ provide: LOCALE_ID, useValue: 'pt-BR' }` e `DEFAULT_CURRENCY_CODE: 'BRL'` no `app.config`. Garante `| currency` e `| date` em pt-BR em todo o app.
+
+- [ ] **Step 4: Componentes compartilhados** (`shared/`): `status-chip` (cor por status), `page-header` (título + ações, espaçamento padrão), `empty-state` e `error-state` (com retry) — extrair/uniformizar o que as telas fizeram inline. Refatorar Operações/Posições/Dashboard para usá-los.
+
+- [ ] **Step 5: Polish global** — espaçamentos/elevação consistentes nos cards, larguras de coluna/alinhamento numérico à direita nas tabelas, cabeçalho de página padronizado nas 3 telas.
+
+- [ ] **Step 6: Testes** — `status-chip` mapeia status→cor; `empty-state`/`error-state` renderizam e `error-state` emite retry. `npm test` verde.
+
+- [ ] **Step 7: Build + test** verdes; smoke visual (`ng serve`) → commit + push + PR → **PAUSA**.
+
+---
+
 ## Fechamento da Fase 4b
 
-Após 4b.5: o MVP do SPEC §14 está completo de ponta a ponta — Angular → API → RabbitMQ → Worker → posição/status → telas. Abrir release `developer → main` (Fases 1–4). Próximo (opcional): Fase 5 (qualidade sênior: retry/DLQ, OperationFailed + reprocess, health do worker, OpenTelemetry, containerizar o front).
+Após 4b.6: o MVP do SPEC §14 está completo de ponta a ponta — Angular → API → RabbitMQ → Worker → posição/status → telas, com identidade visual corporativa. Abrir release `developer → main` (Fases 1–4). Próximo (opcional): Fase 5 (qualidade sênior: retry/DLQ, OperationFailed + reprocess, health do worker, OpenTelemetry, containerizar o front).
