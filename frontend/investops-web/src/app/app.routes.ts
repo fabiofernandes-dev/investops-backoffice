@@ -3,6 +3,8 @@ import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
 import * as operationsEffects from './features/operations/state/operations.effects';
 import { operationsFeature } from './features/operations/state/operations.feature';
+import * as positionsEffects from './features/positions/state/positions.effects';
+import { positionsFeature } from './features/positions/state/positions.feature';
 
 export const routes: Routes = [
   {
@@ -26,6 +28,7 @@ export const routes: Routes = [
   },
   {
     path: 'positions',
+    providers: [provideState(positionsFeature), provideEffects(positionsEffects)],
     loadComponent: () => import('./features/positions/positions.component').then((m) => m.PositionsComponent),
   },
   { path: '**', redirectTo: '' },
