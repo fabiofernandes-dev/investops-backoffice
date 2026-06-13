@@ -39,39 +39,7 @@ import { selectError, selectItems, selectLoading, selectTotal } from '../state/o
     MatTooltipModule,
   ],
   templateUrl: './operations-list.component.html',
-  styles: [
-    `
-      .filters {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-      .search {
-        flex: 1;
-        min-width: 220px;
-      }
-      table {
-        width: 100%;
-      }
-      .num {
-        text-align: right;
-      }
-      .chip {
-        padding: 2px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-        color: #fff;
-        white-space: nowrap;
-      }
-      .state {
-        padding: 24px;
-        text-align: center;
-        color: rgba(0, 0, 0, 0.6);
-      }
-    `,
-  ],
+  styleUrl: './operations-list.component.scss',
 })
 export class OperationsListComponent implements OnInit {
   private readonly store = inject(Store);
