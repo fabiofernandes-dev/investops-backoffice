@@ -105,8 +105,8 @@
         <a mat-icon-button [routerLink]="['/operations', o.id]" matTooltip="Ver detalhe">
           <mat-icon>visibility</mat-icon>
         </a>
-        @if (isFailed(o.status)) {
-          <button mat-icon-button disabled matTooltip="Reprocessar (disponível na Fase 5)">
+        @if (canReprocess(o.status)) {
+          <button mat-icon-button (click)="reprocess(o.id)" matTooltip="Reprocessar">
             <mat-icon>replay</mat-icon>
           </button>
         }

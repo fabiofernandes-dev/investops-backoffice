@@ -14,6 +14,7 @@ public static class DependencyInjection
     {
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<ImportOperationHandler>();
+        services.AddScoped<Operations.ReprocessOperation.ReprocessOperationHandler>();
         services.AddScoped<GetOperationByIdHandler>();
         services.AddScoped<ListOperationsHandler>();
         services.AddScoped<GetOperationEventsHandler>();

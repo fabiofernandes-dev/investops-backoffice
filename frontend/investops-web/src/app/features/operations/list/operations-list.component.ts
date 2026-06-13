@@ -136,7 +136,11 @@ export class OperationsListComponent implements OnInit {
     this.reload();
   }
 
-  isFailed(status: string): boolean {
-    return status === 'Failed';
+  canReprocess(status: string): boolean {
+    return status === 'Imported' || status === 'Failed';
+  }
+
+  reprocess(id: string): void {
+    this.store.dispatch(OperationsActions.reprocessOperation({ id }));
   }
 }
