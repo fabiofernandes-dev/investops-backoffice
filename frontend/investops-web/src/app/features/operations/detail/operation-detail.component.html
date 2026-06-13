@@ -10,7 +10,7 @@
 }
 
 @if (error()) {
-  <div class="state">{{ error() }}</div>
+  <app-error-state [message]="error()!" (retry)="reload()" />
 }
 
 <div *ngIf="detail() as d">
@@ -60,7 +60,7 @@
         <tr mat-row *matRowDef="let row; columns: eventColumns"></tr>
       </table>
       @if (events().length === 0) {
-        <div class="state">Sem eventos.</div>
+        <app-empty-state message="Sem eventos." />
       }
     </mat-tab>
 
@@ -86,7 +86,7 @@
         <tr mat-row *matRowDef="let row; columns: auditColumns"></tr>
       </table>
       @if (audit().length === 0) {
-        <div class="state">Sem registros de auditoria.</div>
+        <app-empty-state message="Sem registros de auditoria." />
       }
     </mat-tab>
   </mat-tab-group>
