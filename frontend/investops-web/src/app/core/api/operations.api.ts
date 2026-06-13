@@ -34,4 +34,8 @@ export class OperationsApi {
   import(request: ImportOperationRequest): Observable<ImportOperationResult> {
     return this.http.post<ImportOperationResult>(`${this.baseUrl}/import`, request);
   }
+
+  reprocess(id: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${id}/reprocess`, {});
+  }
 }

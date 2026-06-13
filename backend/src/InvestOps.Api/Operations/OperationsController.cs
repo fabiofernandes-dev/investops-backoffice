@@ -4,6 +4,7 @@ using InvestOps.Application.Operations.GetOperationById;
 using InvestOps.Application.Operations.GetOperationEvents;
 using InvestOps.Application.Operations.ImportOperation;
 using InvestOps.Application.Operations.ListOperations;
+using InvestOps.Application.Operations.ReprocessOperation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvestOps.Api.Operations;
@@ -16,7 +17,8 @@ public sealed class OperationsController(
     GetOperationByIdHandler getByIdHandler,
     ListOperationsHandler listHandler,
     GetOperationEventsHandler eventsHandler,
-    GetOperationAuditHandler auditHandler) : ControllerBase
+    GetOperationAuditHandler auditHandler,
+    ReprocessOperationHandler reprocessHandler) : ControllerBase
 {
     [HttpPost("import")]
     public async Task<IActionResult> Import(ImportOperationRequest request, CancellationToken ct)
@@ -64,6 +66,20 @@ public sealed class OperationsController(
     [HttpGet("{id:guid}/audit")]
     public async Task<IActionResult> Audit(Guid id, CancellationToken ct)
         => Ok(await auditHandler.HandleAsync(id, ct));
+
+    [HttpPost("{id:guid}/reprocess")]
+    public async Task<IActionResult> Reprocess(Guid id, CancellationToken ct)
+    {
+        try
+        {
+            await reprocessHandler.HandleAsync(id, GetCorrelationId(), ct);
+            return Accepted();
+        }
+        catch (ReferenceNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails { Title = "Operação não encontrada", Detail = ex.Message });
+        }
+    }
 
     private Guid GetCorrelationId() =>
         Request.Headers.TryGetValue("X-Correlation-Id", out var value) && Guid.TryParse(value, out var id)
