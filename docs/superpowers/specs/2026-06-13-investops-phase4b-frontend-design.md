@@ -100,6 +100,10 @@ Molde (ex.: **operations**):
 ### Dashboard (`/` landing)
 Grid de `MatCard` com `summary` (importadas hoje, processadas, rejeitadas, falhas, divergências, tempo médio) + um card iterando `processingMetrics.operationsByStatus` (dicionário) e exibindo `outboxPending`.
 
+### Importar operação (`/operations/new`) — **fora do SPEC §9, adicionada para demo**
+Formulário reativo que dispara o fluxo assíncrono ponta a ponta a partir da UI (`POST /operations/import`). Campos: **externalId** (obrigatório), **conta** (select via lookup), **produto** (select via lookup), **tipo** (Buy/Sell), **quantidade** (>0), **preço unitário** (>0), **data da operação** (obrigatória). `settlementDate` é calculada no servidor. Submit → sucesso: feedback (snackbar) + navega para a operação/lista; erro 422 (`ReferenceNotFound`)/validação → mensagem. Via **NgRx** (action `importOperation` → effect → POST → success: navega + recarrega lista; failure: erro), consistente com a arquitetura.
+**Backend necessário:** `GET /api/accounts` → `AccountLookupDto { id, accountNumber, customerName }` (join accounts→customers) para o select de conta.
+
 ## 7. Testes (Jest) — SPEC §13
 
 - **Operations list renders** (store/selector mockado com itens).
@@ -117,9 +121,10 @@ Grid de `MatCard` com `summary` (importadas hoje, processadas, rejeitadas, falha
 | 4b.3 | `feature/web-operations` | feature Operações: NgRx + lista (tabela/paginação/sort/filtros/debounce/loading/error) + detalhe (abas) + testes §13 |
 | 4b.4 | `feature/web-positions` | feature Posições: NgRx + tabela paginada + testes |
 | 4b.5 | `feature/web-dashboard` | feature Dashboard: NgRx + cards (summary/metrics) + testes |
-| 4b.6 | `feature/web-theme` | **Tema corporativo + polish**: tema Material custom (paleta/densidade/tipografia), locale pt-BR global, componentes compartilhados (status-chip/page-header/empty-state/error-state), polish das 3 telas |
+| 4b.7 | `feature/web-import` | **Importar operação** (fora do SPEC §9, p/ demo): `GET /accounts` (.NET) + formulário reativo + `POST /operations/import` via NgRx + nav link + testes |
+| 4b.6 | `feature/web-theme` | **Tema corporativo + polish**: tema Material custom (paleta/densidade/tipografia), locale pt-BR global, componentes compartilhados (status-chip/page-header/empty-state/error-state), polish de todas as telas |
 
-**Ordem:** 4b.1 → 4b.2 → 4b.3 → 4b.4 → 4b.5 → 4b.6. Cada uma um PR para `developer`. As telas (4b.3–4b.5) já trazem os essenciais visuais (chips por status, formatação pt-BR, loading/erro/vazio); a 4b.6 eleva à identidade corporativa.
+**Ordem:** 4b.1 → 4b.2 → 4b.3 → 4b.4 → 4b.5 → **4b.7 (importar)** → **4b.6 (tema, por último)**. Cada uma um PR para `developer`. As telas trazem os essenciais visuais (chips, pt-BR, loading/erro/vazio); a 4b.6 (última) eleva à identidade corporativa e estiliza tudo, inclusive o formulário de importação.
 
 ## 9. Jest no Angular 19 (nota de setup p/ 4b.2)
 - `ng new` gera Karma/Jasmine → **remover** e configurar `jest-preset-angular` (jest.config, setup-jest, `tsconfig.spec`, script `"test": "jest"`).

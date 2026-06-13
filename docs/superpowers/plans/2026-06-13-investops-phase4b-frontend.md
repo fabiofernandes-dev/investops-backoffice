@@ -208,6 +208,24 @@ export const appConfig: ApplicationConfig = {
 
 ---
 
+## Chunk 6: Importar operação (4b.7)
+
+> Fora do SPEC §9 — adicionada para tornar o fluxo assíncrono **tangível na UI** (form → API → RabbitMQ → worker → posição/status). Roda **antes** do tema (4b.6 estiliza o form também).
+
+### Task 4b.7: Formulário de importação + `GET /accounts`
+
+**Files:** `.NET` lookups (accounts) + `src/app/features/operations/import/**`, `core/api`, `core/models`, `app.routes.ts`, shell nav
+
+- [ ] **Step 1: Branch** `feature/web-import`.
+- [ ] **Step 2 (.NET): lookup de contas** — `AccountLookupDto(Guid Id, string AccountNumber, string CustomerName)`; `ILookupRepository.ListAccountsAsync` (join `investment_accounts`→`customers`, `ORDER BY account_number`); handler `ListAccountsHandler`; `AccountsController` (`GET /api/accounts`); DI; teste de integração. Build + test backend.
+- [ ] **Step 3 (front): models + api** — `AccountLookup`, `ImportOperationRequest { externalId, accountId, productId, operationType, quantity, unitPrice, operationDate }`; `LookupsApi.accounts()`; `OperationsApi.import(req)`.
+- [ ] **Step 4: NgRx** — na feature de operações: action `importOperation({ request })` / `importSuccess({ id })` / `importFailure({ error })`; effect → `OperationsApi.import` → success: `importSuccess` (+ navega para a operação/lista) ; failure: `importFailure` (mensagem). Reducer guarda `importError`/`importing`.
+- [ ] **Step 5: Componente** (`operations/import/operation-import.component`): `ReactiveForms` com validação (required, min>0), selects de conta/produto (lookups), tipo (Buy/Sell), data; `styleUrl` + `.scss`. Submit despacha `importOperation`; sucesso → snackbar + navega; erro → mensagem (inclui 422 ReferenceNotFound). Rota `operations/new` (antes de `operations/:id` para não colidir) + link "Importar" no shell.
+- [ ] **Step 6: Testes Jest** — form inválido desabilita submit; submit válido despacha `importOperation`; estado de erro exibido. Reducer dos novos casos.
+- [ ] **Step 7: Build + test** verdes; smoke (`ng serve` + API): preencher e importar → operação aparece na lista → commit + push + PR → **PAUSA**.
+
+---
+
 ## Chunk 5: Tema corporativo + polish (4b.6)
 
 > As telas 4b.3–4b.5 já entregam os **essenciais visuais por componente** (status chips coloridos por status, formatação pt-BR de moeda/data, estados de loading/erro/vazio). A 4b.6 é o **passe de identidade visual + polish global**, feito depois das telas.
