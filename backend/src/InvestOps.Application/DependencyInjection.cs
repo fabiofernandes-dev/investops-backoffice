@@ -23,6 +23,8 @@ public static class DependencyInjection
         services.AddScoped<Positions.GetPositionsByCustomerHandler>();
         services.AddScoped<Dashboard.GetDashboardSummaryHandler>();
         services.AddScoped<Dashboard.GetProcessingMetricsHandler>();
+        services.AddScoped<Lookups.ListProductsHandler>();
+        services.AddScoped<Lookups.ListCustomersHandler>();
         services.AddValidatorsFromAssemblyContaining<ImportOperationValidator>();
         return services;
     }

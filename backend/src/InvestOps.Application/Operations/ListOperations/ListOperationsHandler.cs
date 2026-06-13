@@ -6,14 +6,12 @@ namespace InvestOps.Application.Operations.ListOperations;
 
 public sealed class ListOperationsHandler(IOperationRepository operations)
 {
-    public async Task<PagedResult<OperationDto>> HandleAsync(ListOperationsQuery query, CancellationToken ct)
+    public async Task<PagedResult<OperationListItemDto>> HandleAsync(ListOperationsQuery query, CancellationToken ct)
     {
         if (!string.IsNullOrWhiteSpace(query.Status) && !Enum.TryParse<OperationStatus>(query.Status, out _))
-            return new PagedResult<OperationDto>([], 0, query.NormalizedPage, query.NormalizedPageSize);
+            return new PagedResult<OperationListItemDto>([], 0, query.NormalizedPage, query.NormalizedPageSize);
 
         var (items, total) = await operations.ListAsync(query, ct);
-
-        var dtos = items.Select(OperationDto.From).ToList();
-        return new PagedResult<OperationDto>(dtos, total, query.NormalizedPage, query.NormalizedPageSize);
+        return new PagedResult<OperationListItemDto>(items, total, query.NormalizedPage, query.NormalizedPageSize);
     }
 }
