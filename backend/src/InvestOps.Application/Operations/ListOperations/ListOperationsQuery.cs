@@ -6,7 +6,8 @@ public sealed record ListOperationsQuery(
     string? Sort = null,
     string? Status = null,
     Guid? ProductId = null,
-    Guid? CustomerId = null)
+    Guid? CustomerId = null,
+    string? ExternalId = null)
 {
     public int NormalizedPage => Page < 1 ? 1 : Page;
     public int NormalizedPageSize => Math.Clamp(PageSize, 1, 100);
