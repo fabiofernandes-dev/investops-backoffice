@@ -28,7 +28,7 @@ Angular  ──REST/SSE──►  API .NET  ──gRPC──►  marketdata-go
                                      stream      simulados)
 ```
 
-- **Sem novo acoplamento de dados**: `marketdata-go` é stateless (não usa Postgres/RabbitMQ). Gera cotações para qualquer `productId`.
+- **Sem dependências de infra**: `marketdata-go` **não usa Postgres nem RabbitMQ** — autossuficiente. Mantém apenas o **preço atual por produto em memória efêmera** (para o random walk evoluir); reinício volta à base; dados **simulados**. Gera cotações para qualquer `productId`.
 - A API .NET continua a única porta do browser (o browser nunca fala gRPC direto).
 
 ## 3. Contrato `.proto`
