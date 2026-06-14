@@ -38,5 +38,9 @@ export const routes: Routes = [
     providers: [provideState(positionsFeature), provideEffects(positionsEffects)],
     loadComponent: () => import('./features/positions/positions.component').then((m) => m.PositionsComponent),
   },
+  {
+    path: 'quotes',
+    loadComponent: () => import('./features/quotes/quotes.component').then((m) => m.QuotesComponent),
+  },
   { path: '**', redirectTo: '' },
 ];
