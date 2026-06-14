@@ -1,10 +1,12 @@
 using InvestOps.Application.Abstractions;
+using InvestOps.Infrastructure.MarketData;
 using InvestOps.Infrastructure.Messaging;
 using InvestOps.Infrastructure.Persistence;
 using InvestOps.Infrastructure.Persistence.Dapper;
 using InvestOps.Infrastructure.Persistence.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using GrpcMarketDataClient = InvestOps.MarketData.V1.MarketData.MarketDataClient;
 
 namespace InvestOps.Infrastructure;
 
@@ -35,6 +37,10 @@ public static class DependencyInjection
         services.AddSingleton(rabbitOptions);
         services.AddSingleton<IEventBus, RabbitMqEventBus>();
         services.AddHostedService<OutboxPublisher>();
+
+        var marketDataUrl = configuration["MarketData:Url"] ?? "http://localhost:5300";
+        services.AddGrpcClient<GrpcMarketDataClient>(o => o.Address = new Uri(marketDataUrl));
+        services.AddScoped<IMarketDataGateway, MarketDataGateway>();
 
         return services;
     }

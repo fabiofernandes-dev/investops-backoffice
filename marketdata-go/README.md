@@ -17,3 +17,6 @@ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 cd contracts/proto && PATH="$PATH:$(go env GOPATH)/bin" buf generate
 ```
+
+> Explicação completa dos **dois** fluxos de codegen (Go commitado vs .NET no build) em
+> [`contracts/proto/README.md`](../contracts/proto/README.md).
