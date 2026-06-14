@@ -1,9 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LoadingService } from './core/state/loading.service';
 
@@ -18,15 +19,19 @@ import { LoadingService } from './core/state/loading.service';
     MatSidenavModule,
     MatListModule,
     MatIconModule,
+    MatButtonModule,
     MatProgressBarModule,
   ],
   template: `
-    <mat-toolbar color="primary">
-      <span>InvestOps Backoffice</span>
+    <mat-toolbar class="toolbar">
+      <button mat-icon-button (click)="drawer.toggle()" aria-label="Alternar menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="brand">InvestOps Backoffice</span>
     </mat-toolbar>
 
     <mat-sidenav-container class="layout">
-      <mat-sidenav mode="side" opened class="sidenav">
+      <mat-sidenav #drawer mode="side" opened class="sidenav">
         <mat-nav-list>
           <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <mat-icon matListItemIcon>dashboard</mat-icon>
@@ -57,22 +62,7 @@ import { LoadingService } from './core/state/loading.service';
       </mat-sidenav-content>
     </mat-sidenav-container>
   `,
-  styles: [
-    `
-      .layout {
-        height: calc(100vh - 64px);
-      }
-      .sidenav {
-        width: 220px;
-      }
-      .active {
-        background: rgba(0, 0, 0, 0.06);
-      }
-      .page {
-        padding: 24px;
-      }
-    `,
-  ],
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   readonly loading = inject(LoadingService);
