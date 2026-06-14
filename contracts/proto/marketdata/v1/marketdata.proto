@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package marketdata.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "investops/marketdata/internal/gen/marketdatav1;marketdatav1";
+option csharp_namespace = "InvestOps.MarketData.V1";
+
+// Serviço de cotações (preços simulados).
+service MarketData {
+  // Cotação atual de um produto.
+  rpc GetQuote(GetQuoteRequest) returns (Quote);
+  // Fluxo contínuo de cotações para os produtos pedidos (server-streaming).
+  rpc StreamQuotes(StreamQuotesRequest) returns (stream Quote);
+}
+
+message GetQuoteRequest {
+  string product_id = 1;
+}
+
+message StreamQuotesRequest {
+  repeated string product_ids = 1;
+}
+
+message Quote {
+  string product_id = 1;
+  string price = 2; // decimal como string (sem float)
+  google.protobuf.Timestamp as_of = 3;
+}

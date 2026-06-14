@@ -45,6 +45,14 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  marketdata:
+    build: ./marketdata-go
+    restart: on-failure
+    environment:
+      GRPC_PORT: "5300"
+    ports:
+      - "${MARKETDATA_PORT:-5300}:5300"
+
 volumes:
   pgdata:
   rabbitmqdata:

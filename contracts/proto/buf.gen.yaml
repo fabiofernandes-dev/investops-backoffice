@@ -1,0 +1,10 @@
+version: v2
+plugins:
+  - local: protoc-gen-go
+    out: ../../marketdata-go
+    opt:
+      - module=investops/marketdata
+  - local: protoc-gen-go-grpc
+    out: ../../marketdata-go
+    opt:
+      - module=investops/marketdata
