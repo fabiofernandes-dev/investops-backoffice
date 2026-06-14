@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Store } from '@ngrx/store';
+import { ErrorStateComponent } from '../../shared/error-state/error-state.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { DashboardActions } from './state/dashboard.actions';
 import { selectError, selectLoading, selectMetrics, selectSummary } from './state/dashboard.feature';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatProgressBarModule, MatButtonModule],
+  imports: [CommonModule, MatCardModule, MatProgressBarModule, PageHeaderComponent, ErrorStateComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

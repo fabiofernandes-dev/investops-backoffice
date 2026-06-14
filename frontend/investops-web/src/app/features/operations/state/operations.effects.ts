@@ -3,9 +3,11 @@ import { inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { EMPTY, catchError, delay, forkJoin, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
 import { OperationsApi } from '../../../core/api/operations.api';
 import { OperationsActions } from './operations.actions';
+import { selectQuery } from './operations.feature';
 
 function importErrorMessage(err: HttpErrorResponse): string {
   if (err.status === 422) {
@@ -70,4 +72,25 @@ export const importOperationNavigate$ = createEffect(
       }),
     ),
   { functional: true, dispatch: false },
+);
+
+// Reprocessa (republica o evento) e, após dar tempo ao worker, recarrega a lista com a query atual.
+export const reprocessOperation$ = createEffect(
+  (actions$ = inject(Actions), api = inject(OperationsApi), snackBar = inject(MatSnackBar), store = inject(Store)) =>
+    actions$.pipe(
+      ofType(OperationsActions.reprocessOperation),
+      switchMap(({ id }) =>
+        api.reprocess(id).pipe(
+          tap(() => snackBar.open('Reprocessamento solicitado.', 'OK', { duration: 3000 })),
+          delay(1500),
+          withLatestFrom(store.select(selectQuery)),
+          map(([, query]) => OperationsActions.load({ query })),
+          catchError(() => {
+            snackBar.open('Falha ao solicitar reprocessamento.', 'OK', { duration: 3000 });
+            return EMPTY;
+          }),
+        ),
+      ),
+    ),
+  { functional: true },
 );

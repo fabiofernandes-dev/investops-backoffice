@@ -17,6 +17,10 @@ import { Store } from '@ngrx/store';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { LookupsApi } from '../../../core/api/lookups.api';
 import { CustomerLookup, OperationsQuery, ProductLookup } from '../../../core/models';
+import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../../shared/error-state/error-state.component';
+import { PageHeaderComponent } from '../../../shared/page-header/page-header.component';
+import { StatusChipComponent } from '../../../shared/status-chip/status-chip.component';
 import { OperationsActions } from '../state/operations.actions';
 import { selectError, selectItems, selectLoading, selectTotal } from '../state/operations.feature';
 
@@ -37,6 +41,10 @@ import { selectError, selectItems, selectLoading, selectTotal } from '../state/o
     MatIconModule,
     MatProgressBarModule,
     MatTooltipModule,
+    PageHeaderComponent,
+    StatusChipComponent,
+    ErrorStateComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './operations-list.component.html',
   styleUrl: './operations-list.component.scss',
@@ -128,22 +136,11 @@ export class OperationsListComponent implements OnInit {
     this.reload();
   }
 
-  statusColor(status: string): string {
-    switch (status) {
-      case 'Processed':
-        return '#2e7d32';
-      case 'Rejected':
-        return '#c62828';
-      case 'Failed':
-        return '#ef6c00';
-      case 'Validated':
-        return '#1565c0';
-      default:
-        return '#616161';
-    }
+  canReprocess(status: string): boolean {
+    return status === 'Imported' || status === 'Failed';
   }
 
-  isFailed(status: string): boolean {
-    return status === 'Failed';
+  reprocess(id: string): void {
+    this.store.dispatch(OperationsActions.reprocessOperation({ id }));
   }
 }

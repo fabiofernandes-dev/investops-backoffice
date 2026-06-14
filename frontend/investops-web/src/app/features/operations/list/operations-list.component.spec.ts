@@ -5,6 +5,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { of } from 'rxjs';
 import { LookupsApi } from '../../../core/api/lookups.api';
 import { OperationListItem } from '../../../core/models';
+import { OperationsActions } from '../state/operations.actions';
 import { selectError, selectItems, selectLoading, selectTotal } from '../state/operations.feature';
 import { OperationsListComponent } from './operations-list.component';
 
@@ -77,9 +78,9 @@ describe('OperationsListComponent', () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
   }));
 
-  it('shows the reprocess button only for Failed rows', () => {
+  it('shows the reprocess button only for reprocessable rows (Imported/Failed, not Processed)', () => {
     setup();
-    store.overrideSelector(selectItems, [makeItem('1', 'Processed'), makeItem('2', 'Failed')]);
+    store.overrideSelector(selectItems, [makeItem('1', 'Processed'), makeItem('2', 'Imported')]);
     store.refreshState();
     fixture.detectChanges();
 
@@ -87,6 +88,21 @@ describe('OperationsListComponent', () => {
       (icon) => (icon as HTMLElement).textContent?.trim() === 'replay',
     );
     expect(replayIcons.length).toBe(1);
+  });
+
+  it('dispatches reprocessOperation when the reprocess button is clicked', () => {
+    setup();
+    store.overrideSelector(selectItems, [makeItem('op-1', 'Imported')]);
+    store.refreshState();
+    fixture.detectChanges();
+    const dispatch = jest.spyOn(store, 'dispatch');
+
+    const replayButton = Array.from(fixture.nativeElement.querySelectorAll('button')).find((b) =>
+      (b as HTMLElement).textContent?.includes('replay'),
+    ) as HTMLButtonElement;
+    replayButton.click();
+
+    expect(dispatch).toHaveBeenCalledWith(OperationsActions.reprocessOperation({ id: 'op-1' }));
   });
 
   it('shows the error state when there is an error', () => {

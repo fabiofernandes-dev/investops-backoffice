@@ -13,5 +13,6 @@ export const OperationsActions = createActionGroup({
     'Import Operation': props<{ request: ImportOperationRequest }>(),
     'Import Operation Success': props<{ id: string }>(),
     'Import Operation Failure': props<{ error: string }>(),
+    'Reprocess Operation': props<{ id: string }>(),
   },
 });

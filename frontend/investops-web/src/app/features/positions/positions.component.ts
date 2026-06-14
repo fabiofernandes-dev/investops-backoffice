@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { Store } from '@ngrx/store';
 import { PositionsQuery } from '../../core/models';
+import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../shared/error-state/error-state.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { PositionsActions } from './state/positions.actions';
 import { selectError, selectItems, selectLoading, selectTotal } from './state/positions.feature';
 
 @Component({
   selector: 'app-positions',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatSortModule, MatPaginatorModule, MatButtonModule],
+  imports: [CommonModule, MatTableModule, MatSortModule, MatPaginatorModule, PageHeaderComponent, ErrorStateComponent, EmptyStateComponent],
   templateUrl: './positions.component.html',
   styleUrl: './positions.component.scss',
 })
