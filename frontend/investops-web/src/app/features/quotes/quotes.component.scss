@@ -1,0 +1,21 @@
+table {
+  width: 100%;
+}
+
+.num {
+  text-align: right;
+}
+
+mat-icon {
+  vertical-align: middle;
+
+  &.up {
+    color: #2e7d32;
+  }
+  &.down {
+    color: #c62828;
+  }
+  &.flat {
+    color: rgba(0, 0, 0, 0.4);
+  }
+}

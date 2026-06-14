@@ -105,6 +105,12 @@ export interface AccountLookup {
   customerName: string;
 }
 
+export interface Quote {
+  productId: string;
+  price: number;
+  asOf: string;
+}
+
 export interface ImportOperationRequest {
   externalId: string;
   accountId: string;
