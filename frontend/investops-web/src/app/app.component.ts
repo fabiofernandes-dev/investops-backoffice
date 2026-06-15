@@ -49,6 +49,10 @@ import { LoadingService } from './core/state/loading.service';
             <mat-icon matListItemIcon>account_balance_wallet</mat-icon>
             <span matListItemTitle>Posições</span>
           </a>
+          <a mat-list-item routerLink="/quotes" routerLinkActive="active">
+            <mat-icon matListItemIcon>trending_up</mat-icon>
+            <span matListItemTitle>Cotações</span>
+          </a>
         </mat-nav-list>
       </mat-sidenav>
 

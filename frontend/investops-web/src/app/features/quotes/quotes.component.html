@@ -1,0 +1,47 @@
+<app-page-header title="Cotações" />
+
+@if (error()) {
+  <app-error-state [message]="error()!" />
+} @else {
+  <table mat-table [dataSource]="rows()">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Produto</th>
+      <td mat-cell *matCellDef="let r">{{ r.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ticker">
+      <th mat-header-cell *matHeaderCellDef>Ticker</th>
+      <td mat-cell *matCellDef="let r">{{ r.ticker }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef class="num">Preço</th>
+      <td mat-cell *matCellDef="let r" class="num">{{ r.price !== null ? (r.price | currency) : '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="change">
+      <th mat-header-cell *matHeaderCellDef>Variação</th>
+      <td mat-cell *matCellDef="let r">
+        @switch (direction(r)) {
+          @case ('up') {
+            <mat-icon class="up">arrow_upward</mat-icon>
+          }
+          @case ('down') {
+            <mat-icon class="down">arrow_downward</mat-icon>
+          }
+          @case ('flat') {
+            <mat-icon class="flat">remove</mat-icon>
+          }
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="asOf">
+      <th mat-header-cell *matHeaderCellDef>Atualizado</th>
+      <td mat-cell *matCellDef="let r">{{ r.asOf ? (r.asOf | date: 'HH:mm:ss') : '-' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+}
