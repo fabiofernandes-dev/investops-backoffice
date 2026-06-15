@@ -53,6 +53,39 @@ services:
     ports:
       - "${MARKETDATA_PORT:-5300}:5300"
 
+  migrator:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.migrator
+    command: ["--seed"]
+    environment:
+      INVESTOPS_DB: Host=postgres;Port=5432;Database=${POSTGRES_DB:-investops};Username=${POSTGRES_USER:-investops};Password=${POSTGRES_PASSWORD:-investops}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: on-failure
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-investops};Username=${POSTGRES_USER:-investops};Password=${POSTGRES_PASSWORD:-investops}
+      RabbitMq__Host: rabbitmq
+      MarketData__Url: http://marketdata:5300
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      marketdata:
+        condition: service_started
+      migrator:
+        condition: service_completed_successfully
+
 volumes:
   pgdata:
   rabbitmqdata:

@@ -1,0 +1,13 @@
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/out-tsc
+.git
+.angular
+.vs
+.vscode
+.idea
+.superpowers
+.playwright-mcp
+docs
