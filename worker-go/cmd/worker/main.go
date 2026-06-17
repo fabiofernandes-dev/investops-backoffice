@@ -29,10 +29,12 @@ func main() {
 	defer pool.Close()
 
 	consumer, err := messaging.NewConsumer(messaging.ConsumerConfig{
-		URL:        cfg.RabbitMQURL,
-		Exchange:   cfg.Exchange,
-		Queue:      cfg.Queue,
-		RoutingKey: cfg.RoutingKey,
+		URL:         cfg.RabbitMQURL,
+		Exchange:    cfg.Exchange,
+		Queue:       cfg.Queue,
+		RoutingKey:  cfg.RoutingKey,
+		MaxAttempts: cfg.RetryMaxAttempts,
+		Backoff:     cfg.RetryBackoff,
 	}, logger)
 	if err != nil {
 		logger.Error("falha ao conectar no RabbitMQ", "error", err)

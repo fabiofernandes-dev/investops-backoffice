@@ -25,10 +25,12 @@ func TestConsumerReceivesMessage(t *testing.T) {
 	require.NoError(t, err)
 
 	cfg := messaging.ConsumerConfig{
-		URL:        amqpURL,
-		Exchange:   "investops",
-		Queue:      "operations.processing",
-		RoutingKey: "OperationImported",
+		URL:         amqpURL,
+		Exchange:    "investops",
+		Queue:       "operations.processing",
+		RoutingKey:  "OperationImported",
+		MaxAttempts: 3,
+		Backoff:     200 * time.Millisecond,
 	}
 	consumer, err := messaging.NewConsumer(cfg, observability.New())
 	require.NoError(t, err)
