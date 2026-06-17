@@ -14,6 +14,8 @@ type Config struct {
 	RoutingKey       string
 	OutboxPollPeriod time.Duration
 	OutboxBatchSize  int
+	RetryMaxAttempts int
+	RetryBackoff     time.Duration
 }
 
 func Load() Config {
@@ -25,7 +27,16 @@ func Load() Config {
 		RoutingKey:       env("RABBITMQ_ROUTING_KEY", "OperationImported"),
 		OutboxPollPeriod: time.Duration(envInt("OUTBOX_POLL_SECONDS", 2)) * time.Second,
 		OutboxBatchSize:  envInt("OUTBOX_BATCH_SIZE", 50),
+		RetryMaxAttempts: positiveInt(envInt("RETRY_MAX_ATTEMPTS", 3), 3),
+		RetryBackoff:     time.Duration(positiveInt(envInt("RETRY_BACKOFF_MS", 5000), 5000)) * time.Millisecond,
 	}
+}
+
+func positiveInt(value, def int) int {
+	if value <= 0 {
+		return def
+	}
+	return value
 }
 
 func env(key, def string) string {
