@@ -75,6 +75,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB:-investops};Username=${POSTGRES_USER:-investops};Password=${POSTGRES_PASSWORD:-investops}
       RabbitMq__Host: rabbitmq
+      RabbitMq__Username: ${RABBITMQ_USER:-investops}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD:-investops}
       MarketData__Url: http://marketdata:5300
     depends_on:
       postgres:
