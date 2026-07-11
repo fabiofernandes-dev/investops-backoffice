@@ -4,7 +4,7 @@
 
 Plataforma fullstack de backoffice para operações de investimento
 
-> **Status:** em construção — Fase 5a (resiliência do worker: retry + DLQ). Veja o [SPEC.md](SPEC.md) para a visão completa.
+> **Status:** em construção — veja [Status & roadmap](#status--roadmap). O [SPEC.md](SPEC.md) descreve a visão completa do produto; nem tudo está implementado ainda.
 
 ## Destaques de engenharia
 
@@ -13,6 +13,23 @@ Plataforma fullstack de backoffice para operações de investimento
 - **Interop poliglota:** serviço de cotações em **gRPC** (Go) consumido pela API .NET, com Protobuf versionado.
 - **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 19** (signals, standalone) servida por **edge nginx** same-origin.
 - **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, rate limiting por perfil de endpoint, 6 ADRs e specs de design por fase em [docs/](docs/).
+
+## Status & roadmap
+
+O [SPEC.md](SPEC.md) é a visão completa; a entrega é incremental, por fases ([docs/design/](docs/design/)):
+
+| Área | Status |
+| ---- | ------ |
+| Import de operações (validação, idempotência, Outbox → RabbitMQ → Worker) | ✅ |
+| Worker Go: regras de negócio, posição consolidada, retry + DLQ | ✅ |
+| Read API: operations, positions, dashboard, lookups (paginação/ordenação server-side) | ✅ |
+| Frontend: dashboard, operações, posições, cotações ao vivo | ✅ |
+| Cotações via gRPC (.NET ↔ Go) + SSE | ✅ |
+| Edge nginx (same-origin) + rate limiting | ✅ |
+| CRUD de produtos (`POST`/`PUT`) | 🔲 planejado |
+| Conciliação com custodiante (reconciliation) | 🔲 planejado |
+| Processing monitor (UI de eventos do worker) | 🔲 planejado |
+| Autenticação/autorização (OIDC) | 🚫 fora do MVP — [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md) |
 
 ## Arquitetura
 
@@ -197,8 +214,8 @@ Decisões de segurança do MVP — registradas em [ADR 0006](docs/adr/0006-defer
 
 - **Rate limiting** nativo (ASP.NET Core): limite global de 100 req/min + política mais rígida (20 req/min) nos endpoints de escrita (`import`, `reprocess`); health checks isentos; `429` com `Retry-After`. Limites configuráveis via seção `RateLimiting`.
 - **Autenticação/autorização**: fora do escopo do MVP, por decisão — backoffice interno assume rede privada + IdP corporativo; o ADR documenta como o design acomoda `[Authorize]` + policies por perfil.
-- **SQL 100% parametrizado** (Dapper) com ordenação dinâmica por whitelist; **Swagger desabilitado em Production** (com teste garantindo); credenciais só por variável de ambiente; security headers no nginx.
-- As credenciais `investops/investops` dos exemplos são **exclusivas de dev local** — qualquer deploy real deve sobrescrevê-las via `.env`/variáveis de ambiente.
+- **SQL 100% parametrizado** (Dapper) com ordenação dinâmica por whitelist; **Swagger desabilitado em Production** (com teste garantindo); security headers no nginx.
+- **Credenciais:** o `appsettings.json` base não contém credenciais — as de dev local vivem em `appsettings.Development.json`, e Staging/Production só via variáveis de ambiente. Os defaults `investops/investops` do `.env.example`/compose são **intencionais e exclusivos de demo local** (`docker compose up` sem edição é requisito); qualquer deploy real deve sobrescrevê-los.
 
 ### Testes
 

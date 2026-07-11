@@ -1,5 +1,8 @@
 # SPEC.md — InvestOps Backoffice
 
+> **Nota:** este documento é a **visão completa** do produto e serve de norte para o desenvolvimento.
+> A entrega é incremental — o que já está implementado vs. planejado está no [README — Status & roadmap](README.md#status--roadmap).
+
 ## 1. Visão geral
 
 Criar uma plataforma fullstack de backoffice para investimentos chamada **InvestOps Backoffice**.
