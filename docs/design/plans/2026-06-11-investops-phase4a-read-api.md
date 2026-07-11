@@ -1,14 +1,12 @@
 # InvestOps Backoffice — Fase 4a (API de Leitura) Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Adicionar os endpoints de leitura que o frontend (Fase 4b) precisa: eventos/auditoria de operação, posições consolidadas e dashboard.
 
 **Architecture:** Reusa o padrão da Fase 2 — controllers finos → handlers (serviços simples) → repositórios Dapper via `IDbSession` (leitura sem transação) → DTOs. Paginação reusa `PagedResult<T>`; ordenação de posições usa um `PositionsSortClauseBuilder` dedicado (whitelist anti-injection). Testes de integração com Testcontainers.
 
 **Tech Stack:** .NET 8, Dapper, Npgsql, xUnit, Testcontainers, PostgreSQL.
 
-**Spec:** [docs/superpowers/specs/2026-06-11-investops-phase4a-read-api-design.md](../specs/2026-06-11-investops-phase4a-read-api-design.md)
+**Spec:** [docs/design/specs/2026-06-11-investops-phase4a-read-api-design.md](../specs/2026-06-11-investops-phase4a-read-api-design.md)
 
 ---
 

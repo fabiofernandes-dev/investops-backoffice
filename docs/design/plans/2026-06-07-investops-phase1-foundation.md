@@ -1,7 +1,5 @@
 # InvestOps Backoffice — Fase 1 (Fundação) Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Estabelecer a fundação do InvestOps Backoffice — infra local (Docker), esqueleto da solução .NET 8, API com health/Swagger/Serilog, modelo de domínio e migrations — sem nenhum fluxo de negócio.
 
 **Architecture:** Modular monolith em .NET 8 (Clean Architecture: Domain ← Application ← Infrastructure; Api como composition root; Contracts para DTOs de evento). Persistência PostgreSQL via Dapper; schema versionado com DbUp. Mensageria (RabbitMQ) sobe no Compose mas só é consumida a partir da Fase 3.
@@ -660,9 +658,9 @@ Status: Accepted
 <prós/contras + caminho de evolução>
 ```
 
-Repetir para: 0002 RabbitMQ (processamento assíncrono), 0003 Outbox Pattern, 0004 Go no worker, 0005 PostgreSQL compartilhado no MVP (todos derivados do SPEC §3, §4, §23).
+Repetir para: 0002 RabbitMQ (processamento assíncrono), 0003 Outbox Pattern, 0004 Go no worker, 0005 PostgreSQL compartilhado no MVP (todos derivados do SPEC §3, §4, §17).
 
-- [ ] **Step 4: Conferir critérios de aceite (SPEC §22)** — checklist do design doc §6 todo marcável.
+- [ ] **Step 4: Conferir critérios de aceite (SPEC §14)** — checklist do design doc §6 todo marcável.
 
 - [ ] **Step 5: Commit + push + PR** (`docs: README de execução e ADRs 0001–0005`) → **PAUSA**.
 

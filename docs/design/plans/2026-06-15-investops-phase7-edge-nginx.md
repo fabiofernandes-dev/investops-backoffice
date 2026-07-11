@@ -1,14 +1,12 @@
 # InvestOps Backoffice — Fase 7 (Edge nginx + Containerização) Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** `docker compose up` sobe a stack inteira (nginx + api + migrator + worker + marketdata + infra) num cenário **same-origin** (nginx serve o SPA e faz proxy `/api`), sem CORS, com SSE atravessando o proxy.
 
 **Architecture:** API .NET e migrator containerizados (Dockerfiles, context = raiz do repo p/ enxergar `contracts/proto`). Migrator one-shot (`INVESTOPS_DB`, `--seed`) roda antes da API. nginx serve o build de produção do Angular (`apiBaseUrl: '/api'`) e faz proxy `/api → api:8080` com `proxy_buffering off` (SSE). Dev (`ng serve` + `dotnet run`) fica intacto.
 
 **Tech Stack:** Docker multi-stage (.NET SDK/aspnet/runtime, node:22-alpine, nginx:alpine), docker-compose, Angular fileReplacements.
 
-**Spec:** [docs/superpowers/specs/2026-06-15-investops-phase7-edge-nginx-design.md](../specs/2026-06-15-investops-phase7-edge-nginx-design.md)
+**Spec:** [docs/design/specs/2026-06-15-investops-phase7-edge-nginx-design.md](../specs/2026-06-15-investops-phase7-edge-nginx-design.md)
 
 ---
 

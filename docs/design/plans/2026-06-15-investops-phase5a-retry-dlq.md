@@ -1,14 +1,12 @@
 # InvestOps Backoffice — Fase 5a (Retry + DLQ + OperationFailed) Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Substituir o requeue infinito do worker por **retry com backoff + limite + DLQ**, finalizando operações que falham de forma transitória como **`Failed`** + evento **`OperationFailed`**.
 
 **Architecture:** Filas **quorum**; em erro transitório o worker `Nack(requeue=false)` → DLX `investops.retry` → wait queue (TTL) → volta à principal (backoff); contagem por **`x-death`**; após N tentativas o consumer **publica na DLQ**; um **DLQ consumer** (canal próprio) marca `Failed` + `processing_event` + outbox `OperationFailed`. Rejeição de negócio segue `Rejected` (sem retry).
 
 **Tech Stack:** Go 1.26, rabbitmq/amqp091-go (quorum + DLX + TTL), pgx, testcontainers.
 
-**Spec:** [docs/superpowers/specs/2026-06-15-investops-phase5a-retry-dlq-design.md](../specs/2026-06-15-investops-phase5a-retry-dlq-design.md)
+**Spec:** [docs/design/specs/2026-06-15-investops-phase5a-retry-dlq-design.md](../specs/2026-06-15-investops-phase5a-retry-dlq-design.md)
 
 ---
 

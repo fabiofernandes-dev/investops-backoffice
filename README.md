@@ -2,64 +2,117 @@
 
 [![CI](https://github.com/fabiofernandes-dev/investops-backoffice/actions/workflows/ci.yml/badge.svg)](https://github.com/fabiofernandes-dev/investops-backoffice/actions/workflows/ci.yml)
 
-Plataforma fullstack de backoffice para operações de investimento, construída como ambiente de estudo para uma vaga sênior fullstack.
+Plataforma fullstack de backoffice para operações de investimento
 
-> **Status:** em construção — Fase 1 (fundação). Veja o [SPEC.md](SPEC.md) para a visão completa.
+> **Status:** em construção — Fase 5a (resiliência do worker: retry + DLQ). Veja o [SPEC.md](SPEC.md) para a visão completa.
+
+## Destaques de engenharia
+
+- **Arquitetura event-driven** com **Outbox Pattern**: publicação confiável de eventos (sem dual-write) entre a API .NET e o Worker Go via RabbitMQ.
+- **Resiliência no consumo:** retry com backoff (wait queue + TTL) e **Dead Letter Queue**; falhas transitórias reprocessam, falhas de negócio são terminais.
+- **Interop poliglota:** serviço de cotações em **gRPC** (Go) consumido pela API .NET, com Protobuf versionado.
+- **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 19** (signals, standalone) servida por **edge nginx** same-origin.
+- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, 5 ADRs e specs de design por fase em [docs/](docs/).
 
 ## Arquitetura
 
 ```text
-Angular Frontend → .NET Operations API → PostgreSQL
-                                       → Outbox → RabbitMQ → Go Worker → PostgreSQL
+Angular SPA (nginx edge) → .NET Operations API → PostgreSQL
+                                               → Outbox → RabbitMQ → Go Worker → PostgreSQL
+                                               → gRPC → Go MarketData
 ```
 
-Dois serviços (API .NET + Worker Go) sobre banco compartilhado no MVP, integrados via **Outbox Pattern** e RabbitMQ. Decisões registradas em [docs/adr/](docs/adr/).
+Quatro serviços — SPA Angular, API .NET, Worker Go e MarketData Go — sobre banco compartilhado no MVP. Integração assíncrona via **Outbox Pattern** + RabbitMQ e cotações via **gRPC**. No deploy, um **edge nginx** serve o SPA e faz proxy de `/api` para a API (same-origin). Decisões registradas em [docs/adr/](docs/adr/).
 
 ## Stack
 
-| Camada | Tecnologias |
-|--------|-------------|
-| Frontend | Angular 18+, TypeScript, RxJS, Angular Material |
-| API | .NET 8, ASP.NET Core, Dapper, FluentValidation, Serilog, OpenTelemetry |
-| Worker | Go, RabbitMQ (pgx), slog |
-| Infra | Docker Compose, PostgreSQL, RabbitMQ |
+| Camada     | Tecnologias                                                            |
+| ---------- | ---------------------------------------------------------------------- |
+| Frontend   | Angular 19, TypeScript, RxJS, Angular Material, Jest                   |
+| API        | .NET 8, ASP.NET Core, Dapper, FluentValidation, Serilog, OpenTelemetry |
+| Worker     | Go, RabbitMQ, pgx, slog                                                |
+| MarketData | Go, gRPC, Protobuf (buf)                                               |
+| Infra      | Docker Compose, PostgreSQL, RabbitMQ, nginx                            |
 
 ## Estrutura do repositório
 
 ```text
 investops-backoffice/
-  backend/      # solução .NET 8
+  backend/                      # solução .NET 8
     src/
-      InvestOps.Api/             # ASP.NET Core (Serilog, Swagger, Health Checks)
-      InvestOps.Application/      # casos de uso (Fase 2+)
-      InvestOps.Domain/          # entidades e enums do domínio
-      InvestOps.Infrastructure/  # persistência/Dapper (Fase 2+)
-      InvestOps.Contracts/       # DTOs de evento (Fase 2+)
-      InvestOps.Migrator/        # DbUp: schema + seed
-    tests/                       # UnitTests, IntegrationTests
-  worker-go/    # worker assíncrono em Go (Fase 3)
-  frontend/     # app Angular (Fase 4)
-  contracts/    # contratos de eventos JSON (Fase 2)
-  docs/         # ADRs e documentação de design
-  docker-compose.yml
+      InvestOps.Api/            # ASP.NET Core (Serilog, Swagger, Health Checks)
+      InvestOps.Application/    # casos de uso
+      InvestOps.Domain/         # entidades e enums do domínio
+      InvestOps.Infrastructure/ # persistência/Dapper, RabbitMQ, cliente gRPC
+      InvestOps.Contracts/      # DTOs de evento
+      InvestOps.Migrator/       # DbUp: schema + seed
+    tests/                      # UnitTests, IntegrationTests
+  worker-go/                    # worker assíncrono (consumo RabbitMQ, retry + DLQ)
+  marketdata-go/                # serviço gRPC de cotações
+  frontend/investops-web/       # app Angular 19
+  contracts/                    # contratos de eventos JSON + .proto (gRPC)
+  docs/                         # ADRs e documentação de design
+  docker-compose.yml            # stack completo
 ```
 
-## Como rodar localmente
+## Como rodar
+
+Há dois caminhos:
+
+- **A. Stack completo via Docker** — um comando sobe todos os serviços. Ideal para ver o sistema fim a fim.
+- **B. Componente por componente** — infra no Docker, cada serviço no host, com hot-reload. Ideal para desenvolver.
 
 ### Pré-requisitos
 
-- [Docker](https://www.docker.com/) + Docker Compose
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Docker](https://www.docker.com/) + Docker Compose — obrigatório em ambos os caminhos
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) — API, Migrator e testes .NET
+- [Go 1.26+](https://go.dev/dl/) — worker e marketdata
+- [Node.js 20+](https://nodejs.org/) — frontend Angular
 
-### 1. Subir a infraestrutura (PostgreSQL + RabbitMQ)
+---
+
+### A. Stack completo via Docker Compose
+
+Builda e sobe **todos os serviços**: `postgres`, `rabbitmq`, `migrator` (schema + seed), `marketdata`, `worker`, `api` e `web`.
 
 ```bash
 cp .env.example .env      # opcional; o compose já usa defaults
-docker compose --env-file .env.example up -d
-docker compose --env-file .env.example ps      # ambos devem ficar (healthy)
+docker compose --env-file .env.example up -d --build
+docker compose --env-file .env.example ps      # aguarde postgres/rabbitmq (healthy)
 ```
 
-### 2. Aplicar o schema do banco (e seed opcional)
+- App (SPA + API via edge nginx): <http://localhost:8080>
+- RabbitMQ Management UI: <http://localhost:15672> (`investops` / `investops`)
+
+> ⚠️ **Primeira subida da Fase 5a:** a fila `operations.processing` mudou de _classic_ para _quorum_. Se você já rodou uma fase anterior, o RabbitMQ recusa a redeclaração com `406 PRECONDITION_FAILED`. Rode uma vez para recriar os volumes:
+>
+> ```bash
+> docker compose down -v   # apaga volumes (RabbitMQ + Postgres); o migrator re-semeia no próximo up
+> docker compose --env-file .env.example up -d --build
+> ```
+
+Parar tudo:
+
+```bash
+docker compose --env-file .env.example down        # mantém os dados (volumes)
+docker compose --env-file .env.example down -v      # apaga os dados
+```
+
+---
+
+### B. Componente por componente (desenvolvimento)
+
+Suba apenas a infra pelo Docker e rode cada serviço no host. Os defaults de cada serviço já apontam para `localhost`, então nenhuma variável de ambiente é obrigatória em dev. Siga a ordem abaixo (a API depende de MarketData; o Worker e a API dependem de Postgres + RabbitMQ).
+
+#### 1. Infraestrutura (só PostgreSQL + RabbitMQ)
+
+```bash
+docker compose --env-file .env.example up -d postgres rabbitmq
+```
+
+> Sem os nomes dos serviços, `docker compose up` subiria **tudo** (inclusive api/worker/web já buildados).
+
+#### 2. Schema do banco (Migrator)
 
 ```bash
 cd backend
@@ -68,7 +121,23 @@ dotnet run --project src/InvestOps.Migrator -- --seed   # schema + dados de exem
 dotnet run --project src/InvestOps.Migrator
 ```
 
-### 3. Rodar a API
+#### 3. MarketData (gRPC de cotações)
+
+```bash
+cd marketdata-go
+go run ./cmd/server        # escuta gRPC em :5300 (env GRPC_PORT)
+```
+
+#### 4. Worker (processamento assíncrono)
+
+```bash
+cd worker-go
+go run ./cmd/worker        # consome RabbitMQ, aplica regras e faz o relay do Outbox
+```
+
+Retry/backoff/DLQ e demais variáveis estão em [worker-go/README.md](worker-go/README.md).
+
+#### 5. API .NET
 
 ```bash
 cd backend
@@ -77,18 +146,31 @@ dotnet run --project src/InvestOps.Api
 
 - Swagger: <http://localhost:5000/swagger> (a raiz `/` redireciona para o Swagger em Development/Staging)
 - Health: <http://localhost:5000/health> · liveness `/health/live` · readiness `/health/ready`
+- Consome o MarketData em `http://localhost:5300` (config `MarketData:Url`)
 
 > Em `Production` o Swagger é desabilitado; apenas `/health` fica exposto.
 
-### Ambientes
+#### 6. Frontend Angular
+
+```bash
+cd frontend/investops-web
+npm install
+npm start                  # ng serve em http://localhost:4200
+```
+
+Em dev o SPA chama a API direto em `http://localhost:5000/api` (`src/environments/environment.ts`).
+
+---
+
+### Ambientes (API)
 
 A configuração é separada por ambiente via `ASPNETCORE_ENVIRONMENT`, carregando `appsettings.{Environment}.json` sobre o `appsettings.json` base.
 
-| Ambiente | Arquivo | Serilog | Swagger |
-|----------|---------|---------|---------|
-| Development | `appsettings.Development.json` | Debug | ✅ |
-| Staging (homologação) | `appsettings.Staging.json` | Information | ✅ |
-| Production | `appsettings.Production.json` | Warning | ❌ |
+| Ambiente              | Arquivo                        | Serilog     | Swagger |
+| --------------------- | ------------------------------ | ----------- | ------- |
+| Development           | `appsettings.Development.json` | Debug       | ✅      |
+| Staging (homologação) | `appsettings.Staging.json`     | Information | ✅      |
+| Production            | `appsettings.Production.json`  | Warning     | ❌      |
 
 Rodar em um ambiente específico (perfis em `launchSettings.json`):
 
@@ -106,31 +188,34 @@ export ConnectionStrings__Postgres="Host=...;Database=...;Username=...;Password=
 export RabbitMq__Host="rabbit.prod.interno"
 export RabbitMq__Username="..."
 export RabbitMq__Password="..."
+export MarketData__Url="http://marketdata.prod.interno:5300"
 ```
 
-### 4. Rodar os testes
+### Testes
 
 ```bash
-cd backend
-dotnet test
+# Backend (.NET) — unit + integração (testcontainers exige Docker)
+cd backend && dotnet test
+
+# Worker e MarketData (Go) — integração usa testcontainers (exige Docker)
+cd worker-go && go test ./...
+cd marketdata-go && go test ./...
+
+# Frontend (Angular) — Jest
+cd frontend/investops-web && npm test
 ```
 
 ### Portas
 
-| Serviço | Porta |
-|---------|-------|
-| .NET API | 5000 |
-| Angular (Fase 4) | 4200 |
-| PostgreSQL | 5432 |
-| RabbitMQ (AMQP) | 5672 |
-| RabbitMQ Management UI | 15672 |
-
-### Parar tudo
-
-```bash
-docker compose --env-file .env.example down        # mantém os dados (volumes)
-docker compose --env-file .env.example down -v      # apaga os dados
-```
+| Serviço                         | Dev (host) | Docker             |
+| ------------------------------- | ---------- | ------------------ |
+| App — edge nginx (SPA + `/api`) | —          | 8080               |
+| .NET API                        | 5000       | interna (via edge) |
+| Angular dev server              | 4200       | —                  |
+| MarketData (gRPC)               | 5300       | 5300               |
+| PostgreSQL                      | 5432       | 5432               |
+| RabbitMQ (AMQP)                 | 5672       | 5672               |
+| RabbitMQ Management UI          | 15672      | 15672              |
 
 ## Fluxo de desenvolvimento
 

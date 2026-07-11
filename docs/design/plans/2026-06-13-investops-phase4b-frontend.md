@@ -1,14 +1,12 @@
 # InvestOps Backoffice — Fase 4b (Frontend Angular) Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Entregar o frontend Angular do backoffice (Dashboard, Operações lista+detalhe, Posições) consumindo a API real, com NgRx, Material e Jest — precedido de uma preparação de backend (CORS + nomes na lista + lookups).
 
 **Architecture:** Angular 19 standalone + Angular Material + NgRx (store/effects, APIs standalone). Cada feature isola seu estado (`provideState`/`provideEffects` em rota lazy). HTTP com services tipados + interceptors (erro/loading). Backend ganha CORS, enriquecimento da lista de operações (nomes via join) e endpoints de lookup.
 
 **Tech Stack:** Angular 19, Angular Material, NgRx 19, RxJS, Jest (`jest-preset-angular`), .NET 8 (prep).
 
-**Spec:** [docs/superpowers/specs/2026-06-13-investops-phase4b-frontend-design.md](../specs/2026-06-13-investops-phase4b-frontend-design.md)
+**Spec:** [docs/design/specs/2026-06-13-investops-phase4b-frontend-design.md](../specs/2026-06-13-investops-phase4b-frontend-design.md)
 
 ---
 

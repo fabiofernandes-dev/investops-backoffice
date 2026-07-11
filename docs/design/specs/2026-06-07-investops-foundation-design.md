@@ -10,9 +10,8 @@ Este documento captura *como* vamos construir o InvestOps Backoffice. O **quê**
 
 ## 1. Modo de trabalho
 
-- **Implementação:** Claude implementa; o usuário (fabiofernandes-dev) revisa cada PR para aprender e conseguir explicar o sistema numa entrevista.
 - **Cadência:** fase a fase. Ao fim de cada fase, reavaliamos antes de seguir.
-- **Objetivo:** treinar para vaga sênior fullstack. Prioridade é clareza arquitetural e capacidade de explicar decisões (`SPEC.md` §23), não completar 100% das features.
+- **Objetivo:** treinar para vaga sênior fullstack. Prioridade é clareza arquitetural e capacidade de explicar decisões (`SPEC.md` §17), não completar 100% das features.
 
 ## 2. Convenções de Git
 
@@ -37,7 +36,7 @@ Este documento captura *como* vamos construir o InvestOps Backoffice. O **quê**
 | Banco | **PostgreSQL compartilhado** entre API e Worker no MVP | SPEC §3; separação por responsabilidade/contratos de evento. |
 | Line endings | LF no repo, CRLF para scripts Windows (`.gitattributes`) | Dev em Windows + containers Linux. |
 
-## 4. Roadmap por fases (SPEC §20)
+## 4. Roadmap por fases (SPEC §16)
 
 1. **Fase 1 — Fundação** ← *em execução* (infra + esqueleto .NET, sem fluxo de negócio)
 2. **Fase 2 — Primeiro fluxo** (importação de operação, validação, idempotência, Outbox, testes)
@@ -49,7 +48,7 @@ Cada fase terá seu próprio plano de implementação detalhado.
 
 ## 5. Quebra da Fase 1 (Fundação)
 
-Sem nenhum fluxo de negócio (SPEC §22). Cada task é um PR pequeno e revisável.
+Sem nenhum fluxo de negócio (SPEC §14). Cada task é um PR pequeno e revisável.
 
 | # | Branch | Entrega | Pronto quando |
 |---|--------|---------|---------------|
@@ -59,11 +58,11 @@ Sem nenhum fluxo de negócio (SPEC §22). Cada task é um PR pequeno e revisáve
 | T3 | `feature/api-foundation` | Serilog + Swagger + Health Checks (liveness + readiness Postgres) + connection strings em `appsettings` | `GET /health` Healthy; Swagger abre; teste de integração do `/health` |
 | T4 | `feature/domain-model` | Enums + entidades do SPEC §5 no `Domain` | build/testes passam; entidades só no `Domain` |
 | T5 | `feature/db-migrations` | Scripts SQL das 10 tabelas (§10) + todos os índices, via DbUp | migrations aplicam em Postgres limpo; índices conferidos |
-| T6 | `feature/docs-foundation` | README "rodar localmente" + ADRs 0001–0005 | critérios de aceite do SPEC §22 atendidos |
+| T6 | `feature/docs-foundation` | README "rodar localmente" + ADRs 0001–0005 | critérios de aceite do SPEC §14 atendidos |
 
 **Ordem:** T0 → T1 → T2 → T3 → T4 → T5 → T6.
 
-## 6. Critérios de aceite da Fase 1 (SPEC §22)
+## 6. Critérios de aceite da Fase 1 (SPEC §14)
 
 - [ ] Estrutura de pastas clara
 - [ ] Backend compila

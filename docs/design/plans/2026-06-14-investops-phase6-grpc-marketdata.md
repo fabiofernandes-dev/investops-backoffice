@@ -1,14 +1,12 @@
 # InvestOps Backoffice — Fase 6 (gRPC Market Data) Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Adicionar cotações ao backoffice via gRPC: serviço Go `marketdata-go` (GetQuote unário + StreamQuotes streaming, preços simulados), API .NET como client gRPC + bridge SSE, e um ticker ao vivo no Angular.
 
 **Architecture:** `.proto` único compartilhado (codegen Go commitado; .NET via Grpc.Tools). `marketdata-go` é stateless (sem DB), com preço-base determinístico por produto + random walk em memória. A API .NET consome o gRPC (unário e stream) e repassa ao browser via REST/SSE. O Angular consome com `EventSource`.
 
 **Tech Stack:** Go 1.26 (google.golang.org/grpc, shopspring/decimal), buf (codegen), .NET 8 (Grpc.Net.Client, Grpc.Tools), Angular 19 (EventSource), Docker/compose.
 
-**Spec:** [docs/superpowers/specs/2026-06-14-investops-phase6-grpc-marketdata-design.md](../specs/2026-06-14-investops-phase6-grpc-marketdata-design.md)
+**Spec:** [docs/design/specs/2026-06-14-investops-phase6-grpc-marketdata-design.md](../specs/2026-06-14-investops-phase6-grpc-marketdata-design.md)
 
 ---
 

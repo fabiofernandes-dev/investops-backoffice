@@ -46,3 +46,7 @@ appsettings.*.Local.json
 .claude/
 .superpowers/
 .playwright-mcp/
+
+# ---------- Tooling local / scratch (fora do projeto) ----------
+/output/
+/scripts/

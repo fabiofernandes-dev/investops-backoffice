@@ -1,14 +1,12 @@
 # InvestOps Backoffice — Fase 2 (Importação de Operação) Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Implementar o primeiro fluxo de negócio — importar uma operação pela API .NET (validação, idempotência, gravação transacional de Operation+OutboxMessage+AuditLog), publicar os eventos no RabbitMQ via um Outbox Publisher, e expor a leitura (GET by id + lista paginada).
 
 **Architecture:** Clean Architecture preenchendo os projetos da Fase 1. Controllers finos → serviços de caso de uso (Application) → repositórios Dapper (Infrastructure). Transação única no handler de import. `OutboxPublisher` (BackgroundService) entrega eventos ao RabbitMQ. Testes de integração com Testcontainers (Postgres/RabbitMQ efêmeros) usando as migrations reais.
 
 **Tech Stack:** .NET 8, Dapper, Npgsql, FluentValidation, RabbitMQ.Client, xUnit, Testcontainers, PostgreSQL, RabbitMQ.
 
-**Spec:** [docs/superpowers/specs/2026-06-07-investops-phase2-operation-import-design.md](../specs/2026-06-07-investops-phase2-operation-import-design.md)
+**Spec:** [docs/design/specs/2026-06-07-investops-phase2-operation-import-design.md](../specs/2026-06-07-investops-phase2-operation-import-design.md)
 
 ---
 

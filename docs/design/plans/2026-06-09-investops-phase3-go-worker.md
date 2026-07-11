@@ -1,14 +1,12 @@
 # InvestOps Backoffice — Fase 3 (Worker Go) Implementation Plan
 
-> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Implementar o worker Go que consome `OperationImported`, aplica as regras de negócio, atualiza posição/status/`processing_events` e publica os eventos downstream via relay próprio (publisher por serviço).
 
 **Architecture:** Worker Go (pgx + amqp091-go) sobre o banco compartilhado. Regras puras e testáveis (`rules`/`positions`), um `Processor` que orquestra carga→decisão→persistência transacional, consumer RabbitMQ (`prefetch=1`, ack após commit) e um relay de outbox próprio (`source='worker'`). O .NET passa a filtrar `source='api'` para os serviços ficarem independentes.
 
 **Tech Stack:** Go 1.23, `jackc/pgx/v5` (+ `pgx-shopspring-decimal`), `rabbitmq/amqp091-go`, `shopspring/decimal`, `google/uuid`, `stretchr/testify`, `testcontainers-go`.
 
-**Spec:** [docs/superpowers/specs/2026-06-09-investops-phase3-go-worker-design.md](../specs/2026-06-09-investops-phase3-go-worker-design.md)
+**Spec:** [docs/design/specs/2026-06-09-investops-phase3-go-worker-design.md](../specs/2026-06-09-investops-phase3-go-worker-design.md)
 
 ---
 
