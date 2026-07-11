@@ -18,7 +18,7 @@ O sistema deve simular um ambiente real de operações financeiras, com:
 - Monitoramento de falhas.
 - Conciliação entre posição interna e custodiante.
 
-Este projeto tem como objetivo treinar para uma vaga sênior fullstack em plataforma de backoffice de investimentos.
+Este projeto tem como objetivo demonstrar arquitetura fullstack de nível sênior aplicada a uma plataforma de backoffice de investimentos.
 
 ---
 
@@ -606,7 +606,7 @@ ON outbox_messages(status, created_at);
     "productId": "uuid",
     "operationType": "Buy",
     "quantity": 100,
-    "unitPrice": 25.40,
+    "unitPrice": 25.4,
     "operationDate": "2026-06-07"
   }
 }
@@ -626,8 +626,8 @@ ON outbox_messages(status, created_at);
     "accountId": "uuid",
     "productId": "uuid",
     "quantity": 100,
-    "averagePrice": 25.40,
-    "grossAmount": 2540.00
+    "averagePrice": 25.4,
+    "grossAmount": 2540.0
   }
 }
 ```
@@ -824,7 +824,7 @@ Testes principais
 
 Este projeto deve priorizar clareza arquitetural e boas decisões técnicas.
 
-Não é necessário terminar todas as funcionalidades para que ele seja útil em entrevista. O mais importante é conseguir explicar:
+O mais importante é conseguir explicar:
 
 ```text
 Por que existem dois serviços.

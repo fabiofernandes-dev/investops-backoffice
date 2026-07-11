@@ -86,7 +86,7 @@ Os **args da fila mudaram** (classic→quorum + DLX) → redeclarar a fila exist
 - Poison message que **sempre** falha: 3 tentativas com backoff → DLQ → `Failed` (não fica em loop). ✅ (o gap atual).
 - Worker reiniciando no meio do retry: a mensagem está durável na fila quorum; retoma. (Reconnect in-process = 5c.)
 - O publish na DLQ + Ack não é atômico (sem publisher confirms): risco mínimo aceitável; anotar (confirms = extensão).
-- **Dead-letter strategy do quorum** é `at_most_once` por padrão (pode descartar em falha no dead-letter). Para o estudo é aceitável (mesma classe do item acima); `at_least_once` exigiria `x-dead-letter-strategy` + publisher confirms na fila quorum — anotado como limitação/extensão.
+- **Dead-letter strategy do quorum** é `at_most_once` por padrão (pode descartar em falha no dead-letter). Para o MVP é aceitável (mesma classe do item acima); `at_least_once` exigiria `x-dead-letter-strategy` + publisher confirms na fila quorum — anotado como limitação/extensão.
 
 ## 10. Testes
 - **Go integração (testcontainers RabbitMQ+Postgres)**: handler que **sempre falha** (poison) → exatamente **`RETRY_MAX_ATTEMPTS`** tentativas (TTL injetado curto, ex. 200ms) → a operação vira **`Failed`** com `processing_event.error_message` preenchido e `attempt_count` = N, e há outbox **`OperationFailed`**; uma operação que **processa** **não** vai para a DLQ; **idempotência** do DLQ consumer (reentrega de uma já-`Failed` não duplica).
