@@ -12,7 +12,7 @@ Plataforma fullstack de backoffice para operações de investimento
 - **Resiliência no consumo:** retry com backoff (wait queue + TTL) e **Dead Letter Queue**; falhas transitórias reprocessam, falhas de negócio são terminais.
 - **Interop poliglota:** serviço de cotações em **gRPC** (Go) consumido pela API .NET, com Protobuf versionado.
 - **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 19** (signals, standalone) servida por **edge nginx** same-origin.
-- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, 5 ADRs e specs de design por fase em [docs/](docs/).
+- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, rate limiting por perfil de endpoint, 6 ADRs e specs de design por fase em [docs/](docs/).
 
 ## Arquitetura
 
@@ -190,6 +190,15 @@ export RabbitMq__Username="..."
 export RabbitMq__Password="..."
 export MarketData__Url="http://marketdata.prod.interno:5300"
 ```
+
+### Segurança & escopo
+
+Decisões de segurança do MVP — registradas em [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md):
+
+- **Rate limiting** nativo (ASP.NET Core): limite global de 100 req/min + política mais rígida (20 req/min) nos endpoints de escrita (`import`, `reprocess`); health checks isentos; `429` com `Retry-After`. Limites configuráveis via seção `RateLimiting`.
+- **Autenticação/autorização**: fora do escopo do MVP, por decisão — backoffice interno assume rede privada + IdP corporativo; o ADR documenta como o design acomoda `[Authorize]` + policies por perfil.
+- **SQL 100% parametrizado** (Dapper) com ordenação dinâmica por whitelist; **Swagger desabilitado em Production** (com teste garantindo); credenciais só por variável de ambiente; security headers no nginx.
+- As credenciais `investops/investops` dos exemplos são **exclusivas de dev local** — qualquer deploy real deve sobrescrevê-las via `.env`/variáveis de ambiente.
 
 ### Testes
 
