@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,6 +48,7 @@ import { selectError, selectItems, selectLoading, selectTotal } from '../state/o
   ],
   templateUrl: './operations-list.component.html',
   styleUrl: './operations-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperationsListComponent implements OnInit {
   private readonly store = inject(Store);

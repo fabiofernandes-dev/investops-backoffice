@@ -1,6 +1,6 @@
 # marketdata-go
 
-Serviço gRPC de cotações (preços simulados) — estudo de gRPC com interop .NET ↔ Go.
+Serviço gRPC de cotações (preços simulados) com interop .NET ↔ Go.
 
 - `GetQuote` (unário) e `StreamQuotes` (server-streaming).
 - Stateless (sem DB); preço-base determinístico por produto + random walk em memória.

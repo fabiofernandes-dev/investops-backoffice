@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -17,6 +17,7 @@ import { selectError, selectItems, selectLoading, selectTotal } from './state/po
   imports: [CommonModule, MatTableModule, MatSortModule, MatPaginatorModule, PageHeaderComponent, ErrorStateComponent, EmptyStateComponent],
   templateUrl: './positions.component.html',
   styleUrl: './positions.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PositionsComponent implements OnInit {
   private readonly store = inject(Store);

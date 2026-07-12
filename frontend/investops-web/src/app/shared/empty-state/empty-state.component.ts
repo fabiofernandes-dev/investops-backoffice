@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
     </div>
   `,
   styleUrl: './empty-state.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyStateComponent {
   readonly message = input('Nenhum registro encontrado.');
