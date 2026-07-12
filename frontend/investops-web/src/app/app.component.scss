@@ -3,7 +3,7 @@
   background: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
   // O ícone do mat-icon-button tem token próprio no M3 — força para branco (on-primary).
-  --mdc-icon-button-icon-color: var(--mat-sys-on-primary);
+  --mat-icon-button-icon-color: var(--mat-sys-on-primary);
   position: sticky;
   top: 0;
   z-index: 3;
