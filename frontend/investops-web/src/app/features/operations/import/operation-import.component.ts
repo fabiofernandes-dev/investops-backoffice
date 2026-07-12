@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -20,7 +20,6 @@ import { selectImportError, selectImporting } from '../state/operations.feature'
   selector: 'app-operation-import',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     RouterLink,
     MatCardModule,
@@ -29,8 +28,8 @@ import { selectImportError, selectImporting } from '../state/operations.feature'
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule
+],
   templateUrl: './operation-import.component.html',
   styleUrl: './operation-import.component.scss',
 })

@@ -8,55 +8,59 @@
   <app-error-state [message]="error()!" (retry)="reload()" />
 }
 
-<div class="cards" *ngIf="summary() as s">
-  <mat-card>
-    <mat-card-content>
-      <div class="value">{{ s.importedToday }}</div>
-      <div class="label">Importadas hoje</div>
-    </mat-card-content>
-  </mat-card>
-  <mat-card>
-    <mat-card-content>
-      <div class="value">{{ s.processed }}</div>
-      <div class="label">Processadas</div>
-    </mat-card-content>
-  </mat-card>
-  <mat-card>
-    <mat-card-content>
-      <div class="value">{{ s.rejected }}</div>
-      <div class="label">Rejeitadas</div>
-    </mat-card-content>
-  </mat-card>
-  <mat-card>
-    <mat-card-content>
-      <div class="value">{{ s.failed }}</div>
-      <div class="label">Falhas</div>
-    </mat-card-content>
-  </mat-card>
-  <mat-card>
-    <mat-card-content>
-      <div class="value">{{ s.divergencesPending }}</div>
-      <div class="label">Divergências pendentes</div>
-    </mat-card-content>
-  </mat-card>
-  <mat-card>
-    <mat-card-content>
-      <div class="value">{{ (s.averageProcessingSeconds ?? 0) | number: '1.0-1' }} s</div>
-      <div class="label">Tempo médio de processamento</div>
-    </mat-card-content>
-  </mat-card>
-</div>
+@if (summary(); as s) {
+  <div class="cards">
+    <mat-card>
+      <mat-card-content>
+        <div class="value">{{ s.importedToday }}</div>
+        <div class="label">Importadas hoje</div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <div class="value">{{ s.processed }}</div>
+        <div class="label">Processadas</div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <div class="value">{{ s.rejected }}</div>
+        <div class="label">Rejeitadas</div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <div class="value">{{ s.failed }}</div>
+        <div class="label">Falhas</div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <div class="value">{{ s.divergencesPending }}</div>
+        <div class="label">Divergências pendentes</div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <div class="value">{{ (s.averageProcessingSeconds ?? 0) | number: '1.0-1' }} s</div>
+        <div class="label">Tempo médio de processamento</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+}
 
-<mat-card class="metrics" *ngIf="metrics() as m">
-  <mat-card-header>
-    <mat-card-title>Pipeline</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <ul>
-      @for (entry of m.operationsByStatus | keyvalue; track entry.key) {
-        <li><span>{{ entry.key }}</span><strong>{{ entry.value }}</strong></li>
-      }
-      <li><span>Outbox pendente</span><strong>{{ m.outboxPending }}</strong></li>
-    </ul>
-  </mat-card-content>
-</mat-card>
+@if (metrics(); as m) {
+  <mat-card class="metrics">
+    <mat-card-header>
+      <mat-card-title>Pipeline</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ul>
+        @for (entry of m.operationsByStatus | keyvalue; track entry.key) {
+          <li><span>{{ entry.key }}</span><strong>{{ entry.value }}</strong></li>
+        }
+        <li><span>Outbox pendente</span><strong>{{ m.outboxPending }}</strong></li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+}
