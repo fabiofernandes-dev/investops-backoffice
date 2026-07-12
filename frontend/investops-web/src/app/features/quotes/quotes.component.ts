@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -21,6 +21,7 @@ interface QuoteState {
   imports: [CommonModule, MatTableModule, MatIconModule, PageHeaderComponent, ErrorStateComponent],
   templateUrl: './quotes.component.html',
   styleUrl: './quotes.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuotesComponent implements OnInit {
   private readonly lookups = inject(LookupsApi);

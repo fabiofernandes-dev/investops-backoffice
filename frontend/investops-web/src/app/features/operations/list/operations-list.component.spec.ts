@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -65,18 +65,25 @@ describe('OperationsListComponent', () => {
     expect(rows.length).toBe(2);
   });
 
-  it('dispatches load only after the debounce when searching', fakeAsync(() => {
-    setup();
-    fixture.detectChanges(); // ngOnInit: initial load + subscribes to search
-    const dispatch = jest.spyOn(store, 'dispatch');
+  // Zoneless: fakeAsync/tick dependem de zone.js. Usamos fake timers do Jest,
+  // que interceptam o setInterval do asyncScheduler do RxJS (debounceTime).
+  it('dispatches load only after the debounce when searching', () => {
+    jest.useFakeTimers();
+    try {
+      setup();
+      fixture.detectChanges(); // ngOnInit: initial load + subscribes to search
+      const dispatch = jest.spyOn(store, 'dispatch');
 
-    fixture.componentInstance.searchControl.setValue('EXT-9');
-    tick(299);
-    expect(dispatch).not.toHaveBeenCalled();
+      fixture.componentInstance.searchControl.setValue('EXT-9');
+      jest.advanceTimersByTime(299);
+      expect(dispatch).not.toHaveBeenCalled();
 
-    tick(1);
-    expect(dispatch).toHaveBeenCalledTimes(1);
-  }));
+      jest.advanceTimersByTime(1);
+      expect(dispatch).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 
   it('shows the reprocess button only for reprocessable rows (Imported/Failed, not Processed)', () => {
     setup();

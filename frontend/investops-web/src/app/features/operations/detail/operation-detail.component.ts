@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -30,6 +30,7 @@ import { selectAudit, selectDetail, selectDetailError, selectDetailLoading, sele
   ],
   templateUrl: './operation-detail.component.html',
   styleUrl: './operation-detail.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperationDetailComponent implements OnInit {
   private readonly store = inject(Store);

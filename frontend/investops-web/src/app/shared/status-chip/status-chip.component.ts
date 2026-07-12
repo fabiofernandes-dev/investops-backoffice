@@ -1,10 +1,11 @@
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-status-chip',
   standalone: true,
   template: `<span class="chip" [style.background]="color()">{{ status() }}</span>`,
   styleUrl: './status-chip.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusChipComponent {
   readonly status = input.required<string>();

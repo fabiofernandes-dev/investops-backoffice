@@ -1,5 +1,5 @@
 
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,6 +32,7 @@ import { selectImportError, selectImporting } from '../state/operations.feature'
 ],
   templateUrl: './operation-import.component.html',
   styleUrl: './operation-import.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperationImportComponent implements OnInit {
   private readonly store = inject(Store);

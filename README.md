@@ -11,7 +11,7 @@ Plataforma fullstack de backoffice para operações de investimento
 - **Arquitetura event-driven** com **Outbox Pattern**: publicação confiável de eventos (sem dual-write) entre a API .NET e o Worker Go via RabbitMQ.
 - **Resiliência no consumo:** retry com backoff (wait queue + TTL) e **Dead Letter Queue**; falhas transitórias reprocessam, falhas de negócio são terminais.
 - **Interop poliglota:** serviço de cotações em **gRPC** (Go) consumido pela API .NET, com Protobuf versionado.
-- **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 19** (signals, standalone) servida por **edge nginx** same-origin.
+- **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 21 zoneless** (signals, standalone, `OnPush`, sem zone.js) servida por **edge nginx** same-origin.
 - **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, rate limiting por perfil de endpoint, 6 ADRs e specs de design por fase em [docs/](docs/).
 
 ## Status & roadmap
@@ -45,7 +45,7 @@ Quatro serviços — SPA Angular, API .NET, Worker Go e MarketData Go — sobre 
 
 | Camada     | Tecnologias                                                            |
 | ---------- | ---------------------------------------------------------------------- |
-| Frontend   | Angular 19, TypeScript, RxJS, Angular Material, Jest                   |
+| Frontend   | Angular 21 (zoneless, signals), TypeScript, RxJS, Angular Material, Jest |
 | API        | .NET 8, ASP.NET Core, Dapper, FluentValidation, Serilog, OpenTelemetry |
 | Worker     | Go, RabbitMQ, pgx, slog                                                |
 | MarketData | Go, gRPC, Protobuf (buf)                                               |
@@ -66,7 +66,7 @@ investops-backoffice/
     tests/                      # UnitTests, IntegrationTests
   worker-go/                    # worker assíncrono (consumo RabbitMQ, retry + DLQ)
   marketdata-go/                # serviço gRPC de cotações
-  frontend/investops-web/       # app Angular 19
+  frontend/investops-web/       # app Angular 21 (zoneless)
   contracts/                    # contratos de eventos JSON + .proto (gRPC)
   docs/                         # ADRs e documentação de design
   docker-compose.yml            # stack completo

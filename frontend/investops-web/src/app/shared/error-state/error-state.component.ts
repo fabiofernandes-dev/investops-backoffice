@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
     </div>
   `,
   styleUrl: './error-state.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ErrorStateComponent {
   readonly message = input('Algo deu errado.');
