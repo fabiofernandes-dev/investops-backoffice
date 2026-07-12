@@ -808,7 +808,7 @@ Tela de posições
 Integração real com API
 ```
 
-### Fase 5 — Qualidade sênior
+### Fase 5 — Prontidão para produção
 
 ```text
 Logs estruturados

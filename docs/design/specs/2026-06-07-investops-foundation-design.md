@@ -42,7 +42,7 @@ Este documento captura *como* vamos construir o InvestOps Backoffice. O **quê**
 2. **Fase 2 — Primeiro fluxo** (importação de operação, validação, idempotência, Outbox, testes)
 3. **Fase 3 — Worker Go** (consumo RabbitMQ, regras de negócio, atualização de posição, eventos)
 4. **Fase 4 — Angular** (shell, operações, detalhe, posições, integração real)
-5. **Fase 5 — Qualidade sênior** (logs estruturados, correlationId, retry, DLQ, auditoria, ADRs, testes)
+5. **Fase 5 — Prontidão para produção** (logs estruturados, correlationId, retry, DLQ, auditoria, ADRs, testes)
 
 Cada fase terá seu próprio plano de implementação detalhado.
 
