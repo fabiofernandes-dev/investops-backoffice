@@ -4,7 +4,7 @@ SPA Angular do backoffice InvestOps. Consome a API .NET em `/api` e exibe a list
 
 ## Stack
 
-- Angular 19 (standalone components, signals) + Angular Material
+- Angular 21 **zoneless** (standalone components, signals, `OnPush`, sem zone.js) + Angular Material
 - TypeScript, RxJS
 - Jest (testes unitários)
 

@@ -167,4 +167,4 @@
 ---
 
 ## Fechamento da Fase 6
-Após 6.3: o backoffice tem cotações ao vivo via gRPC (.NET↔Go) + SSE. `docker compose up` sobe **API + worker + marketdata + Angular + infra**. Estudo de gRPC coberto: `.proto` compartilhado, unário + server-streaming, interop poliglota, bridge para o browser.
+Após 6.3: o backoffice tem cotações ao vivo via gRPC (.NET↔Go) + SSE. `docker compose up` sobe **API + worker + marketdata + Angular + infra**. Escopo de gRPC coberto: `.proto` compartilhado, unário + server-streaming, interop poliglota, bridge para o browser.

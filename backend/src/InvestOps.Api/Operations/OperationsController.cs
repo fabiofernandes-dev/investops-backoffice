@@ -6,6 +6,7 @@ using InvestOps.Application.Operations.ImportOperation;
 using InvestOps.Application.Operations.ListOperations;
 using InvestOps.Application.Operations.ReprocessOperation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace InvestOps.Api.Operations;
 
@@ -21,6 +22,7 @@ public sealed class OperationsController(
     ReprocessOperationHandler reprocessHandler) : ControllerBase
 {
     [HttpPost("import")]
+    [EnableRateLimiting(RateLimitingOptions.WritePolicy)]
     public async Task<IActionResult> Import(ImportOperationRequest request, CancellationToken ct)
     {
         var validation = await importValidator.ValidateAsync(request, ct);
@@ -68,6 +70,7 @@ public sealed class OperationsController(
         => Ok(await auditHandler.HandleAsync(id, ct));
 
     [HttpPost("{id:guid}/reprocess")]
+    [EnableRateLimiting(RateLimitingOptions.WritePolicy)]
     public async Task<IActionResult> Reprocess(Guid id, CancellationToken ct)
     {
         try

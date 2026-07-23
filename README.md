@@ -4,15 +4,32 @@
 
 Plataforma fullstack de backoffice para operações de investimento
 
-> **Status:** em construção — Fase 5a (resiliência do worker: retry + DLQ). Veja o [SPEC.md](SPEC.md) para a visão completa.
+> **Status:** em construção — veja [Status & roadmap](#status--roadmap). O [SPEC.md](SPEC.md) descreve a visão completa do produto; nem tudo está implementado ainda.
 
 ## Destaques de engenharia
 
 - **Arquitetura event-driven** com **Outbox Pattern**: publicação confiável de eventos (sem dual-write) entre a API .NET e o Worker Go via RabbitMQ.
 - **Resiliência no consumo:** retry com backoff (wait queue + TTL) e **Dead Letter Queue**; falhas transitórias reprocessam, falhas de negócio são terminais.
 - **Interop poliglota:** serviço de cotações em **gRPC** (Go) consumido pela API .NET, com Protobuf versionado.
-- **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 19** (signals, standalone) servida por **edge nginx** same-origin.
-- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, 5 ADRs e specs de design por fase em [docs/](docs/).
+- **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 21 zoneless** (signals, standalone, `OnPush`, sem zone.js) servida por **edge nginx** same-origin.
+- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, rate limiting por perfil de endpoint, 6 ADRs e specs de design por fase em [docs/](docs/).
+
+## Status & roadmap
+
+O [SPEC.md](SPEC.md) é a visão completa; a entrega é incremental, por fases ([docs/design/](docs/design/)):
+
+| Área | Status |
+| ---- | ------ |
+| Import de operações (validação, idempotência, Outbox → RabbitMQ → Worker) | ✅ |
+| Worker Go: regras de negócio, posição consolidada, retry + DLQ | ✅ |
+| Read API: operations, positions, dashboard, lookups (paginação/ordenação server-side) | ✅ |
+| Frontend: dashboard, operações, posições, cotações ao vivo | ✅ |
+| Cotações via gRPC (.NET ↔ Go) + SSE | ✅ |
+| Edge nginx (same-origin) + rate limiting | ✅ |
+| CRUD de produtos (`POST`/`PUT`) | 🔲 planejado |
+| Conciliação com custodiante (reconciliation) | 🔲 planejado |
+| Processing monitor (UI de eventos do worker) | 🔲 planejado |
+| Autenticação/autorização (OIDC) | 🚫 fora do MVP — [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md) |
 
 ## Arquitetura
 
@@ -28,7 +45,7 @@ Quatro serviços — SPA Angular, API .NET, Worker Go e MarketData Go — sobre 
 
 | Camada     | Tecnologias                                                            |
 | ---------- | ---------------------------------------------------------------------- |
-| Frontend   | Angular 19, TypeScript, RxJS, Angular Material, Jest                   |
+| Frontend   | Angular 21 (zoneless, signals), TypeScript, RxJS, Angular Material, Jest |
 | API        | .NET 8, ASP.NET Core, Dapper, FluentValidation, Serilog, OpenTelemetry |
 | Worker     | Go, RabbitMQ, pgx, slog                                                |
 | MarketData | Go, gRPC, Protobuf (buf)                                               |
@@ -49,7 +66,7 @@ investops-backoffice/
     tests/                      # UnitTests, IntegrationTests
   worker-go/                    # worker assíncrono (consumo RabbitMQ, retry + DLQ)
   marketdata-go/                # serviço gRPC de cotações
-  frontend/investops-web/       # app Angular 19
+  frontend/investops-web/       # app Angular 21 (zoneless)
   contracts/                    # contratos de eventos JSON + .proto (gRPC)
   docs/                         # ADRs e documentação de design
   docker-compose.yml            # stack completo
@@ -190,6 +207,15 @@ export RabbitMq__Username="..."
 export RabbitMq__Password="..."
 export MarketData__Url="http://marketdata.prod.interno:5300"
 ```
+
+### Segurança & escopo
+
+Decisões de segurança do MVP — registradas em [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md):
+
+- **Rate limiting** nativo (ASP.NET Core): limite global de 100 req/min + política mais rígida (20 req/min) nos endpoints de escrita (`import`, `reprocess`); health checks isentos; `429` com `Retry-After`. Limites configuráveis via seção `RateLimiting`.
+- **Autenticação/autorização**: fora do escopo do MVP, por decisão — backoffice interno assume rede privada + IdP corporativo; o ADR documenta como o design acomoda `[Authorize]` + policies por perfil.
+- **SQL 100% parametrizado** (Dapper) com ordenação dinâmica por whitelist; **Swagger desabilitado em Production** (com teste garantindo); security headers no nginx.
+- **Credenciais:** o `appsettings.json` base não contém credenciais — as de dev local vivem em `appsettings.Development.json`, e Staging/Production só via variáveis de ambiente. Os defaults `investops/investops` do `.env.example`/compose são **intencionais e exclusivos de demo local** (`docker compose up` sem edição é requisito); qualquer deploy real deve sobrescrevê-los.
 
 ### Testes
 

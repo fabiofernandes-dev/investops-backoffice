@@ -2,7 +2,7 @@
 
 **Data:** 2026-06-14
 **Status:** Aprovado (início da Fase 6)
-**Contexto:** feature de estudo de **gRPC** com interop **.NET ↔ Go**. Adiciona cotações (preços) ao backoffice.
+**Contexto:** feature que introduz **gRPC** com interop **.NET ↔ Go**. Adiciona cotações (preços) ao backoffice.
 
 Novo serviço Go (`marketdata-go`) expõe um servidor **gRPC** de cotações (preços simulados). A **API .NET** é **client gRPC** e faz **bridge** para o browser via **SSE**. O Angular mostra um **ticker ao vivo**.
 

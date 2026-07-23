@@ -11,7 +11,7 @@ Este documento captura *como* vamos construir o InvestOps Backoffice. O **quê**
 ## 1. Modo de trabalho
 
 - **Cadência:** fase a fase. Ao fim de cada fase, reavaliamos antes de seguir.
-- **Objetivo:** treinar para vaga sênior fullstack. Prioridade é clareza arquitetural e capacidade de explicar decisões (`SPEC.md` §17), não completar 100% das features.
+- **Objetivo:** prioridade é clareza arquitetural e capacidade de explicar decisões (`SPEC.md` §17), não completar 100% das features.
 
 ## 2. Convenções de Git
 
@@ -30,7 +30,7 @@ Este documento captura *como* vamos construir o InvestOps Backoffice. O **quê**
 
 | Decisão | Escolha | Motivo |
 |---------|---------|--------|
-| Versão .NET | **net8.0**, SDK fixado via `global.json` (8.0.421) | Fiel ao SPEC e à vaga; SDK 8 está instalado. |
+| Versão .NET | **net8.0**, SDK fixado via `global.json` (8.0.421) | Fiel ao SPEC; SDK 8 está instalado. |
 | Migrations | **DbUp** (scripts SQL versionados, migrator .NET) | Idiomático com Dapper (sem EF), versiona evolução, prática sênior. |
 | Acesso a dados | **Dapper** | Exigência do SPEC; controle de SQL e performance. |
 | Banco | **PostgreSQL compartilhado** entre API e Worker no MVP | SPEC §3; separação por responsabilidade/contratos de evento. |
@@ -42,7 +42,7 @@ Este documento captura *como* vamos construir o InvestOps Backoffice. O **quê**
 2. **Fase 2 — Primeiro fluxo** (importação de operação, validação, idempotência, Outbox, testes)
 3. **Fase 3 — Worker Go** (consumo RabbitMQ, regras de negócio, atualização de posição, eventos)
 4. **Fase 4 — Angular** (shell, operações, detalhe, posições, integração real)
-5. **Fase 5 — Qualidade sênior** (logs estruturados, correlationId, retry, DLQ, auditoria, ADRs, testes)
+5. **Fase 5 — Prontidão para produção** (logs estruturados, correlationId, retry, DLQ, auditoria, ADRs, testes)
 
 Cada fase terá seu próprio plano de implementação detalhado.
 

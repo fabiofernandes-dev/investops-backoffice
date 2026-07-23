@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Store } from '@ngrx/store';
@@ -14,6 +14,7 @@ import { selectError, selectLoading, selectMetrics, selectSummary } from './stat
   imports: [CommonModule, MatCardModule, MatProgressBarModule, PageHeaderComponent, ErrorStateComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
   private readonly store = inject(Store);

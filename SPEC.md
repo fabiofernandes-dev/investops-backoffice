@@ -1,5 +1,8 @@
 # SPEC.md — InvestOps Backoffice
 
+> **Nota:** este documento é a **visão completa** do produto e serve de norte para o desenvolvimento.
+> A entrega é incremental — o que já está implementado vs. planejado está no [README — Status & roadmap](README.md#status--roadmap).
+
 ## 1. Visão geral
 
 Criar uma plataforma fullstack de backoffice para investimentos chamada **InvestOps Backoffice**.
@@ -18,7 +21,7 @@ O sistema deve simular um ambiente real de operações financeiras, com:
 - Monitoramento de falhas.
 - Conciliação entre posição interna e custodiante.
 
-Este projeto tem como objetivo treinar para uma vaga sênior fullstack em plataforma de backoffice de investimentos.
+Este projeto tem como objetivo demonstrar arquitetura fullstack de nível sênior aplicada a uma plataforma de backoffice de investimentos.
 
 ---
 
@@ -606,7 +609,7 @@ ON outbox_messages(status, created_at);
     "productId": "uuid",
     "operationType": "Buy",
     "quantity": 100,
-    "unitPrice": 25.40,
+    "unitPrice": 25.4,
     "operationDate": "2026-06-07"
   }
 }
@@ -626,8 +629,8 @@ ON outbox_messages(status, created_at);
     "accountId": "uuid",
     "productId": "uuid",
     "quantity": 100,
-    "averagePrice": 25.40,
-    "grossAmount": 2540.00
+    "averagePrice": 25.4,
+    "grossAmount": 2540.0
   }
 }
 ```
@@ -805,7 +808,7 @@ Tela de posições
 Integração real com API
 ```
 
-### Fase 5 — Qualidade sênior
+### Fase 5 — Prontidão para produção
 
 ```text
 Logs estruturados
@@ -824,7 +827,7 @@ Testes principais
 
 Este projeto deve priorizar clareza arquitetural e boas decisões técnicas.
 
-Não é necessário terminar todas as funcionalidades para que ele seja útil em entrevista. O mais importante é conseguir explicar:
+O mais importante é conseguir explicar:
 
 ```text
 Por que existem dois serviços.
