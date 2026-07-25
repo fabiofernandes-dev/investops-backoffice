@@ -249,7 +249,7 @@ public class ReconciliationTests(PostgresFixture fixture)
     }
 
     [Fact]
-    public async Task Resolve_throws_conflict_when_not_pending()
+    public async Task Resolve_throws_conflict_and_writes_no_audit_when_not_pending()
     {
         var divergenceId = Guid.NewGuid();
         await using (var conn = await _factory.OpenConnectionAsync())
@@ -259,8 +259,35 @@ public class ReconciliationTests(PostgresFixture fixture)
             await SeedDivergenceAsync(conn, divergenceId, importId, accountId, productId, 10, 20, "Resolved");
         }
 
+        await using (var session = new DbSession(_factory))
+            await Assert.ThrowsAsync<ConflictException>(() => BuildResolveHandler(session).HandleAsync(divergenceId, default));
+
+        await using var verify = await _factory.OpenConnectionAsync();
+        var auditCount = await verify.ExecuteScalarAsync<long>(
+            "SELECT count(*) FROM audit_logs WHERE entity_name = 'ReconciliationDivergence' AND entity_id = @id;",
+            new { id = divergenceId.ToString() });
+        Assert.Equal(0L, auditCount);
+    }
+
+    [Fact]
+    public async Task UpdateDivergenceStatus_only_affects_pending_rows()
+    {
+        var divergenceId = Guid.NewGuid();
+        await using (var conn = await _factory.OpenConnectionAsync())
+        {
+            var (accountId, productId) = await SeedReferencesAsync(conn, "Guard Cliente");
+            var importId = await SeedImportAsync(conn, $"custodian-{Guid.NewGuid():N}");
+            await SeedDivergenceAsync(conn, divergenceId, importId, accountId, productId, 10, 20, "Pending");
+        }
+
         await using var session = new DbSession(_factory);
-        await Assert.ThrowsAsync<ConflictException>(() => BuildResolveHandler(session).HandleAsync(divergenceId, default));
+        var repo = new ReconciliationRepository(session);
+
+        var first = await repo.UpdateDivergenceStatusAsync(divergenceId, "Resolved", DateTimeOffset.UtcNow, default);
+        var second = await repo.UpdateDivergenceStatusAsync(divergenceId, "Ignored", DateTimeOffset.UtcNow, default);
+
+        Assert.Equal(1, first);  // pending -> resolved
+        Assert.Equal(0, second); // no longer pending: guard blocks the second writer
     }
 
     [Fact]

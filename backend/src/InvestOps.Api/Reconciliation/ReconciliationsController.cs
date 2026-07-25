@@ -5,6 +5,7 @@ using InvestOps.Application.Reconciliation.ImportReconciliation;
 using InvestOps.Application.Reconciliation.IgnoreDivergence;
 using InvestOps.Application.Reconciliation.ListDivergences;
 using InvestOps.Application.Reconciliation.ResolveDivergence;
+using InvestOps.Domain.Reconciliation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -29,7 +30,7 @@ public sealed class ReconciliationsController(
         if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
             return BadRequest(new ProblemDetails { Title = "Arquivo deve ser .csv" });
 
-        IReadOnlyList<InvestOps.Domain.Reconciliation.CustodianRow> rows;
+        IReadOnlyList<CustodianRow> rows;
         try { await using var stream = file.OpenReadStream(); rows = CsvCustodianStatementParser.Parse(stream); }
         catch (CsvFormatException ex) { return BadRequest(new ProblemDetails { Title = "CSV inválido", Detail = ex.Message }); }
 

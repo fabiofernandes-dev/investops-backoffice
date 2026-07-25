@@ -29,7 +29,9 @@ public sealed class IgnoreDivergenceHandler(
         await unitOfWork.BeginAsync(ct);
         try
         {
-            await repo.UpdateDivergenceStatusAsync(divergenceId, nameof(DivergenceStatus.Ignored), now, ct);
+            var affected = await repo.UpdateDivergenceStatusAsync(divergenceId, nameof(DivergenceStatus.Ignored), now, ct);
+            if (affected == 0)
+                throw new ConflictException($"Divergência {divergenceId} não está mais pendente (alteração concorrente).");
             await audit.InsertAsync(auditLog, ct);
             await unitOfWork.CommitAsync(ct);
         }

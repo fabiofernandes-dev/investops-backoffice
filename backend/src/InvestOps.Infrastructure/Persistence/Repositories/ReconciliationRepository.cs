@@ -27,29 +27,27 @@ public sealed class ReconciliationRepository(IDbSession session) : IReconciliati
 
     public async Task InsertDivergencesAsync(IReadOnlyList<ReconciliationDivergence> divergences, CancellationToken ct)
     {
+        if (divergences.Count == 0) return;
+
         const string sql = """
             INSERT INTO reconciliation_divergences
               (id, reconciliation_import_id, account_id, product_id, internal_quantity, custodian_quantity, status, created_at, resolved_at)
-            VALUES
-              (@Id, @ReconciliationImportId, @AccountId, @ProductId, @InternalQuantity, @CustodianQuantity, @Status, @CreatedAt, @ResolvedAt);
+            SELECT * FROM unnest(@Ids, @ImportIds, @AccountIds, @ProductIds, @InternalQties, @CustodianQties, @Statuses, @CreatedAts, @ResolvedAts);
             """;
-        var conn = await session.GetConnectionAsync(ct);
-        foreach (var d in divergences)
+        var parameters = new
         {
-            var parameters = new
-            {
-                d.Id,
-                d.ReconciliationImportId,
-                d.AccountId,
-                d.ProductId,
-                d.InternalQuantity,
-                d.CustodianQuantity,
-                Status = d.Status.ToString(),
-                d.CreatedAt,
-                d.ResolvedAt
-            };
-            await conn.ExecuteAsync(new CommandDefinition(sql, parameters, session.Transaction, cancellationToken: ct));
-        }
+            Ids = divergences.Select(d => d.Id).ToArray(),
+            ImportIds = divergences.Select(d => d.ReconciliationImportId).ToArray(),
+            AccountIds = divergences.Select(d => d.AccountId).ToArray(),
+            ProductIds = divergences.Select(d => d.ProductId).ToArray(),
+            InternalQties = divergences.Select(d => d.InternalQuantity).ToArray(),
+            CustodianQties = divergences.Select(d => d.CustodianQuantity).ToArray(),
+            Statuses = divergences.Select(d => d.Status.ToString()).ToArray(),
+            CreatedAts = divergences.Select(d => d.CreatedAt).ToArray(),
+            ResolvedAts = divergences.Select(d => d.ResolvedAt).ToArray()
+        };
+        var conn = await session.GetConnectionAsync(ct);
+        await conn.ExecuteAsync(new CommandDefinition(sql, parameters, session.Transaction, cancellationToken: ct));
     }
 
     public async Task<ReconciliationDivergence?> GetDivergenceByIdAsync(Guid id, CancellationToken ct)
@@ -79,11 +77,15 @@ public sealed class ReconciliationRepository(IDbSession session) : IReconciliati
         };
     }
 
-    public async Task UpdateDivergenceStatusAsync(Guid id, string status, DateTimeOffset resolvedAt, CancellationToken ct)
+    public async Task<int> UpdateDivergenceStatusAsync(Guid id, string status, DateTimeOffset resolvedAt, CancellationToken ct)
     {
-        const string sql = "UPDATE reconciliation_divergences SET status = @status, resolved_at = @resolvedAt WHERE id = @id;";
+        const string sql = """
+            UPDATE reconciliation_divergences
+            SET status = @status, resolved_at = @resolvedAt
+            WHERE id = @id AND status = 'Pending';
+            """;
         var conn = await session.GetConnectionAsync(ct);
-        await conn.ExecuteAsync(new CommandDefinition(sql, new { id, status, resolvedAt }, session.Transaction, cancellationToken: ct));
+        return await conn.ExecuteAsync(new CommandDefinition(sql, new { id, status, resolvedAt }, session.Transaction, cancellationToken: ct));
     }
 
     private sealed class DivergenceRow

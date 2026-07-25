@@ -17,11 +17,11 @@ public sealed class ImportReconciliationHandler(
         var productIds = request.Rows.Select(r => r.ProductId).Distinct().ToList();
 
         var existingAccounts = (await read.GetExistingAccountIdsAsync(accountIds, ct)).ToHashSet();
-        var missingAccount = accountIds.FirstOrDefault(id => !existingAccounts.Contains(id));
-        if (missingAccount != Guid.Empty) throw new ReferenceNotFoundException($"Conta {missingAccount} não encontrada");
+        var missingAccounts = accountIds.Where(id => !existingAccounts.Contains(id)).ToList();
+        if (missingAccounts.Count > 0) throw new ReferenceNotFoundException($"Conta {missingAccounts[0]} não encontrada");
         var existingProducts = (await read.GetExistingProductIdsAsync(productIds, ct)).ToHashSet();
-        var missingProduct = productIds.FirstOrDefault(id => !existingProducts.Contains(id));
-        if (missingProduct != Guid.Empty) throw new ReferenceNotFoundException($"Produto {missingProduct} não encontrado");
+        var missingProducts = productIds.Where(id => !existingProducts.Contains(id)).ToList();
+        if (missingProducts.Count > 0) throw new ReferenceNotFoundException($"Produto {missingProducts[0]} não encontrado");
 
         var internalPositions = await read.GetInternalPositionsAsync(accountIds, productIds, ct);
         var results = ReconciliationComparer.Compare(request.Rows, internalPositions);
