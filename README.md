@@ -12,7 +12,7 @@ Plataforma fullstack de backoffice para operações de investimento
 - **Resiliência no consumo:** retry com backoff (wait queue + TTL) e **Dead Letter Queue**; falhas transitórias reprocessam, falhas de negócio são terminais.
 - **Interop poliglota:** serviço de cotações em **gRPC** (Go) consumido pela API .NET, com Protobuf versionado.
 - **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 21 zoneless** (signals, standalone, `OnPush`, sem zone.js) servida por **edge nginx** same-origin.
-- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, rate limiting por perfil de endpoint, 6 ADRs e specs de design por fase em [docs/](docs/).
+- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, rate limiting por perfil de endpoint, 7 ADRs e specs de design por fase em [docs/](docs/).
 
 ## Status & roadmap
 
@@ -26,8 +26,8 @@ O [SPEC.md](SPEC.md) é a visão completa; a entrega é incremental, por fases (
 | Frontend: dashboard, operações, posições, cotações ao vivo | ✅ |
 | Cotações via gRPC (.NET ↔ Go) + SSE | ✅ |
 | Edge nginx (same-origin) + rate limiting | ✅ |
+| Conciliação com custodiante: import CSV, divergências, resolver/ignorar ([ADR 0007](docs/adr/0007-synchronous-reconciliation.md)) | ✅ |
 | CRUD de produtos (`POST`/`PUT`) | 🔲 planejado |
-| Conciliação com custodiante (reconciliation) | 🔲 planejado |
 | Processing monitor (UI de eventos do worker) | 🔲 planejado |
 | Autenticação/autorização (OIDC) | 🚫 fora do MVP — [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md) |
 

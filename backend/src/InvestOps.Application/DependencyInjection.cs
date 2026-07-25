@@ -27,6 +27,10 @@ public static class DependencyInjection
         services.AddScoped<Lookups.ListProductsHandler>();
         services.AddScoped<Lookups.ListCustomersHandler>();
         services.AddScoped<Lookups.ListAccountsHandler>();
+        services.AddScoped<Reconciliation.ImportReconciliation.ImportReconciliationHandler>();
+        services.AddScoped<Reconciliation.ListDivergences.ListDivergencesHandler>();
+        services.AddScoped<Reconciliation.ResolveDivergence.ResolveDivergenceHandler>();
+        services.AddScoped<Reconciliation.IgnoreDivergence.IgnoreDivergenceHandler>();
         services.AddValidatorsFromAssemblyContaining<ImportOperationValidator>();
         return services;
     }

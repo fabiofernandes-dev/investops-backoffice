@@ -1,0 +1,53 @@
+table {
+  width: 100%;
+}
+
+.num {
+  text-align: right;
+}
+
+.neg {
+  color: #c62828;
+}
+
+.import-card {
+  margin-bottom: 16px;
+  max-width: 560px;
+}
+
+.import-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.file-name {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.error {
+  color: #c62828;
+}
+
+.last-import {
+  color: #2e7d32;
+  margin: 0;
+}
+
+.filters {
+  margin-bottom: 8px;
+}
