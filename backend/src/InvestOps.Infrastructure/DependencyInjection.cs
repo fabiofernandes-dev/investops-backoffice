@@ -32,6 +32,8 @@ public static class DependencyInjection
         services.AddScoped<IPositionReadRepository, PositionReadRepository>();
         services.AddScoped<ILookupRepository, LookupRepository>();
         services.AddScoped<IDashboardRepository, DashboardRepository>();
+        services.AddScoped<IReconciliationRepository, ReconciliationRepository>();
+        services.AddScoped<IReconciliationReadRepository, ReconciliationReadRepository>();
 
         var rabbitOptions = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>() ?? new RabbitMqOptions();
         services.AddSingleton(rabbitOptions);
