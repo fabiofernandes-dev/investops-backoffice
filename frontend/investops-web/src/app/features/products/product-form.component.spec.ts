@@ -2,15 +2,28 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { Product } from '../../core/models';
 import { ProductFormComponent } from './product-form.component';
 import { ProductsActions } from './state/products.actions';
-import { selectItems, selectSaveError, selectSaving } from './state/products.feature';
+import { selectItems, selectLoading, selectSaveError, selectSaving } from './state/products.feature';
+
+function makeProduct(id: string): Product {
+  return {
+    id,
+    productType: 'Fund',
+    name: 'Fundo ' + id,
+    ticker: 'FND' + id,
+    riskLevel: 2,
+    liquidityDays: 5,
+    isActive: false,
+  };
+}
 
 describe('ProductFormComponent', () => {
   let store: MockStore;
   let fixture: ComponentFixture<ProductFormComponent>;
 
-  function setup(id: string | null): void {
+  function setup(id: string | null, items: Product[] = []): void {
     TestBed.configureTestingModule({
       imports: [ProductFormComponent],
       providers: [
@@ -21,7 +34,8 @@ describe('ProductFormComponent', () => {
       ],
     });
     store = TestBed.inject(MockStore);
-    store.overrideSelector(selectItems, []);
+    store.overrideSelector(selectItems, items);
+    store.overrideSelector(selectLoading, false);
     store.overrideSelector(selectSaving, false);
     store.overrideSelector(selectSaveError, null);
     fixture = TestBed.createComponent(ProductFormComponent);
@@ -89,6 +103,27 @@ describe('ProductFormComponent', () => {
         request: { productType: 'FixedIncome', name: 'Tesouro', ticker: null, riskLevel: 1, liquidityDays: 30, isActive: true },
       }),
     );
+  });
+
+  it('populates the form from the store product and keeps user edits across a reload', () => {
+    setup('p-1', [makeProduct('p-1')]);
+
+    expect(fixture.componentInstance.form.getRawValue()).toEqual({
+      productType: 'Fund',
+      name: 'Fundo p-1',
+      ticker: 'FNDp-1',
+      riskLevel: 2,
+      liquidityDays: 5,
+      isActive: false,
+    });
+
+    fixture.componentInstance.form.patchValue({ name: 'Editado pelo usuário' });
+
+    store.overrideSelector(selectItems, [{ ...makeProduct('p-1'), name: 'Nome do servidor' }]);
+    store.refreshState();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.form.controls.name.value).toBe('Editado pelo usuário');
   });
 
   it('shows the duplicate ticker error from the store', () => {

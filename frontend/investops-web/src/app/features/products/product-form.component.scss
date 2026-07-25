@@ -24,3 +24,9 @@ mat-card {
 .error {
   color: #c62828;
 }
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}

@@ -47,6 +47,7 @@ export const saveProduct$ = createEffect(
   { functional: true },
 );
 
+// dispatch:false — a navegacao para /products remonta a lista, cujo ngOnInit ja dispara load().
 export const saveProductSuccess$ = createEffect(
   (actions$ = inject(Actions), router = inject(Router), snackBar = inject(MatSnackBar)) =>
     actions$.pipe(
@@ -55,9 +56,8 @@ export const saveProductSuccess$ = createEffect(
         snackBar.open('Produto salvo com sucesso.', 'OK', { duration: 4000 });
         router.navigate(['/products']);
       }),
-      map(() => ProductsActions.load()),
     ),
-  { functional: true },
+  { functional: true, dispatch: false },
 );
 
 // concatMap: escritas por-entidade não podem se cancelar entre si (evita perder um DELETE).

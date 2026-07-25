@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -12,7 +13,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ProductRequest } from '../../core/models';
 import { ProductsActions } from './state/products.actions';
-import { selectItems, selectSaveError, selectSaving } from './state/products.feature';
+import { selectItems, selectLoading, selectSaveError, selectSaving } from './state/products.feature';
 
 @Component({
   selector: 'app-product-form',
@@ -28,6 +29,7 @@ import { selectItems, selectSaveError, selectSaving } from './state/products.fea
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.scss',
@@ -43,8 +45,13 @@ export class ProductFormComponent implements OnInit {
 
   readonly saving = this.store.selectSignal(selectSaving);
   readonly saveError = this.store.selectSignal(selectSaveError);
+  private readonly loading = this.store.selectSignal(selectLoading);
   private readonly items = this.store.selectSignal(selectItems);
   private readonly product = computed(() => this.items().find((p) => p.id === this.productId) ?? null);
+
+  // Segura o form em edicao ate o produto chegar do store (evita flash de "novo produto"
+  // e a janela em que o 1o patch sobrescreveria uma edicao do usuario).
+  readonly loadingProduct = computed(() => this.isEdit && this.loading() && this.product() === null);
 
   readonly productTypes = ['FixedIncome', 'Fund', 'Stock', 'Derivative'];
 

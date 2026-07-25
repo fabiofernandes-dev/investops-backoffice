@@ -5,6 +5,11 @@
   <h1>{{ isEdit ? 'Editar produto' : 'Novo produto' }}</h1>
 </div>
 
+@if (loadingProduct()) {
+  <div class="loading">
+    <mat-spinner diameter="40" />
+  </div>
+} @else {
 <mat-card>
   <mat-card-content>
     <form [formGroup]="form" (ngSubmit)="submit()" class="form">
@@ -60,3 +65,4 @@
     </form>
   </mat-card-content>
 </mat-card>
+}
