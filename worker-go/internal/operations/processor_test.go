@@ -38,6 +38,7 @@ func (f *fakeTx) UpdateOperationStatus(_ context.Context, _ uuid.UUID, status, r
 	f.statusUpdates = append(f.statusUpdates, statusUpdate{status, reason})
 	return nil
 }
+func (f *fakeTx) MarkOperationFailed(_ context.Context, _ uuid.UUID) (int64, error) { return 1, nil }
 func (f *fakeTx) InsertProcessingEvent(_ context.Context, e operations.ProcessingEvent) error {
 	f.procEvents = append(f.procEvents, e)
 	return nil
