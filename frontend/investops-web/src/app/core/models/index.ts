@@ -94,6 +94,25 @@ export interface ProductLookup {
   ticker: string | null;
 }
 
+export interface Product {
+  id: string;
+  productType: string;
+  name: string;
+  ticker: string | null;
+  riskLevel: number;
+  liquidityDays: number;
+  isActive: boolean;
+}
+
+export interface ProductRequest {
+  productType: string;
+  name: string;
+  ticker: string | null;
+  riskLevel: number;
+  liquidityDays: number;
+  isActive?: boolean;
+}
+
 export interface CustomerLookup {
   id: string;
   name: string;

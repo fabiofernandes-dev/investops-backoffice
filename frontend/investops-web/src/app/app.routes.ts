@@ -11,6 +11,8 @@ import * as dashboardEffects from './features/dashboard/state/dashboard.effects'
 import { dashboardFeature } from './features/dashboard/state/dashboard.feature';
 import * as processingEventsEffects from './features/processing-monitor/state/processing-events.effects';
 import { processingEventsFeature } from './features/processing-monitor/state/processing-events.feature';
+import * as productsEffects from './features/products/state/products.effects';
+import { productsFeature } from './features/products/state/products.feature';
 
 export const routes: Routes = [
   {
@@ -55,6 +57,24 @@ export const routes: Routes = [
   {
     path: 'quotes',
     loadComponent: () => import('./features/quotes/quotes.component').then((m) => m.QuotesComponent),
+  },
+  {
+    path: 'products',
+    providers: [provideState(productsFeature), provideEffects(productsEffects)],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/products/products-list.component').then((m) => m.ProductsListComponent),
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./features/products/product-form.component').then((m) => m.ProductFormComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/products/product-form.component').then((m) => m.ProductFormComponent),
+      },
+    ],
   },
   { path: '**', redirectTo: '' },
 ];

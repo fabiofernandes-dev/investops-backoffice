@@ -61,6 +61,10 @@ import { LoadingService } from './core/state/loading.service';
             <mat-icon matListItemIcon>trending_up</mat-icon>
             <span matListItemTitle>Cotações</span>
           </a>
+          <a mat-list-item routerLink="/products" routerLinkActive="active">
+            <mat-icon matListItemIcon>inventory_2</mat-icon>
+            <span matListItemTitle>Produtos</span>
+          </a>
         </mat-nav-list>
       </mat-sidenav>
 
