@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { DashboardSummary, ProcessingMetrics } from '../../core/models';
 import { DashboardComponent } from './dashboard.component';
@@ -22,7 +23,7 @@ describe('DashboardComponent', () => {
   function setup(): void {
     TestBed.configureTestingModule({
       imports: [DashboardComponent],
-      providers: [provideNoopAnimations(), provideMockStore()],
+      providers: [provideNoopAnimations(), provideRouter([]), provideMockStore()],
     });
     store = TestBed.inject(MockStore);
     store.overrideSelector(selectSummary, null);
