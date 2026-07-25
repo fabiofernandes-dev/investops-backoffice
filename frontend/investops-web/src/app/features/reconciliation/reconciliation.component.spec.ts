@@ -1,10 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { Actions } from '@ngrx/effects';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { Divergence } from '../../core/models';
+import { Subject } from 'rxjs';
+import { Action } from '@ngrx/store';
+import { Divergence, ImportReconciliationResult } from '../../core/models';
 import { ReconciliationComponent } from './reconciliation.component';
 import { ReconciliationActions } from './state/reconciliation.actions';
-import { selectError, selectImportError, selectImporting, selectItems, selectLoading, selectTotal } from './state/reconciliation.feature';
+import { selectError, selectImportError, selectImporting, selectItems, selectLastImport, selectLoading, selectTotal } from './state/reconciliation.feature';
+
+function makeResult(): ImportReconciliationResult {
+  return {
+    importId: 'imp-1',
+    source: 'Custodiante XPTO',
+    referenceDate: '2026-06-10',
+    rowsProcessed: 3,
+    matchedCount: 2,
+    divergenceCount: 1,
+  };
+}
 
 function makeDivergence(id: string, status: string): Divergence {
   return {
@@ -28,11 +42,13 @@ function makeDivergence(id: string, status: string): Divergence {
 describe('ReconciliationComponent', () => {
   let store: MockStore;
   let fixture: ComponentFixture<ReconciliationComponent>;
+  let actions$: Subject<Action>;
 
   function setup(): void {
+    actions$ = new Subject<Action>();
     TestBed.configureTestingModule({
       imports: [ReconciliationComponent],
-      providers: [provideNoopAnimations(), provideMockStore()],
+      providers: [provideNoopAnimations(), provideMockStore(), { provide: Actions, useValue: actions$ }],
     });
     store = TestBed.inject(MockStore);
     store.overrideSelector(selectItems, []);
@@ -41,6 +57,7 @@ describe('ReconciliationComponent', () => {
     store.overrideSelector(selectError, null);
     store.overrideSelector(selectImporting, false);
     store.overrideSelector(selectImportError, null);
+    store.overrideSelector(selectLastImport, null);
     fixture = TestBed.createComponent(ReconciliationComponent);
   }
 
@@ -122,6 +139,22 @@ describe('ReconciliationComponent', () => {
     fixture.componentInstance.submitImport();
 
     expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('clears the form, file and filter after a successful import', () => {
+    setup();
+    fixture.detectChanges();
+    fixture.componentInstance.selectedFile.set(new File(['x'], 'extrato.csv'));
+    fixture.componentInstance.importForm.setValue({ source: 'Custodiante XPTO', referenceDate: new Date(2026, 5, 10) });
+    fixture.componentInstance.statusFilter = 'Resolved';
+
+    actions$.next(ReconciliationActions.importSuccess({ result: makeResult() }));
+
+    expect(fixture.componentInstance.selectedFile()).toBeNull();
+    expect(fixture.componentInstance.importForm.controls.source.value).toBe('');
+    expect(fixture.componentInstance.importForm.controls.referenceDate.value).toBeNull();
+    expect(fixture.componentInstance.statusFilter).toBe('');
+    expect(fixture.componentInstance.pageIndex).toBe(0);
   });
 
   it('shows the error state when there is an error', () => {

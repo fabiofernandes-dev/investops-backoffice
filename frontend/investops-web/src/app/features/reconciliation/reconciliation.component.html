@@ -37,8 +37,12 @@
         <p class="error">{{ importError() }}</p>
       }
 
+      @if (lastImport(); as last) {
+        <p class="last-import">Último extrato: {{ last.divergenceCount }} divergência(s), {{ last.matchedCount }} conferida(s).</p>
+      }
+
       <div class="actions">
-        <button mat-flat-button color="primary" type="submit" [disabled]="importing() || !selectedFile()">
+        <button mat-flat-button color="primary" type="submit" [disabled]="importing() || !selectedFile() || importForm.invalid">
           Importar extrato
         </button>
       </div>

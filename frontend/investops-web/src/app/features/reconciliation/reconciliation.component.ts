@@ -1,5 +1,6 @@
 import { CommonModule, formatDate } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -13,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { DivergencesQuery } from '../../core/models';
 import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
@@ -20,7 +22,7 @@ import { ErrorStateComponent } from '../../shared/error-state/error-state.compon
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { StatusChipComponent } from '../../shared/status-chip/status-chip.component';
 import { ReconciliationActions } from './state/reconciliation.actions';
-import { selectError, selectImportError, selectImporting, selectItems, selectLoading, selectTotal } from './state/reconciliation.feature';
+import { selectError, selectImportError, selectImporting, selectItems, selectLastImport, selectLoading, selectTotal } from './state/reconciliation.feature';
 
 @Component({
   selector: 'app-reconciliation',
@@ -52,6 +54,7 @@ import { selectError, selectImportError, selectImporting, selectItems, selectLoa
 export class ReconciliationComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly fb = inject(FormBuilder);
+  private readonly actions$ = inject(Actions);
 
   readonly items = this.store.selectSignal(selectItems);
   readonly total = this.store.selectSignal(selectTotal);
@@ -59,7 +62,9 @@ export class ReconciliationComponent implements OnInit {
   readonly error = this.store.selectSignal(selectError);
   readonly importing = this.store.selectSignal(selectImporting);
   readonly importError = this.store.selectSignal(selectImportError);
+  readonly lastImport = this.store.selectSignal(selectLastImport);
 
+  readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
   readonly selectedFile = signal<File | null>(null);
 
   readonly statuses = ['Pending', 'Resolved', 'Ignored'];
@@ -85,6 +90,12 @@ export class ReconciliationComponent implements OnInit {
   pageSize = 20;
   sortActive = 'createdAt';
   sortDirection: 'asc' | 'desc' = 'desc';
+
+  constructor() {
+    this.actions$
+      .pipe(ofType(ReconciliationActions.importSuccess), takeUntilDestroyed())
+      .subscribe(() => this.resetAfterImport());
+  }
 
   ngOnInit(): void {
     this.reload();
@@ -137,6 +148,18 @@ export class ReconciliationComponent implements OnInit {
     const { source, referenceDate } = this.importForm.getRawValue();
     const formattedDate = formatDate(referenceDate!, 'yyyy-MM-dd', 'en-US');
     this.store.dispatch(ReconciliationActions.import({ source: source.trim(), referenceDate: formattedDate, file }));
+  }
+
+  private resetAfterImport(): void {
+    this.importForm.reset({ source: '', referenceDate: null });
+    this.selectedFile.set(null);
+    const input = this.fileInput();
+    if (input) {
+      input.nativeElement.value = '';
+    }
+    this.statusFilter = '';
+    this.pageIndex = 0;
+    this.reload();
   }
 
   resolve(id: string): void {
