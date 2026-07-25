@@ -35,8 +35,8 @@ public class ImportOperationTests(PostgresFixture fixture)
             "INSERT INTO investment_accounts (id, customer_id, account_number, status) VALUES (@accountId, @customerId, 'ACC-T', 'Active');",
             new { accountId, customerId });
         await conn.ExecuteAsync(
-            "INSERT INTO financial_products (id, product_type, name, ticker, risk_level, liquidity_days, is_active) VALUES (@productId, 'Stock', 'Test', 'TST', 3, 2, true);",
-            new { productId });
+            "INSERT INTO financial_products (id, product_type, name, ticker, risk_level, liquidity_days, is_active) VALUES (@productId, 'Stock', 'Test', @ticker, 3, 2, true);",
+            new { productId, ticker = "T" + Guid.NewGuid().ToString("N")[..5] });
 
         return (accountId, productId);
     }

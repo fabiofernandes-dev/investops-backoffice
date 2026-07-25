@@ -94,6 +94,25 @@ export interface ProductLookup {
   ticker: string | null;
 }
 
+export interface Product {
+  id: string;
+  productType: string;
+  name: string;
+  ticker: string | null;
+  riskLevel: number;
+  liquidityDays: number;
+  isActive: boolean;
+}
+
+export interface ProductRequest {
+  productType: string;
+  name: string;
+  ticker: string | null;
+  riskLevel: number;
+  liquidityDays: number;
+  isActive?: boolean;
+}
+
 export interface CustomerLookup {
   id: string;
   name: string;
@@ -158,6 +177,25 @@ export interface Divergence {
 }
 
 export interface DivergencesQuery {
+  page: number;
+  pageSize: number;
+  sort?: string;
+  status?: string;
+}
+
+export interface ProcessingEventItem {
+  id: string;
+  operationId: string;
+  externalId: string;
+  eventType: string;
+  status: string;
+  attemptCount: number;
+  errorMessage: string | null;
+  createdAt: string;
+  processedAt: string | null;
+}
+
+export interface ProcessingEventsQuery {
   page: number;
   pageSize: number;
   sort?: string;

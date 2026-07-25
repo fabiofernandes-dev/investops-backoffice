@@ -39,7 +39,7 @@ public class PositionsReadTests(PostgresFixture fixture) : IAsyncLifetime
             var productId = Guid.NewGuid();
             productIds[i] = productId;
             await conn.ExecuteAsync("INSERT INTO financial_products (id, product_type, name, ticker, risk_level, liquidity_days, is_active) VALUES (@productId,'Stock',@name,@ticker,3,2,true);",
-                new { productId, name = $"Produto {i}", ticker = $"TICK{i}" });
+                new { productId, name = $"Produto {i}", ticker = "T" + Guid.NewGuid().ToString("N")[..5] });
             await conn.ExecuteAsync("INSERT INTO portfolio_positions (id, account_id, product_id, quantity, average_price, gross_amount, updated_at) VALUES (@id,@accountId,@productId,100,10,1000,now());",
                 new { id = Guid.NewGuid(), accountId, productId });
         }

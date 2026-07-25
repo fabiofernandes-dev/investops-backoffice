@@ -11,6 +11,7 @@ import (
 const (
 	EventOperationProcessed = "OperationProcessed"
 	EventOperationRejected  = "OperationRejected"
+	EventOperationFailed    = "OperationFailed"
 	EventPositionUpdated    = "PositionUpdated"
 	eventVersion            = 1
 )
