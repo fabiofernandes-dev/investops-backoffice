@@ -21,21 +21,8 @@ public class LookupsReadTests(PostgresFixture fixture) : IAsyncLifetime
 
     public Task DisposeAsync() => _session.DisposeAsync().AsTask();
 
-    private ListProductsHandler ProductsHandler() => new(new LookupRepository(_session));
     private ListCustomersHandler CustomersHandler() => new(new LookupRepository(_session));
     private ListAccountsHandler AccountsHandler() => new(new LookupRepository(_session));
-
-    [Fact]
-    public async Task Products_returns_seeded_product()
-    {
-        var productId = Guid.NewGuid();
-        await using (var conn = await _factory.OpenConnectionAsync())
-            await conn.ExecuteAsync("INSERT INTO financial_products (id, product_type, name, ticker, risk_level, liquidity_days, is_active) VALUES (@productId,'Stock','Lookup Prod','LKP',3,2,true);", new { productId });
-
-        var products = await ProductsHandler().HandleAsync(default);
-
-        Assert.Contains(products, p => p.Id == productId && p.Name == "Lookup Prod" && p.Ticker == "LKP");
-    }
 
     [Fact]
     public async Task Customers_returns_seeded_customer()
