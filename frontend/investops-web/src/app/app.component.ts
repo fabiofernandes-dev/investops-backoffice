@@ -53,6 +53,10 @@ import { LoadingService } from './core/state/loading.service';
             <mat-icon matListItemIcon>rule</mat-icon>
             <span matListItemTitle>Conciliação</span>
           </a>
+          <a mat-list-item routerLink="/processing-monitor" routerLinkActive="active">
+            <mat-icon matListItemIcon>monitor_heart</mat-icon>
+            <span matListItemTitle>Processing Monitor</span>
+          </a>
           <a mat-list-item routerLink="/quotes" routerLinkActive="active">
             <mat-icon matListItemIcon>trending_up</mat-icon>
             <span matListItemTitle>Cotações</span>
