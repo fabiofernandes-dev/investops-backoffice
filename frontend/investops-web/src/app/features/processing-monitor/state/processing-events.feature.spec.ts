@@ -37,6 +37,15 @@ describe('processing events reducer', () => {
     expect(state.error).toBeNull();
   });
 
+  it('load with silent true preserves an existing error (no error-state flicker on poll)', () => {
+    const state = reducer(
+      { ...initialProcessingEventsState, error: 'boom' },
+      ProcessingEventsActions.load({ query: { page: 1, pageSize: 20 }, silent: true }),
+    );
+    expect(state.error).toBe('boom');
+    expect(state.loading).toBe(false);
+  });
+
   it('load without silent sets loading (defaults to non-silent)', () => {
     const state = reducer(initialProcessingEventsState, ProcessingEventsActions.load({ query: { page: 1, pageSize: 20 } }));
     expect(state.loading).toBe(true);

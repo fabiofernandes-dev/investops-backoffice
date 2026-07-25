@@ -22,7 +22,12 @@ export const processingEventsFeature = createFeature({
   name: 'processingEvents',
   reducer: createReducer(
     initialProcessingEventsState,
-    on(ProcessingEventsActions.load, (state, { query, silent }) => ({ ...state, query, loading: !silent, error: null })),
+    on(ProcessingEventsActions.load, (state, { query, silent }) => ({
+      ...state,
+      query,
+      loading: !silent,
+      error: silent ? state.error : null,
+    })),
     on(ProcessingEventsActions.loadSuccess, (state, { result }) => ({
       ...state,
       items: result.items,

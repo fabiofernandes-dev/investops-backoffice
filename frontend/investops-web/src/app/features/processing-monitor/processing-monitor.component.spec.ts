@@ -77,13 +77,20 @@ describe('ProcessingMonitorComponent', () => {
     );
   });
 
-  it('polls a silent load while auto-refresh is on and stops when off', () => {
+  it('polls a silent load on each interval while auto-refresh is on and stops when off', () => {
     setup();
     fixture.detectChanges();
     const dispatch = jest.spyOn(store, 'dispatch');
 
     fixture.componentInstance.autoRefresh.set(true);
+
+    // Descarta a emissão inicial timer(0) do spy para provar a RECORRÊNCIA
+    // (um timer emit-once passaria no tick 0 mas falharia no próximo intervalo).
+    jest.advanceTimersByTime(1);
+    dispatch.mockClear();
+
     jest.advanceTimersByTime(5000);
+    expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ silent: true }));
 
     dispatch.mockClear();
