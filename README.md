@@ -27,7 +27,7 @@ O [SPEC.md](SPEC.md) é a visão completa; a entrega é incremental, por fases (
 | Cotações via gRPC (.NET ↔ Go) + SSE | ✅ |
 | Edge nginx (same-origin) + rate limiting | ✅ |
 | Conciliação com custodiante: import CSV, divergências, resolver/ignorar ([ADR 0007](docs/adr/0007-synchronous-reconciliation.md)) | ✅ |
-| CRUD de produtos (`POST`/`PUT`) | 🔲 planejado |
+| CRUD de produtos (`POST`/`PUT`/`DELETE` lógico, ticker único) | ✅ |
 | Processing monitor (UI de eventos do worker) | ✅ |
 | Autenticação/autorização (OIDC) | 🚫 fora do MVP — [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md) |
 
