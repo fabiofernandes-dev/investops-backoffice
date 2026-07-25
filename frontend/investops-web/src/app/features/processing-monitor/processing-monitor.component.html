@@ -1,0 +1,78 @@
+<app-page-header title="Processing Monitor" />
+
+<div class="toolbar">
+  <button mat-stroked-button color="primary" (click)="reload(false)">
+    <mat-icon>refresh</mat-icon>
+    Atualizar
+  </button>
+
+  <mat-slide-toggle [checked]="autoRefresh()" (change)="autoRefresh.set($event.checked)">
+    Auto-refresh (5s)
+  </mat-slide-toggle>
+
+  <mat-form-field appearance="outline" class="status-filter">
+    <mat-label>Status</mat-label>
+    <mat-select [(value)]="statusFilter" (selectionChange)="onStatusChange()">
+      <mat-option value="">Todos</mat-option>
+      @for (s of statuses; track s) {
+        <mat-option [value]="s">{{ s }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (error()) {
+  <app-error-state [message]="error()!" (retry)="reload(false)" />
+} @else {
+  <table mat-table [dataSource]="items()" matSort matSortActive="createdAt" matSortDirection="desc" (matSortChange)="onSort($event)">
+    <ng-container matColumnDef="eventType">
+      <th mat-header-cell *matHeaderCellDef>Evento</th>
+      <td mat-cell *matCellDef="let e">{{ e.eventType }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="externalId">
+      <th mat-header-cell *matHeaderCellDef>Operação</th>
+      <td mat-cell *matCellDef="let e">
+        <a [routerLink]="['/operations', e.operationId]">{{ e.externalId }}</a>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let e"><app-status-chip [status]="e.status" /></td>
+    </ng-container>
+
+    <ng-container matColumnDef="attemptCount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Tentativas</th>
+      <td mat-cell *matCellDef="let e" class="num">{{ e.attemptCount }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="errorMessage">
+      <th mat-header-cell *matHeaderCellDef>Erro</th>
+      <td mat-cell *matCellDef="let e">
+        @if (e.errorMessage) {
+          <span class="error-message" [matTooltip]="e.errorMessage">{{ e.errorMessage }}</span>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Criado em</th>
+      <td mat-cell *matCellDef="let e">{{ e.createdAt | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="processedAt">
+      <th mat-header-cell *matHeaderCellDef>Processado em</th>
+      <td mat-cell *matCellDef="let e">{{ e.processedAt | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  @if (!loading() && items().length === 0) {
+    <app-empty-state message="Nenhum evento de processamento encontrado." />
+  }
+
+  <mat-paginator [length]="total()" [pageSize]="pageSize" [pageIndex]="pageIndex" [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />
+}

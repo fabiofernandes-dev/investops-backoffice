@@ -164,6 +164,25 @@ export interface DivergencesQuery {
   status?: string;
 }
 
+export interface ProcessingEventItem {
+  id: string;
+  operationId: string;
+  externalId: string;
+  eventType: string;
+  status: string;
+  attemptCount: number;
+  errorMessage: string | null;
+  createdAt: string;
+  processedAt: string | null;
+}
+
+export interface ProcessingEventsQuery {
+  page: number;
+  pageSize: number;
+  sort?: string;
+  status?: string;
+}
+
 export interface ImportReconciliationResult {
   importId: string;
   source: string;

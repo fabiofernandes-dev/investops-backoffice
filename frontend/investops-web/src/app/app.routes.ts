@@ -9,6 +9,8 @@ import * as reconciliationEffects from './features/reconciliation/state/reconcil
 import { reconciliationFeature } from './features/reconciliation/state/reconciliation.feature';
 import * as dashboardEffects from './features/dashboard/state/dashboard.effects';
 import { dashboardFeature } from './features/dashboard/state/dashboard.feature';
+import * as processingEventsEffects from './features/processing-monitor/state/processing-events.effects';
+import { processingEventsFeature } from './features/processing-monitor/state/processing-events.feature';
 
 export const routes: Routes = [
   {
@@ -44,6 +46,11 @@ export const routes: Routes = [
     path: 'reconciliation',
     providers: [provideState(reconciliationFeature), provideEffects(reconciliationEffects)],
     loadComponent: () => import('./features/reconciliation/reconciliation.component').then((m) => m.ReconciliationComponent),
+  },
+  {
+    path: 'processing-monitor',
+    providers: [provideState(processingEventsFeature), provideEffects(processingEventsEffects)],
+    loadComponent: () => import('./features/processing-monitor/processing-monitor.component').then((m) => m.ProcessingMonitorComponent),
   },
   {
     path: 'quotes',
