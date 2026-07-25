@@ -159,7 +159,9 @@ func (c *Consumer) handle(ctx context.Context, handler Handler, delivery amqp.De
 		if attempt >= c.maxAttempts {
 			c.logger.Error("esgotou tentativas; enviando para a DLQ", "attempt", attempt, "error", err)
 			if c.onExhausted != nil {
-				c.onExhausted(ctx, delivery.Body, attempt, err)
+				hookCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), handlerTimeout)
+				c.onExhausted(hookCtx, delivery.Body, attempt, err)
+				cancel()
 			}
 			if pubErr := c.publishToDlq(ctx, delivery); pubErr != nil {
 				c.logger.Error("falha ao publicar na DLQ; reenfileirando", "error", pubErr)
