@@ -106,11 +106,11 @@ func (r *txRepo) UpdateOperationStatus(ctx context.Context, id uuid.UUID, status
 	return err
 }
 
-func (r *txRepo) MarkOperationFailed(ctx context.Context, id uuid.UUID) error {
+func (r *txRepo) MarkOperationFailed(ctx context.Context, id uuid.UUID) (int64, error) {
 	const q = `UPDATE operations SET status = 'Failed', updated_at = now()
 	           WHERE id = $1 AND status NOT IN ('Processed', 'Rejected');`
-	_, err := r.tx.Exec(ctx, q, id)
-	return err
+	tag, err := r.tx.Exec(ctx, q, id)
+	return tag.RowsAffected(), err
 }
 
 func (r *txRepo) InsertProcessingEvent(ctx context.Context, e operations.ProcessingEvent) error {

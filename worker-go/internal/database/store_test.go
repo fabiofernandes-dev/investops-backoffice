@@ -2,6 +2,8 @@ package database_test
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"log/slog"
 	"path/filepath"
 	"runtime"
@@ -160,7 +162,10 @@ func TestStore_MarkOperationFailed_TransitionsImportedToFailed(t *testing.T) {
 	opID := seedOperation(t, pool, accountID, productID, "Buy", "100", "10")
 
 	require.NoError(t, store.WithinTx(ctx, func(tx operations.TxRepo) error {
-		return tx.MarkOperationFailed(ctx, opID)
+		affected, err := tx.MarkOperationFailed(ctx, opID)
+		require.NoError(t, err)
+		require.Equal(t, int64(1), affected)
+		return nil
 	}))
 
 	var status string
@@ -179,12 +184,40 @@ func TestStore_MarkOperationFailed_DoesNotOverrideProcessed(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, store.WithinTx(ctx, func(tx operations.TxRepo) error {
-		return tx.MarkOperationFailed(ctx, opID)
+		affected, err := tx.MarkOperationFailed(ctx, opID)
+		require.NoError(t, err)
+		require.Equal(t, int64(0), affected, "o guard do WHERE não deve afetar linhas para um resultado de negócio")
+		return nil
 	}))
 
 	var status string
 	require.NoError(t, pool.QueryRow(ctx, `SELECT status FROM operations WHERE id=$1;`, opID).Scan(&status))
 	require.Equal(t, "Processed", status, "o guard do WHERE não deve sobrescrever um resultado de negócio")
+}
+
+func TestFailureRecorder_GuardBlocked_DoesNotInsertFailedEvent(t *testing.T) {
+	ctx := context.Background()
+	pool := newPool(t)
+	store := database.NewStore(pool)
+
+	accountID, productID := seedReferences(t, pool, "Moderate", 3)
+	opID := seedOperation(t, pool, accountID, productID, "Buy", "100", "10")
+	_, err := pool.Exec(ctx, `UPDATE operations SET status='Processed' WHERE id=$1;`, opID)
+	require.NoError(t, err)
+
+	body, err := json.Marshal(event(opID))
+	require.NoError(t, err)
+
+	operations.NewFailureRecorder(store, discard()).MarkExhausted(ctx, body, 3, errors.New("boom"))
+
+	var status string
+	require.NoError(t, pool.QueryRow(ctx, `SELECT status FROM operations WHERE id=$1;`, opID).Scan(&status))
+	require.Equal(t, "Processed", status)
+
+	var failedEvents int
+	require.NoError(t, pool.QueryRow(ctx,
+		`SELECT count(*) FROM processing_events WHERE operation_id=$1 AND status='Failed';`, opID).Scan(&failedEvents))
+	require.Equal(t, 0, failedEvents, "guard barrou a transição: nenhum processing_event Failed deve ser gravado")
 }
 
 func TestStore_InsertProcessingEvent_PersistsAttemptAndError(t *testing.T) {

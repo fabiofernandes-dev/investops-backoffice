@@ -19,7 +19,7 @@ type TxRepo interface {
 	GetPositionForUpdate(ctx context.Context, accountID, productID uuid.UUID) (Position, bool, error)
 	UpsertPosition(ctx context.Context, accountID, productID uuid.UUID, p Position) error
 	UpdateOperationStatus(ctx context.Context, id uuid.UUID, status, reason string) error
-	MarkOperationFailed(ctx context.Context, id uuid.UUID) error
+	MarkOperationFailed(ctx context.Context, id uuid.UUID) (int64, error)
 	InsertProcessingEvent(ctx context.Context, e ProcessingEvent) error
 	InsertOutbox(ctx context.Context, m OutboxMessage) error
 }

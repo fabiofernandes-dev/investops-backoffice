@@ -24,17 +24,26 @@ func (r *FailureRecorder) MarkExhausted(ctx context.Context, body []byte, attemp
 		return
 	}
 	opID := evt.Payload.OperationID
+	errMsg := ""
+	if cause != nil {
+		errMsg = cause.Error()
+	}
 	if err := r.store.WithinTx(ctx, func(tx TxRepo) error {
-		if err := tx.MarkOperationFailed(ctx, opID); err != nil {
+		affected, err := tx.MarkOperationFailed(ctx, opID)
+		if err != nil {
 			return err
+		}
+		if affected == 0 {
+			// guard no SQL barrou a transição (op já Processed/Rejected): não gravar evento espúrio.
+			return nil
 		}
 		return tx.InsertProcessingEvent(ctx, ProcessingEvent{
 			OperationID:  opID,
 			EventType:    EventOperationFailed,
 			Status:       StatusFailed,
 			AttemptCount: attempt,
-			ErrorMessage: cause.Error(),
-			Payload:      summary(map[string]string{"error": cause.Error()}),
+			ErrorMessage: errMsg,
+			Payload:      summary(map[string]string{"error": errMsg}),
 		})
 	}); err != nil {
 		r.logger.Error("falha ao registrar operação como Failed", "operationId", opID, "error", err)
