@@ -151,6 +151,97 @@ func TestStore_RejectBySuitability(t *testing.T) {
 	require.Equal(t, 0, positions)
 }
 
+func TestStore_MarkOperationFailed_TransitionsImportedToFailed(t *testing.T) {
+	ctx := context.Background()
+	pool := newPool(t)
+	store := database.NewStore(pool)
+
+	accountID, productID := seedReferences(t, pool, "Moderate", 3)
+	opID := seedOperation(t, pool, accountID, productID, "Buy", "100", "10")
+
+	require.NoError(t, store.WithinTx(ctx, func(tx operations.TxRepo) error {
+		return tx.MarkOperationFailed(ctx, opID)
+	}))
+
+	var status string
+	require.NoError(t, pool.QueryRow(ctx, `SELECT status FROM operations WHERE id=$1;`, opID).Scan(&status))
+	require.Equal(t, "Failed", status)
+}
+
+func TestStore_MarkOperationFailed_DoesNotOverrideProcessed(t *testing.T) {
+	ctx := context.Background()
+	pool := newPool(t)
+	store := database.NewStore(pool)
+
+	accountID, productID := seedReferences(t, pool, "Moderate", 3)
+	opID := seedOperation(t, pool, accountID, productID, "Buy", "100", "10")
+	_, err := pool.Exec(ctx, `UPDATE operations SET status='Processed' WHERE id=$1;`, opID)
+	require.NoError(t, err)
+
+	require.NoError(t, store.WithinTx(ctx, func(tx operations.TxRepo) error {
+		return tx.MarkOperationFailed(ctx, opID)
+	}))
+
+	var status string
+	require.NoError(t, pool.QueryRow(ctx, `SELECT status FROM operations WHERE id=$1;`, opID).Scan(&status))
+	require.Equal(t, "Processed", status, "o guard do WHERE não deve sobrescrever um resultado de negócio")
+}
+
+func TestStore_InsertProcessingEvent_PersistsAttemptAndError(t *testing.T) {
+	ctx := context.Background()
+	pool := newPool(t)
+	store := database.NewStore(pool)
+
+	accountID, productID := seedReferences(t, pool, "Moderate", 3)
+	opID := seedOperation(t, pool, accountID, productID, "Buy", "100", "10")
+
+	require.NoError(t, store.WithinTx(ctx, func(tx operations.TxRepo) error {
+		return tx.InsertProcessingEvent(ctx, operations.ProcessingEvent{
+			OperationID:  opID,
+			EventType:    operations.EventOperationFailed,
+			Status:       operations.StatusFailed,
+			Payload:      `{"error":"boom"}`,
+			AttemptCount: 3,
+			ErrorMessage: "boom",
+		})
+	}))
+
+	var attempt int
+	var errMsg *string
+	require.NoError(t, pool.QueryRow(ctx,
+		`SELECT attempt_count, error_message FROM processing_events WHERE operation_id=$1 AND event_type='OperationFailed';`,
+		opID).Scan(&attempt, &errMsg))
+	require.Equal(t, 3, attempt)
+	require.NotNil(t, errMsg)
+	require.Equal(t, "boom", *errMsg)
+}
+
+func TestStore_InsertProcessingEvent_EmptyErrorIsNull(t *testing.T) {
+	ctx := context.Background()
+	pool := newPool(t)
+	store := database.NewStore(pool)
+
+	accountID, productID := seedReferences(t, pool, "Moderate", 3)
+	opID := seedOperation(t, pool, accountID, productID, "Buy", "100", "10")
+
+	require.NoError(t, store.WithinTx(ctx, func(tx operations.TxRepo) error {
+		return tx.InsertProcessingEvent(ctx, operations.ProcessingEvent{
+			OperationID: opID,
+			EventType:   operations.EventOperationProcessed,
+			Status:      operations.StatusProcessed,
+			Payload:     `{"outcome":"Processed"}`,
+		})
+	}))
+
+	var attempt int
+	var errMsg *string
+	require.NoError(t, pool.QueryRow(ctx,
+		`SELECT attempt_count, error_message FROM processing_events WHERE operation_id=$1 AND event_type='OperationProcessed';`,
+		opID).Scan(&attempt, &errMsg))
+	require.Equal(t, 0, attempt)
+	require.Nil(t, errMsg, "error_message vazio deve gravar NULL (mantém Processed/Rejected inalterados)")
+}
+
 func TestStore_RejectSellInsufficient(t *testing.T) {
 	ctx := context.Background()
 	pool := newPool(t)

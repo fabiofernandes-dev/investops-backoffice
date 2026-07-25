@@ -15,7 +15,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/modules/rabbitmq"
 )
 
-func startConsumer(t *testing.T, handler messaging.Handler) (string, messaging.ConsumerConfig) {
+func startConsumer(t *testing.T, handler messaging.Handler, hooks ...messaging.OnExhaustedFunc) (string, messaging.ConsumerConfig) {
 	t.Helper()
 	ctx := context.Background()
 
@@ -38,6 +38,10 @@ func startConsumer(t *testing.T, handler messaging.Handler) (string, messaging.C
 	require.NoError(t, err)
 	t.Cleanup(func() { _ = consumer.Close() })
 
+	if len(hooks) > 0 {
+		consumer.SetOnExhausted(hooks[0])
+	}
+
 	consumeCtx, cancel := context.WithCancel(ctx)
 	t.Cleanup(cancel)
 	go func() { _ = consumer.Consume(consumeCtx, handler) }()
@@ -54,6 +58,25 @@ func TestPoisonMessageGoesToDlqAfterMaxAttempts(t *testing.T) {
 
 	msg := waitForDlqMessage(t, url, 25*time.Second)
 	require.JSONEq(t, `{"poison":true}`, string(msg.Body))
+}
+
+func TestOnExhaustedCalledWithMaxAttemptsOnExhaustion(t *testing.T) {
+	exhausted := make(chan int, 4)
+	hook := func(_ context.Context, _ []byte, attempt int, _ error) {
+		exhausted <- attempt
+	}
+	url, cfg := startConsumer(t, func(_ context.Context, _ []byte) error {
+		return errors.New("falha proposital")
+	}, hook)
+
+	publishMessage(t, url, cfg.Exchange, cfg.RoutingKey, []byte(`{"poison":true}`))
+
+	select {
+	case attempt := <-exhausted:
+		require.Equal(t, cfg.MaxAttempts, attempt, "onExhausted deve ser chamado com attempt == maxAttempts")
+	case <-time.After(25 * time.Second):
+		t.Fatal("timeout aguardando o callback onExhausted")
+	}
 }
 
 func TestProcessedMessageDoesNotGoToDlq(t *testing.T) {
