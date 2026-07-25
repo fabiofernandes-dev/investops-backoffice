@@ -25,6 +25,9 @@ const (
 
 type Handler func(ctx context.Context, body []byte) error
 
+// OnExhaustedFunc é chamado quando uma mensagem esgota as tentativas e vai para a DLQ.
+type OnExhaustedFunc func(ctx context.Context, body []byte, attempt int, cause error)
+
 type ConsumerConfig struct {
 	URL         string
 	Exchange    string
@@ -40,7 +43,12 @@ type Consumer struct {
 	queue       string
 	maxAttempts int
 	logger      *slog.Logger
+	onExhausted OnExhaustedFunc
 }
+
+// SetOnExhausted registra um callback opcional invocado no esgotamento de tentativas,
+// antes do roteamento para a DLQ. Sem callback, o comportamento é o atual.
+func (c *Consumer) SetOnExhausted(fn OnExhaustedFunc) { c.onExhausted = fn }
 
 func NewConsumer(cfg ConsumerConfig, logger *slog.Logger) (*Consumer, error) {
 	conn, err := amqp.Dial(cfg.URL)
@@ -150,6 +158,9 @@ func (c *Consumer) handle(ctx context.Context, handler Handler, delivery amqp.De
 		attempt := int(deathCount(delivery, c.queue)) + 1
 		if attempt >= c.maxAttempts {
 			c.logger.Error("esgotou tentativas; enviando para a DLQ", "attempt", attempt, "error", err)
+			if c.onExhausted != nil {
+				c.onExhausted(ctx, delivery.Body, attempt, err)
+			}
 			if pubErr := c.publishToDlq(ctx, delivery); pubErr != nil {
 				c.logger.Error("falha ao publicar na DLQ; reenfileirando", "error", pubErr)
 				_ = delivery.Nack(false, false)

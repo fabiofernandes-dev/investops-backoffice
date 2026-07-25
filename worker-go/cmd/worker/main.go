@@ -42,7 +42,9 @@ func main() {
 	}
 	defer consumer.Close()
 
-	processor := operations.NewProcessor(database.NewStore(pool), logger)
+	store := database.NewStore(pool)
+	processor := operations.NewProcessor(store, logger)
+	consumer.SetOnExhausted(operations.NewFailureRecorder(store, logger).MarkExhausted)
 
 	publisher, err := messaging.NewPublisher(pool, messaging.PublisherConfig{
 		URL:        cfg.RabbitMQURL,
