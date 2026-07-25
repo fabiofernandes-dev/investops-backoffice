@@ -25,7 +25,10 @@ public static class DependencyInjection
         services.AddScoped<Positions.GetPositionsByCustomerHandler>();
         services.AddScoped<Dashboard.GetDashboardSummaryHandler>();
         services.AddScoped<Dashboard.GetProcessingMetricsHandler>();
-        services.AddScoped<Lookups.ListProductsHandler>();
+        services.AddScoped<Products.ListProductsHandler>();
+        services.AddScoped<Products.CreateProductHandler>();
+        services.AddScoped<Products.UpdateProductHandler>();
+        services.AddScoped<Products.DeleteProductHandler>();
         services.AddScoped<Lookups.ListCustomersHandler>();
         services.AddScoped<Lookups.ListAccountsHandler>();
         services.AddScoped<Reconciliation.ImportReconciliation.ImportReconciliationHandler>();
