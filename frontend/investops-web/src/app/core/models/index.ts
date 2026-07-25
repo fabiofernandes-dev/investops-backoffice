@@ -139,3 +139,36 @@ export interface PositionsQuery {
   productId?: string;
   customerId?: string;
 }
+
+export interface Divergence {
+  id: string;
+  importId: string;
+  accountId: string;
+  customerName: string;
+  accountNumber: string;
+  productId: string;
+  productName: string;
+  ticker: string | null;
+  internalQuantity: number;
+  custodianQuantity: number;
+  difference: number;
+  status: string;
+  createdAt: string;
+  resolvedAt: string | null;
+}
+
+export interface DivergencesQuery {
+  page: number;
+  pageSize: number;
+  sort?: string;
+  status?: string;
+}
+
+export interface ImportReconciliationResult {
+  importId: string;
+  source: string;
+  referenceDate: string;
+  rowsProcessed: number;
+  matchedCount: number;
+  divergenceCount: number;
+}
