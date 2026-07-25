@@ -16,6 +16,7 @@ const (
 	StatusImported  = "Imported"
 	StatusProcessed = "Processed"
 	StatusRejected  = "Rejected"
+	StatusFailed    = "Failed"
 )
 
 // Motivos de rejeição (espelham RejectionReason do domínio .NET).

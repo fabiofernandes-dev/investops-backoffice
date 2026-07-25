@@ -106,11 +106,22 @@ func (r *txRepo) UpdateOperationStatus(ctx context.Context, id uuid.UUID, status
 	return err
 }
 
+func (r *txRepo) MarkOperationFailed(ctx context.Context, id uuid.UUID) error {
+	const q = `UPDATE operations SET status = 'Failed', updated_at = now()
+	           WHERE id = $1 AND status NOT IN ('Processed', 'Rejected');`
+	_, err := r.tx.Exec(ctx, q, id)
+	return err
+}
+
 func (r *txRepo) InsertProcessingEvent(ctx context.Context, e operations.ProcessingEvent) error {
 	const q = `
-		INSERT INTO processing_events (id, operation_id, event_type, payload, status, attempt_count, created_at, processed_at)
-		VALUES ($1, $2, $3, $4::jsonb, $5, 0, now(), now());`
-	_, err := r.tx.Exec(ctx, q, uuid.New(), e.OperationID, e.EventType, e.Payload, e.Status)
+		INSERT INTO processing_events (id, operation_id, event_type, payload, status, attempt_count, error_message, created_at, processed_at)
+		VALUES ($1, $2, $3, $4::jsonb, $5, $6, $7, now(), now());`
+	var errArg any
+	if e.ErrorMessage != "" {
+		errArg = e.ErrorMessage
+	}
+	_, err := r.tx.Exec(ctx, q, uuid.New(), e.OperationID, e.EventType, e.Payload, e.Status, e.AttemptCount, errArg)
 	return err
 }
 
