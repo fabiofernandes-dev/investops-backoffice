@@ -1,0 +1,57 @@
+<app-page-header title="Produtos">
+  <a mat-flat-button color="primary" routerLink="/products/new">
+    <mat-icon>add</mat-icon>
+    Novo produto
+  </a>
+</app-page-header>
+
+@if (error()) {
+  <app-error-state [message]="error()!" (retry)="reload()" />
+} @else {
+  <table mat-table [dataSource]="items()">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Nome</th>
+      <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ticker">
+      <th mat-header-cell *matHeaderCellDef>Ticker</th>
+      <td mat-cell *matCellDef="let p">{{ p.ticker ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="productType">
+      <th mat-header-cell *matHeaderCellDef>Tipo</th>
+      <td mat-cell *matCellDef="let p">{{ p.productType }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="riskLevel">
+      <th mat-header-cell *matHeaderCellDef class="num">Risco</th>
+      <td mat-cell *matCellDef="let p" class="num">{{ p.riskLevel }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="liquidityDays">
+      <th mat-header-cell *matHeaderCellDef class="num">Liquidez (dias)</th>
+      <td mat-cell *matCellDef="let p" class="num">{{ p.liquidityDays }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="isActive">
+      <th mat-header-cell *matHeaderCellDef>Ativo</th>
+      <td mat-cell *matCellDef="let p"><app-status-chip [status]="p.isActive ? 'Ativo' : 'Inativo'" /></td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let p">
+        <a mat-button color="primary" [routerLink]="['/products', p.id]">Editar</a>
+        <button mat-button (click)="remove(p)">Excluir</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.inactive]="!row.isActive"></tr>
+  </table>
+
+  @if (!loading() && items().length === 0) {
+    <app-empty-state message="Nenhum produto cadastrado." />
+  }
+}

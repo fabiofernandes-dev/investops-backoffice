@@ -14,6 +14,7 @@ export class StatusChipComponent {
     switch (this.status()) {
       case 'Processed':
       case 'Resolved':
+      case 'Ativo':
         return '#2e7d32';
       case 'Rejected':
         return '#c62828';

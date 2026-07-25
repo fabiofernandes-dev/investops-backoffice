@@ -1,0 +1,62 @@
+<div class="header">
+  <a mat-icon-button routerLink="/products" matTooltip="Voltar">
+    <mat-icon>arrow_back</mat-icon>
+  </a>
+  <h1>{{ isEdit ? 'Editar produto' : 'Novo produto' }}</h1>
+</div>
+
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="productType">
+          @for (t of productTypes; track t) {
+            <mat-option [value]="t">{{ t }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="name" />
+        @if (form.controls.name.hasError('required') && form.controls.name.touched) {
+          <mat-error>Obrigatório</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Ticker (opcional)</mat-label>
+        <input matInput formControlName="ticker" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nível de risco (1–5)</mat-label>
+        <input matInput type="number" formControlName="riskLevel" min="1" max="5" />
+        @if (form.controls.riskLevel.invalid && form.controls.riskLevel.touched) {
+          <mat-error>Informe um valor entre 1 e 5</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Liquidez (dias)</mat-label>
+        <input matInput type="number" formControlName="liquidityDays" min="0" />
+        @if (form.controls.liquidityDays.invalid && form.controls.liquidityDays.touched) {
+          <mat-error>Informe um valor maior ou igual a zero</mat-error>
+        }
+      </mat-form-field>
+
+      @if (isEdit) {
+        <mat-slide-toggle formControlName="isActive">Ativo</mat-slide-toggle>
+      }
+
+      @if (saveError()) {
+        <p class="error">{{ saveError() }}</p>
+      }
+
+      <div class="actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="saving() || form.invalid">Salvar</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
