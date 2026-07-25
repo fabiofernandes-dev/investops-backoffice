@@ -1,0 +1,27 @@
+table {
+  width: 100%;
+}
+
+.num {
+  text-align: right;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.status-filter {
+  margin-left: auto;
+}
+
+.error-message {
+  display: inline-block;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
