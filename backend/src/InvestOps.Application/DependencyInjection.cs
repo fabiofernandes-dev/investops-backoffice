@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<GetOperationByIdHandler>();
         services.AddScoped<ListOperationsHandler>();
         services.AddScoped<GetOperationEventsHandler>();
+        services.AddScoped<Operations.ListProcessingEvents.ListProcessingEventsHandler>();
         services.AddScoped<GetOperationAuditHandler>();
         services.AddScoped<Positions.ListPositionsHandler>();
         services.AddScoped<Positions.GetPositionsByAccountHandler>();
