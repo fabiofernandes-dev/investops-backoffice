@@ -13,10 +13,12 @@ export class StatusChipComponent {
   readonly color = computed(() => {
     switch (this.status()) {
       case 'Processed':
+      case 'Resolved':
         return '#2e7d32';
       case 'Rejected':
         return '#c62828';
       case 'Failed':
+      case 'Pending':
         return '#ef6c00';
       case 'Validated':
         return '#1565c0';
