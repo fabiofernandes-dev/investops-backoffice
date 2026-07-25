@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ErrorStateComponent } from '../../shared/error-state/error-state.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
@@ -11,7 +12,7 @@ import { selectError, selectLoading, selectMetrics, selectSummary } from './stat
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatProgressBarModule, PageHeaderComponent, ErrorStateComponent],
+  imports: [CommonModule, RouterLink, MatCardModule, MatProgressBarModule, PageHeaderComponent, ErrorStateComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

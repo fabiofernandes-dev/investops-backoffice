@@ -5,6 +5,8 @@ import * as operationsEffects from './features/operations/state/operations.effec
 import { operationsFeature } from './features/operations/state/operations.feature';
 import * as positionsEffects from './features/positions/state/positions.effects';
 import { positionsFeature } from './features/positions/state/positions.feature';
+import * as reconciliationEffects from './features/reconciliation/state/reconciliation.effects';
+import { reconciliationFeature } from './features/reconciliation/state/reconciliation.feature';
 import * as dashboardEffects from './features/dashboard/state/dashboard.effects';
 import { dashboardFeature } from './features/dashboard/state/dashboard.feature';
 
@@ -37,6 +39,11 @@ export const routes: Routes = [
     path: 'positions',
     providers: [provideState(positionsFeature), provideEffects(positionsEffects)],
     loadComponent: () => import('./features/positions/positions.component').then((m) => m.PositionsComponent),
+  },
+  {
+    path: 'reconciliation',
+    providers: [provideState(reconciliationFeature), provideEffects(reconciliationEffects)],
+    loadComponent: () => import('./features/reconciliation/reconciliation.component').then((m) => m.ReconciliationComponent),
   },
   {
     path: 'quotes',
