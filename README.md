@@ -4,15 +4,33 @@
 
 Plataforma fullstack de backoffice para operações de investimento
 
-> **Status:** em construção — veja [Status & roadmap](#status--roadmap). O [SPEC.md](SPEC.md) descreve a visão completa do produto; nem tudo está implementado ainda.
+> **Status:** MVP funcionalmente completo — todas as fases do [roadmap](#status--roadmap) entregues (autenticação fica fora do MVP por decisão, [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md)). O [SPEC.md](SPEC.md) descreve a visão completa; as evoluções mapeadas estão nos [ADRs](docs/adr/).
 
 ## Destaques de engenharia
 
-- **Arquitetura event-driven** com **Outbox Pattern**: publicação confiável de eventos (sem dual-write) entre a API .NET e o Worker Go via RabbitMQ.
+- **Arquitetura event-driven** com **Outbox Pattern nos dois lados** — API .NET e Worker Go publicam via relay transacional (sem dual-write) por RabbitMQ.
 - **Resiliência no consumo:** retry com backoff (wait queue + TTL) e **Dead Letter Queue**; falhas transitórias reprocessam, falhas de negócio são terminais.
 - **Interop poliglota:** serviço de cotações em **gRPC** (Go) consumido pela API .NET, com Protobuf versionado.
 - **Modular monolith** .NET 8 (Clean Architecture, Dapper, DbUp) + **SPA Angular 21 zoneless** (signals, standalone, `OnPush`, sem zone.js) servida por **edge nginx** same-origin.
-- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, rate limiting por perfil de endpoint, 7 ADRs e specs de design por fase em [docs/](docs/).
+- **Qualidade:** testes com Testcontainers, CI no GitHub Actions, config por ambiente, rate limiting por perfil de endpoint, **9 ADRs** ([índice](docs/adr/)) e specs de design por fase em [docs/](docs/).
+
+## Interface
+
+Prints da aplicação — todos os dados são fictícios (seed local).
+
+![Dashboard](docs/images/dashboard.png)
+
+<p align="center"><em>Dashboard — métricas do pipeline, funil de status e auto-refresh.</em></p>
+
+| Operações | Conciliação |
+| :---: | :---: |
+| ![Operações](docs/images/operations.png) | ![Conciliação](docs/images/reconciliation.png) |
+| Import com validação, idempotência e status por operação. | Extrato do custodiante: divergências, resolver/ignorar. |
+
+| Processing Monitor | Produtos |
+| :---: | :---: |
+| ![Processing Monitor](docs/images/processing-monitor.png) | ![Produtos](docs/images/products.png) |
+| Eventos do worker com tentativas/erro reais e auto-refresh. | CRUD com ticker único e exclusão lógica (linha inativa esmaecida). |
 
 ## Status & roadmap
 
@@ -20,26 +38,40 @@ O [SPEC.md](SPEC.md) é a visão completa; a entrega é incremental, por fases (
 
 | Área | Status |
 | ---- | ------ |
-| Import de operações (validação, idempotência, Outbox → RabbitMQ → Worker) | ✅ |
-| Worker Go: regras de negócio, posição consolidada, retry + DLQ | ✅ |
+| Import de operações (validação, idempotência, Outbox → RabbitMQ → Worker) ([ADR 0003](docs/adr/0003-use-outbox-pattern.md)) | ✅ |
+| Worker Go: regras de negócio, posição consolidada, retry + DLQ ([ADR 0004](docs/adr/0004-use-go-for-processing-worker.md)) | ✅ |
 | Read API: operations, positions, dashboard, lookups (paginação/ordenação server-side) | ✅ |
 | Frontend: dashboard, operações, posições, cotações ao vivo | ✅ |
 | Cotações via gRPC (.NET ↔ Go) + SSE | ✅ |
 | Edge nginx (same-origin) + rate limiting | ✅ |
 | Conciliação com custodiante: import CSV, divergências, resolver/ignorar ([ADR 0007](docs/adr/0007-synchronous-reconciliation.md)) | ✅ |
 | CRUD de produtos (`POST`/`PUT`/`DELETE` lógico, ticker único) | ✅ |
-| Processing monitor (UI de eventos do worker) | ✅ |
+| Processing monitor: eventos do worker + falha terminal com tentativas/erro ([ADR 0008](docs/adr/0008-terminal-failure-on-retry-exhaustion.md)) | ✅ |
 | Autenticação/autorização (OIDC) | 🚫 fora do MVP — [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md) |
 
 ## Arquitetura
 
-```text
-Angular SPA (nginx edge) → .NET Operations API → PostgreSQL
-                                               → Outbox → RabbitMQ → Go Worker → PostgreSQL
-                                               → gRPC → Go MarketData
+```mermaid
+flowchart LR
+    SPA["Angular 21 SPA<br/>zoneless"]
+    EDGE["edge nginx<br/>same-origin"]
+    API[".NET 8 API<br/>modular monolith"]
+    WK["Go Worker<br/>retry + DLQ"]
+    MD["Go MarketData<br/>gRPC"]
+    MQ{{RabbitMQ}}
+    PG[("PostgreSQL")]
+
+    SPA <-->|"/ e /api"| EDGE
+    EDGE --> API
+    API -->|"operação + outbox<br/>(mesma transação)"| PG
+    API -.->|"Outbox relay · source=api"| MQ
+    MQ -->|OperationImported| WK
+    WK -->|"posições + processing_events"| PG
+    WK -.->|"Outbox relay · source=worker"| MQ
+    API <-->|gRPC| MD
 ```
 
-Quatro serviços — SPA Angular, API .NET, Worker Go e MarketData Go — sobre banco compartilhado no MVP. Integração assíncrona via **Outbox Pattern** + RabbitMQ e cotações via **gRPC**. No deploy, um **edge nginx** serve o SPA e faz proxy de `/api` para a API (same-origin). Decisões registradas em [docs/adr/](docs/adr/).
+Quatro serviços — SPA Angular, API .NET, Worker Go e MarketData Go — sobre banco compartilhado no MVP ([ADR 0005](docs/adr/0005-use-postgresql-shared-database-for-mvp.md)). Integração assíncrona via **Outbox Pattern nos dois lados** ([ADR 0003](docs/adr/0003-use-outbox-pattern.md)) + RabbitMQ; cotações via **gRPC** e stream ao vivo por **SSE**. No deploy, um **edge nginx** serve o SPA e faz proxy de `/api` para a API (same-origin). Todas as decisões — com limitações e evolução — em [docs/adr/](docs/adr/).
 
 ## Stack
 
@@ -100,13 +132,6 @@ docker compose --env-file .env.example ps      # aguarde postgres/rabbitmq (heal
 
 - App (SPA + API via edge nginx): <http://localhost:8080>
 - RabbitMQ Management UI: <http://localhost:15672> (`investops` / `investops`)
-
-> ⚠️ **Primeira subida da Fase 5a:** a fila `operations.processing` mudou de _classic_ para _quorum_. Se você já rodou uma fase anterior, o RabbitMQ recusa a redeclaração com `406 PRECONDITION_FAILED`. Rode uma vez para recriar os volumes:
->
-> ```bash
-> docker compose down -v   # apaga volumes (RabbitMQ + Postgres); o migrator re-semeia no próximo up
-> docker compose --env-file .env.example up -d --build
-> ```
 
 Parar tudo:
 
@@ -242,6 +267,16 @@ cd frontend/investops-web && npm test
 | PostgreSQL                      | 5432       | 5432               |
 | RabbitMQ (AMQP)                 | 5672       | 5672               |
 | RabbitMQ Management UI          | 15672      | 15672              |
+
+## Trade-offs & próximos passos
+
+Decisões conscientes de MVP, com o caminho de evolução registrado nos ADRs:
+
+- **Autenticação/autorização (OIDC)** — fora do MVP por decisão; o design acomoda `[Authorize]` + policies por perfil ([ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md)).
+- **Banco compartilhado → database-per-service** — um PostgreSQL entre API e worker hoje; a fronteira por módulo já isola o caminho de separação ([ADR 0005](docs/adr/0005-use-postgresql-shared-database-for-mvp.md)).
+- **Dead-letter do Outbox** — ambos os publishers reconectam após queda; falta cap + dead-letter de mensagem "poison" — assimetria consciente com o consumer, que já tem DLQ ([ADR 0009](docs/adr/0009-outbox-unbounded-retry-mvp.md)).
+- **Conciliação síncrona → assíncrona** — comparação no request hoje; extratos grandes pedem processamento em background ([ADR 0007](docs/adr/0007-synchronous-reconciliation.md)).
+- **Rate limiting por IP → por identidade** — hoje particiona por IP; com auth, migra para `X-Forwarded-For`/subject ([ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md)).
 
 ## Fluxo de desenvolvimento
 
