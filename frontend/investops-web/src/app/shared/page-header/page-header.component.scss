@@ -2,11 +2,27 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 h1 {
   margin: 0;
+  position: relative;
+  padding-left: 12px;
+
+  // Barrinha de destaque à esquerda do título.
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 3px;
+    bottom: 3px;
+    width: 4px;
+    border-radius: 999px;
+    background: var(--mat-sys-primary);
+  }
 }
 
 .spacer {

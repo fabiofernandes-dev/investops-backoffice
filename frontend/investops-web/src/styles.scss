@@ -24,12 +24,90 @@ body {
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
-  background: var(--mat-sys-surface-container-low, #f5f6fa);
+  // Fundo suave levemente azulado; superfícies (cards/tabelas) ficam brancas e elevadas por cima.
+  background:
+    radial-gradient(1200px 600px at 100% -10%, color-mix(in srgb, var(--mat-sys-primary) 7%, transparent), transparent),
+    var(--mat-sys-surface-container-low, #f4f6fb);
   color: var(--mat-sys-on-surface, #1a1c1e);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1 {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.2px;
   margin: 0 0 16px;
+}
+
+// ---------------------------------------------------------------------------
+// Superfícies: cards e tabelas com cantos arredondados, hairline e sombra suave
+// ---------------------------------------------------------------------------
+.mat-mdc-card {
+  border-radius: 14px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 12px rgba(16, 24, 40, 0.06) !important;
+}
+
+// Envolve qualquer <table mat-table> num "cartão" arredondado e com hover de linha.
+.mat-mdc-table {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-outline-variant);
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 4px 12px rgba(16, 24, 40, 0.05);
+
+  .mat-mdc-header-row {
+    background: var(--mat-sys-surface-container, #eef1f8);
+  }
+
+  .mat-mdc-header-cell {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant, #5b6472);
+  }
+
+  .mat-mdc-row {
+    transition: background-color 0.12s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+    }
+  }
+
+  // Números: alinhados à direita, com dígitos tabulares. O cabeçalho com mat-sort-header
+  // é um flex — por isso empurramos o conteúdo dele para a direita também (senão o título
+  // fica à esquerda e o valor à direita, "desalinhados").
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  th.num .mat-sort-header-container {
+    justify-content: flex-end;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Botões / campos: cantos um pouco mais suaves
+// ---------------------------------------------------------------------------
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 10px !important;
+  letter-spacing: 0.2px;
+}
+
+// Barra de rolagem discreta
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mat-sys-outline-variant) transparent;
 }

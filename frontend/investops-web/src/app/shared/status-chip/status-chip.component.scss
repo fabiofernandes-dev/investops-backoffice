@@ -1,9 +1,14 @@
+// Pílula tonal: a cor (texto) vem inline do componente; fundo e borda derivam dela
+// via currentColor, resultando num chip suave e moderno com bom contraste.
 .chip {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 11px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 500;
-  color: #fff;
+  font-weight: 600;
+  line-height: 1.4;
   white-space: nowrap;
+  background: color-mix(in srgb, currentColor 12%, #fff);
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
 }

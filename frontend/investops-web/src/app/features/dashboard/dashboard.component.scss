@@ -1,26 +1,66 @@
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
+
+.cards .mat-mdc-card {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease;
+
+  // Fita de destaque no topo de cada card (cor por posição).
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--accent, var(--mat-sys-primary));
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 2px 4px rgba(16, 24, 40, 0.06),
+      0 10px 24px rgba(16, 24, 40, 0.1) !important;
+  }
+}
+
+// Acentos semânticos: importadas · processadas · rejeitadas · falhas · divergências · tempo médio
+.cards .mat-mdc-card:nth-child(1) { --accent: #2962ff; }
+.cards .mat-mdc-card:nth-child(2) { --accent: #2e7d32; }
+.cards .mat-mdc-card:nth-child(3) { --accent: #c62828; }
+.cards .mat-mdc-card:nth-child(4) { --accent: #ef6c00; }
+.cards .mat-mdc-card:nth-child(5) { --accent: #f9a825; }
+.cards .mat-mdc-card:nth-child(6) { --accent: #6a1b9a; }
 
 .clickable {
   cursor: pointer;
 }
 
 .value {
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface);
 }
 
 .label {
-  color: rgba(0, 0, 0, 0.6);
-  margin-top: 4px;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
 }
 
 .metrics {
-  max-width: 360px;
+  max-width: 380px;
 
   ul {
     list-style: none;
@@ -31,8 +71,15 @@
   li {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.08));
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    strong {
+      font-variant-numeric: tabular-nums;
+    }
   }
 }
-
