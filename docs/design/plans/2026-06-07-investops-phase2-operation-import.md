@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 2 (Importação de Operação) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 **Goal:** Implementar o primeiro fluxo de negócio — importar uma operação pela API .NET (validação, idempotência, gravação transacional de Operation+OutboxMessage+AuditLog), publicar os eventos no RabbitMQ via um Outbox Publisher, e expor a leitura (GET by id + lista paginada).
 
 **Architecture:** Clean Architecture preenchendo os projetos da Fase 1. Controllers finos → serviços de caso de uso (Application) → repositórios Dapper (Infrastructure). Transação única no handler de import. `OutboxPublisher` (BackgroundService) entrega eventos ao RabbitMQ. Testes de integração com Testcontainers (Postgres/RabbitMQ efêmeros) usando as migrations reais.

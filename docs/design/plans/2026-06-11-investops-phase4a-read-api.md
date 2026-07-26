@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 4a (API de Leitura) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 **Goal:** Adicionar os endpoints de leitura que o frontend (Fase 4b) precisa: eventos/auditoria de operação, posições consolidadas e dashboard.
 
 **Architecture:** Reusa o padrão da Fase 2 — controllers finos → handlers (serviços simples) → repositórios Dapper via `IDbSession` (leitura sem transação) → DTOs. Paginação reusa `PagedResult<T>`; ordenação de posições usa um `PositionsSortClauseBuilder` dedicado (whitelist anti-injection). Testes de integração com Testcontainers.

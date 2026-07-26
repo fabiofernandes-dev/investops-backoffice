@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: /backend
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: gomod
+    directory: /worker-go
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: gomod
+    directory: /marketdata-go
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: npm
+    directory: /frontend/investops-web
+    schedule:
+      interval: weekly

@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 5a (Retry + DLQ + OperationFailed) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 **Goal:** Substituir o requeue infinito do worker por **retry com backoff + limite + DLQ**, finalizando operações que falham de forma transitória como **`Failed`** + evento **`OperationFailed`**.
 
 **Architecture:** Filas **quorum**; em erro transitório o worker `Nack(requeue=false)` → DLX `investops.retry` → wait queue (TTL) → volta à principal (backoff); contagem por **`x-death`**; após N tentativas o consumer **publica na DLQ**; um **DLQ consumer** (canal próprio) marca `Failed` + `processing_event` + outbox `OperationFailed`. Rejeição de negócio segue `Rejected` (sem retry).

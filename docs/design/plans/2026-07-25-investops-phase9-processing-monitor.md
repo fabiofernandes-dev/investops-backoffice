@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 9 (Processing Monitor) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (se houver subagents) ou superpowers:executing-plans. Steps usam checkbox (`- [ ]`). Aplique @superpowers:test-driven-development na lógica pura/regras e @superpowers:verification-before-completion antes de cada "verde".
 
 **Goal:** Tela de monitoramento global dos eventos do worker (`processing_events`), com filtro e auto-refresh por polling — e enriquecer o worker Go para registrar falha terminal (operação `Failed` + `processing_event` `OperationFailed` com tentativas/erro reais) ao esgotar retries.
