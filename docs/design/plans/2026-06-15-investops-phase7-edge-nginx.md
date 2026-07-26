@@ -1,6 +1,6 @@
 # InvestOps Backoffice — Fase 7 (Edge nginx + Containerização) Implementation Plan
 
-> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+> 📜 **Documento histórico.** Fase concluída e entregue — este plano registra a execução original e **pode conter decisões posteriormente substituídas por ADRs** (as decisões atuais estão em [docs/adr/](../../adr/)). Estado atual do produto no [README — Status & roadmap](../../../README.md#status--roadmap).
 
 **Goal:** `docker compose up` sobe a stack inteira (nginx + api + migrator + worker + marketdata + infra) num cenário **same-origin** (nginx serve o SPA e faz proxy `/api`), sem CORS, com SSE atravessando o proxy.
 

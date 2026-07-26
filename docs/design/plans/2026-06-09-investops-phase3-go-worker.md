@@ -1,6 +1,6 @@
 # InvestOps Backoffice — Fase 3 (Worker Go) Implementation Plan
 
-> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+> 📜 **Documento histórico.** Fase concluída e entregue — este plano registra a execução original e **pode conter decisões posteriormente substituídas por ADRs** (as decisões atuais estão em [docs/adr/](../../adr/)). Estado atual do produto no [README — Status & roadmap](../../../README.md#status--roadmap).
 
 **Goal:** Implementar o worker Go que consome `OperationImported`, aplica as regras de negócio, atualiza posição/status/`processing_events` e publica os eventos downstream via relay próprio (publisher por serviço).
 

@@ -1,6 +1,6 @@
 # InvestOps Backoffice — Fase 1 (Fundação) Implementation Plan
 
-> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+> 📜 **Documento histórico.** Fase concluída e entregue — este plano registra a execução original e **pode conter decisões posteriormente substituídas por ADRs** (as decisões atuais estão em [docs/adr/](../../adr/)). Estado atual do produto no [README — Status & roadmap](../../../README.md#status--roadmap).
 
 **Goal:** Estabelecer a fundação do InvestOps Backoffice — infra local (Docker), esqueleto da solução .NET 8, API com health/Swagger/Serilog, modelo de domínio e migrations — sem nenhum fluxo de negócio.
 

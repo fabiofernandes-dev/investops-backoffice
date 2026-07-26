@@ -1,6 +1,6 @@
 # InvestOps Backoffice — Fase 9 (Processing Monitor) Implementation Plan
 
-> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+> 📜 **Documento histórico.** Fase concluída e entregue — este plano registra a execução original e **pode conter decisões posteriormente substituídas por ADRs** (as decisões atuais estão em [docs/adr/](../../adr/)). Estado atual do produto no [README — Status & roadmap](../../../README.md#status--roadmap).
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (se houver subagents) ou superpowers:executing-plans. Steps usam checkbox (`- [ ]`). Aplique @superpowers:test-driven-development na lógica pura/regras e @superpowers:verification-before-completion antes de cada "verde".
 
@@ -185,7 +185,7 @@ consumer.SetOnExhausted(operations.NewFailureRecorder(store, logger).MarkExhaust
 
 - [ ] **Step 7: Testes de integração (Testcontainers)** — em `database/store_test.go` (Postgres, reusar `newPool`/`seedReferences`/`seedOperation`): (a) seed operação `Imported` → `WithinTx(MarkOperationFailed)` → status vira `Failed`; (b) seed operação `Processed` → `MarkOperationFailed` → **continua `Processed`** (guard do `WHERE`); (c) `InsertProcessingEvent` com `AttemptCount=3`/`ErrorMessage="x"` persiste os valores (e `ErrorMessage=""` grava `NULL`). Em `messaging/retry_dlq_test.go` (RabbitMQ): setar um `onExhausted` que sinaliza um canal e asserir que ele é **chamado com `attempt == maxAttempts`** quando o handler sempre falha. **⚠️ Helper:** o `startConsumer` atual cria o `Consumer` internamente e **não o expõe** — ajustar o helper (retornar o `*Consumer` ou aceitar um hook opcional) ou montar um consumer dedicado no teste para poder chamar `SetOnExhausted`.
 
-- [ ] **Step 8: ADR 0008** — `docs/adr/0008-terminal-failure-on-retry-exhaustion.md`, formato do [ADR 0006](../adr/0006-defer-authentication-adopt-rate-limiting.md)/[0007](../adr/0007-synchronous-reconciliation.md): decisão de, no esgotamento de retries, marcar a operação `Failed` + gravar `processing_event` `OperationFailed` (observabilidade do retry/DLQ + ativa o Reprocessar); por que **não** publica `OperationFailed` no Outbox (sem consumidor); distinção transitório × rejeição de negócio; limitação da duplicata rara se o `publishToDlq` falhar após o hook.
+- [ ] **Step 8: ADR 0008** — `docs/adr/0008-terminal-failure-on-retry-exhaustion.md`, formato do [ADR 0006](../../adr/0006-defer-authentication-adopt-rate-limiting.md)/[0007](../../adr/0007-synchronous-reconciliation.md): decisão de, no esgotamento de retries, marcar a operação `Failed` + gravar `processing_event` `OperationFailed` (observabilidade do retry/DLQ + ativa o Reprocessar); por que **não** publica `OperationFailed` no Outbox (sem consumidor); distinção transitório × rejeição de negócio; limitação da duplicata rara se o `publishToDlq` falhar após o hook.
 
 - [ ] **Step 9: Verde** — `cd worker-go && go build ./... && go vet ./... && go test ./...` → tudo verde → commit + push + **PR para `developer`** → **PAUSA**.
 
