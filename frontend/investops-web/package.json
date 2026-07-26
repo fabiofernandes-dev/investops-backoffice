@@ -14,7 +14,7 @@
     "@noble/hashes": "1.8.0"
   },
   "dependencies": {
-    "@angular/animations": "^21.2.18",
+    "@angular/animations": "^22.0.8",
     "@angular/cdk": "^21.2.14",
     "@angular/common": "^21.2.18",
     "@angular/compiler": "^21.2.18",
