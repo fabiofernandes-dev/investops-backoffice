@@ -50,3 +50,8 @@ appsettings.*.Local.json
 # ---------- Tooling local / scratch (fora do projeto) ----------
 /output/
 /scripts/
+
+# Preview/E2E screenshots (Playwright) — não versionar
+/e2e-*.png
+/after-*.png
+/.playwright-mcp/
