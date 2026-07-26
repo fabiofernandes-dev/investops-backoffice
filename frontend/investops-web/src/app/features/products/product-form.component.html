@@ -12,7 +12,19 @@
 } @else {
 <mat-card>
   <mat-card-content>
+    <p class="subtitle">
+      Cadastro de produto financeiro. O <strong>ticker</strong> é único quando informado; tipo e nível de
+      risco alimentam a regra de <em>suitability</em> na importação de operações.
+    </p>
     <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="name" />
+        @if (form.controls.name.hasError('required') && form.controls.name.touched) {
+          <mat-error>Obrigatório</mat-error>
+        }
+      </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Tipo</mat-label>
         <mat-select formControlName="productType">
@@ -20,14 +32,6 @@
             <mat-option [value]="t">{{ t }}</mat-option>
           }
         </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Nome</mat-label>
-        <input matInput formControlName="name" />
-        @if (form.controls.name.hasError('required') && form.controls.name.touched) {
-          <mat-error>Obrigatório</mat-error>
-        }
       </mat-form-field>
 
       <mat-form-field appearance="outline">

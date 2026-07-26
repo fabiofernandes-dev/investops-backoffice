@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -56,7 +56,8 @@ export class ProcessingMonitorComponent implements OnInit {
   readonly statuses = ['Processed', 'Rejected', 'Failed'];
   readonly displayedColumns = ['eventType', 'externalId', 'status', 'attemptCount', 'errorMessage', 'createdAt', 'processedAt'];
 
-  readonly autoRefresh = signal(false);
+  // Estado do auto-refresh persistido entre sessões (localStorage).
+  readonly autoRefresh = signal(localStorage.getItem('pm.autoRefresh') === 'true');
 
   statusFilter = '';
   pageIndex = 0;
@@ -65,6 +66,8 @@ export class ProcessingMonitorComponent implements OnInit {
   sortDirection: 'asc' | 'desc' = 'desc';
 
   constructor() {
+    effect(() => localStorage.setItem('pm.autoRefresh', String(this.autoRefresh())));
+
     timer(0, 5000)
       .pipe(takeUntilDestroyed())
       .subscribe(() => {

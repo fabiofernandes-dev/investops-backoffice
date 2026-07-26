@@ -3,7 +3,7 @@
   background: linear-gradient(
     100deg,
     var(--mat-sys-primary),
-    color-mix(in srgb, var(--mat-sys-primary) 78%, #0b3b8c)
+    color-mix(in srgb, var(--mat-sys-primary) 74%, #071f4d)
   );
   color: var(--mat-sys-on-primary);
   // O ícone do mat-icon-button tem token próprio no M3 — força para branco (on-primary).
@@ -12,12 +12,65 @@
   top: 0;
   z-index: 3;
   gap: 8px;
-  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.14);
+  box-shadow: 0 2px 14px rgba(7, 22, 60, 0.28);
+}
+
+.brand-logo {
+  color: var(--mat-sys-on-primary);
+  opacity: 0.95;
 }
 
 .brand {
   font-weight: 700;
   letter-spacing: 0.2px;
+
+  .brand-sub {
+    font-weight: 400;
+    opacity: 0.82;
+  }
+}
+
+// Breadcrumb da seção atual.
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+  }
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+// "Pílula" de ambiente à direita.
+.env-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #61e08a;
+    box-shadow: 0 0 0 3px rgba(97, 224, 138, 0.28);
+  }
 }
 
 .layout {
@@ -26,32 +79,51 @@
 }
 
 .sidenav {
-  width: 232px;
+  width: 240px;
   background: var(--mat-sys-surface, #fff);
   border-right: 1px solid var(--mat-sys-outline-variant);
-  padding: 8px;
+  padding: 8px 10px;
 
-  // Itens do menu: cantos arredondados, hover suave.
+  // Cabeçalhos de grupo — dão estrutura ao menu.
+  .nav-subheader {
+    margin: 14px 8px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: var(--mat-sys-primary);
+    opacity: 0.75;
+  }
+
+  // Itens: mais contraste (texto/ícone escuros), cantos arredondados, hover claro.
   .mat-mdc-list-item {
     border-radius: 10px;
     margin-bottom: 2px;
     height: 44px;
 
-    &:hover {
-      background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+    .mdc-list-item__primary-text {
+      color: var(--mat-sys-on-surface);
+      font-weight: 500;
     }
 
     .mat-icon {
-      color: var(--mat-sys-on-surface-variant);
+      color: color-mix(in srgb, var(--mat-sys-primary) 55%, #3a4658);
+    }
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 9%, transparent);
     }
   }
 }
 
-// Item ativo: "pílula" com a cor do container secundário.
+// Item ativo: "pílula" forte + ícone na cor primária.
 .active {
   background: var(--mat-sys-secondary-container) !important;
-  color: var(--mat-sys-on-secondary-container) !important;
-  font-weight: 600;
+
+  .mdc-list-item__primary-text {
+    color: var(--mat-sys-on-secondary-container) !important;
+    font-weight: 700 !important;
+  }
 
   .mat-icon {
     color: var(--mat-sys-primary) !important;

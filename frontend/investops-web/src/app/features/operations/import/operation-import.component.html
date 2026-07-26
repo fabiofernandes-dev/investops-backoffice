@@ -7,8 +7,12 @@
 
 <mat-card>
   <mat-card-content>
+    <p class="subtitle">
+      Registra uma operação e dispara o fluxo assíncrono ponta a ponta (Outbox → RabbitMQ → Worker).
+      A data de liquidação é calculada no servidor a partir da liquidez do produto.
+    </p>
     <form [formGroup]="form" (ngSubmit)="submit()" class="form">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="full">
         <mat-label>ExternalId</mat-label>
         <input matInput formControlName="externalId" placeholder="EXT-..." />
         @if (form.controls.externalId.hasError('required') && form.controls.externalId.touched) {
