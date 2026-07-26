@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 6 (gRPC Market Data) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 **Goal:** Adicionar cotações ao backoffice via gRPC: serviço Go `marketdata-go` (GetQuote unário + StreamQuotes streaming, preços simulados), API .NET como client gRPC + bridge SSE, e um ticker ao vivo no Angular.
 
 **Architecture:** `.proto` único compartilhado (codegen Go commitado; .NET via Grpc.Tools). `marketdata-go` é stateless (sem DB), com preço-base determinístico por produto + random walk em memória. A API .NET consome o gRPC (unário e stream) e repassa ao browser via REST/SSE. O Angular consome com `EventSource`.

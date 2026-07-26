@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 8 (Conciliação com custodiante) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (se houver subagents) ou superpowers:executing-plans para implementar este plano. Os steps usam checkbox (`- [ ]`) para rastreio. Aplique @superpowers:test-driven-development na lógica pura e @superpowers:verification-before-completion antes de cada "verde".
 
 **Goal:** Conciliar a posição interna com o extrato do custodiante: importar um CSV, calcular divergências por `(conta, produto)`, listá-las e resolvê-las/ignorá-las — backend .NET + tela Angular.

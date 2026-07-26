@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 1 (Fundação) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 **Goal:** Estabelecer a fundação do InvestOps Backoffice — infra local (Docker), esqueleto da solução .NET 8, API com health/Swagger/Serilog, modelo de domínio e migrations — sem nenhum fluxo de negócio.
 
 **Architecture:** Modular monolith em .NET 8 (Clean Architecture: Domain ← Application ← Infrastructure; Api como composition root; Contracts para DTOs de evento). Persistência PostgreSQL via Dapper; schema versionado com DbUp. Mensageria (RabbitMQ) sobe no Compose mas só é consumida a partir da Fase 3.

@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 10 (CRUD de Produtos) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (se houver subagents) ou superpowers:executing-plans. Steps usam checkbox (`- [ ]`). Aplique @superpowers:test-driven-development nos validators e @superpowers:verification-before-completion antes de cada "verde".
 
 **Goal:** Completar o gerenciamento de produtos financeiros — `GET` completo + `POST`/`PUT`/`DELETE` (lógico) com ticker único — e a tela Angular de gestão. Fecha o SPEC §8 Products.

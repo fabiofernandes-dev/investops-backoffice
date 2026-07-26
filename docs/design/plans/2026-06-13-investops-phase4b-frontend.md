@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 4b (Frontend Angular) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 **Goal:** Entregar o frontend Angular do backoffice (Dashboard, Operações lista+detalhe, Posições) consumindo a API real, com NgRx, Material e Jest — precedido de uma preparação de backend (CORS + nomes na lista + lookups).
 
 **Architecture:** Angular 19 standalone + Angular Material + NgRx (store/effects, APIs standalone). Cada feature isola seu estado (`provideState`/`provideEffects` em rota lazy). HTTP com services tipados + interceptors (erro/loading). Backend ganha CORS, enriquecimento da lista de operações (nomes via join) e endpoints de lookup.

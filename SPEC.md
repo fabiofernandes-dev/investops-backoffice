@@ -1,7 +1,8 @@
 # SPEC.md — InvestOps Backoffice
 
-> **Nota:** este documento é a **visão completa** do produto e serve de norte para o desenvolvimento.
-> A entrega é incremental — o que já está implementado vs. planejado está no [README — Status & roadmap](README.md#status--roadmap).
+> **Nota:** este documento é o **brief original** do produto e serve de norte para o desenvolvimento.
+> O que foi **efetivamente entregue** está no [README — Status & roadmap](README.md#status--roadmap) e nas decisões/limitações dos [ADRs](docs/adr/); a API viva está no Swagger (`/swagger`).
+> Em várias áreas a entrega **foi além deste brief** — serviço gRPC de cotações (MarketData), edge nginx, CRUD de produtos, processing monitor e conciliação. Itens do brief não implementados **não são lacunas**, e sim escopo posterior ao MVP.
 
 ## 1. Visão geral
 
@@ -78,7 +79,7 @@ Redis opcional
 
 ## 3. Arquitetura desejada
 
-A solução terá dois serviços principais:
+A solução tem dois **serviços de negócio** — a API .NET e o Worker Go — e, na entrega, também um serviço **gRPC de cotações (MarketData Go)** consumido pela API e um **edge nginx** que serve o SPA e faz proxy de `/api` (same-origin). O fluxo central de operações:
 
 ```text
 Angular Frontend
@@ -102,6 +103,8 @@ Go Processing Worker
 PostgreSQL
 ```
 
+> O diagrama acima é o fluxo central de importação/processamento. A arquitetura completa entregue (com MarketData gRPC, SSE de cotações e edge nginx) está no [diagrama do README](README.md#arquitetura).
+
 Para o MVP, será usado **banco compartilhado** entre API .NET e Worker Go.
 
 Decisão arquitetural:
@@ -123,20 +126,17 @@ investops-backoffice/
   docker-compose.yml
 
   docs/
-    adr/
-      0001-use-modular-monolith-for-api.md
-      0002-use-rabbitmq-for-async-processing.md
-      0003-use-outbox-pattern.md
-      0004-use-go-for-processing-worker.md
-      0005-use-postgresql-shared-database-for-mvp.md
+    adr/                            # 0001-0009 + índice (README.md)
+    design/                         # specs e planos por fase
 
   contracts/
     events/
       operation-imported.v1.json
       operation-processed.v1.json
       operation-rejected.v1.json
-      operation-failed.v1.json
       position-updated.v1.json
+    proto/
+      marketdata/v1/marketdata.proto
 
   backend/
     InvestOps.sln
@@ -146,6 +146,7 @@ investops-backoffice/
       InvestOps.Domain/
       InvestOps.Infrastructure/
       InvestOps.Contracts/
+      InvestOps.Migrator/
     tests/
       InvestOps.UnitTests/
       InvestOps.IntegrationTests/
@@ -163,6 +164,11 @@ investops-backoffice/
       observability/
     go.mod
     Dockerfile
+
+  marketdata-go/                    # serviço gRPC de cotações
+    cmd/server/
+    internal/
+    go.mod
 
   frontend/
     investops-web/
@@ -425,13 +431,13 @@ GET /api/dashboard/processing-metrics
 GET /api/products
 POST /api/products
 PUT /api/products/{id}
+DELETE /api/products/{id}      # exclusão lógica (is_active=false)
 ```
 
 ### Customers
 
 ```http
 GET /api/customers
-GET /api/customers/{id}
 ```
 
 ### Reconciliation
@@ -442,6 +448,21 @@ GET /api/reconciliations/divergences
 POST /api/reconciliations/divergences/{id}/resolve
 POST /api/reconciliations/divergences/{id}/ignore
 ```
+
+### Processing Events
+
+```http
+GET /api/processing-events
+```
+
+### Quotes (cotações via gRPC/SSE)
+
+```http
+GET /api/quotes/{productId}
+GET /api/quotes/stream
+```
+
+> A lista acima é o núcleo especificado. A API viva (incluindo lookups de contas, auditoria e métricas do dashboard) está no Swagger em `/swagger`.
 
 ---
 
@@ -454,6 +475,8 @@ dashboard
 operations
 operation-detail
 positions
+products
+quotes
 reconciliation
 processing-monitor
 shared
