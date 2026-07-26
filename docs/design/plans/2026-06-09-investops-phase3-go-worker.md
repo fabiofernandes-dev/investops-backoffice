@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 3 (Worker Go) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 **Goal:** Implementar o worker Go que consome `OperationImported`, aplica as regras de negócio, atualiza posição/status/`processing_events` e publica os eventos downstream via relay próprio (publisher por serviço).
 
 **Architecture:** Worker Go (pgx + amqp091-go) sobre o banco compartilhado. Regras puras e testáveis (`rules`/`positions`), um `Processor` que orquestra carga→decisão→persistência transacional, consumer RabbitMQ (`prefetch=1`, ack após commit) e um relay de outbox próprio (`source='worker'`). O .NET passa a filtrar `source='api'` para os serviços ficarem independentes.

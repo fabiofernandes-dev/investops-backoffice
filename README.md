@@ -6,6 +6,8 @@ Plataforma fullstack de backoffice para operações de investimento
 
 > **Status:** MVP funcionalmente completo — todas as fases do [roadmap](#status--roadmap) entregues (autenticação fica fora do MVP por decisão, [ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md)). O [SPEC.md](SPEC.md) descreve a visão completa; as evoluções mapeadas estão nos [ADRs](docs/adr/).
 
+> ⚠️ **Demo local — não exponha na internet.** A stack sobe com **credenciais de demonstração** e publica Postgres/RabbitMQ no host para facilitar o onboarding; **não há autenticação** por decisão de escopo ([ADR 0006](docs/adr/0006-defer-authentication-adopt-rate-limiting.md)). Use apenas na máquina local — qualquer deploy real exige sobrescrever segredos, fechar as portas e colocar auth na frente.
+
 ## Destaques de engenharia
 
 - **Arquitetura event-driven** com **Outbox Pattern nos dois lados** — API .NET e Worker Go publicam via relay transacional (sem dual-write) por RabbitMQ.

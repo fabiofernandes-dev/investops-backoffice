@@ -1,5 +1,7 @@
 # InvestOps Backoffice — Fase 7 (Edge nginx + Containerização) Implementation Plan
 
+> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+
 **Goal:** `docker compose up` sobe a stack inteira (nginx + api + migrator + worker + marketdata + infra) num cenário **same-origin** (nginx serve o SPA e faz proxy `/api`), sem CORS, com SSE atravessando o proxy.
 
 **Architecture:** API .NET e migrator containerizados (Dockerfiles, context = raiz do repo p/ enxergar `contracts/proto`). Migrator one-shot (`INVESTOPS_DB`, `--seed`) roda antes da API. nginx serve o build de produção do Angular (`apiBaseUrl: '/api'`) e faz proxy `/api → api:8080` com `proxy_buffering off` (SSE). Dev (`ng serve` + `dotnet run`) fica intacto.
