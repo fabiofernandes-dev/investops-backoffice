@@ -1,7 +1,6 @@
 @use '@angular/material' as mat;
 @use './theme-colors' as theme;
 
-// Tema corporativo (M3): paleta custom (seed azul financeiro), densidade compacta para backoffice.
 html {
   @include mat.theme(
     (
@@ -24,8 +23,6 @@ body {
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
-  // Fundo cinza-azulado suave; superfícies (cards/tabelas) ficam brancas e elevadas por cima,
-  // com contraste suficiente para "descolar" do fundo.
   background:
     radial-gradient(1200px 600px at 100% -10%, color-mix(in srgb, var(--mat-sys-primary) 9%, transparent), transparent),
     #e8ecf4;
@@ -40,9 +37,6 @@ h1 {
   margin: 0 0 16px;
 }
 
-// ---------------------------------------------------------------------------
-// Superfícies: cards e tabelas com cantos arredondados, hairline e sombra suave
-// ---------------------------------------------------------------------------
 .mat-mdc-card {
   border-radius: 14px;
   background: #fff;
@@ -52,7 +46,6 @@ h1 {
     0 8px 22px rgba(16, 24, 40, 0.08) !important;
 }
 
-// Envolve qualquer <table mat-table> num "cartão" arredondado e com hover de linha.
 .mat-mdc-table {
   width: 100%;
   border-radius: 14px;
@@ -83,9 +76,6 @@ h1 {
     }
   }
 
-  // Números: alinhados à direita, com dígitos tabulares. O cabeçalho com mat-sort-header
-  // é um flex — por isso empurramos o conteúdo dele para a direita também (senão o título
-  // fica à esquerda e o valor à direita, "desalinhados").
   .num {
     text-align: right;
     font-variant-numeric: tabular-nums;
@@ -97,9 +87,14 @@ h1 {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Botões / campos: cantos um pouco mais suaves
-// ---------------------------------------------------------------------------
+.mat-mdc-paginator {
+  margin-top: 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 9%, var(--mat-sys-outline-variant));
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
 .mat-mdc-unelevated-button,
 .mat-mdc-raised-button,
 .mat-mdc-outlined-button,
@@ -108,7 +103,6 @@ h1 {
   letter-spacing: 0.2px;
 }
 
-// Barra de rolagem discreta
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--mat-sys-outline-variant) transparent;

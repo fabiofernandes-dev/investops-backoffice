@@ -30,7 +30,6 @@
   }
 }
 
-// Breadcrumb da seção atual.
 .crumb {
   display: inline-flex;
   align-items: center;
@@ -51,7 +50,6 @@
   flex: 1;
 }
 
-// "Pílula" de ambiente à direita.
 .env-badge {
   display: inline-flex;
   align-items: center;
@@ -84,7 +82,6 @@
   border-right: 1px solid var(--mat-sys-outline-variant);
   padding: 8px 10px;
 
-  // Cabeçalhos de grupo — dão estrutura ao menu.
   .nav-subheader {
     margin: 14px 8px 4px;
     font-size: 11px;
@@ -95,7 +92,6 @@
     opacity: 0.75;
   }
 
-  // Itens: mais contraste (texto/ícone escuros), cantos arredondados, hover claro.
   .mat-mdc-list-item {
     border-radius: 10px;
     margin-bottom: 2px;
@@ -116,7 +112,6 @@
   }
 }
 
-// Item ativo: "pílula" forte + ícone na cor primária.
 .active {
   background: var(--mat-sys-secondary-container) !important;
 

@@ -56,7 +56,6 @@ export class ProcessingMonitorComponent implements OnInit {
   readonly statuses = ['Processed', 'Rejected', 'Failed'];
   readonly displayedColumns = ['eventType', 'externalId', 'status', 'attemptCount', 'errorMessage', 'createdAt', 'processedAt'];
 
-  // Estado do auto-refresh persistido entre sessões (localStorage).
   readonly autoRefresh = signal(localStorage.getItem('pm.autoRefresh') === 'true');
 
   statusFilter = '';

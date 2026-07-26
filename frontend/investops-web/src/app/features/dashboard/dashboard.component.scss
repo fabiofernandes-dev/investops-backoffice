@@ -12,7 +12,6 @@
     transform 0.14s ease,
     box-shadow 0.14s ease;
 
-  // Fita de destaque no topo de cada card (cor por posição).
   &::before {
     content: '';
     position: absolute;
@@ -29,7 +28,6 @@
   }
 }
 
-// Acentos semânticos: importadas · processadas · rejeitadas · falhas · divergências · tempo médio
 .cards .mat-mdc-card:nth-child(1) { --accent: #2962ff; }
 .cards .mat-mdc-card:nth-child(2) { --accent: #2e7d32; }
 .cards .mat-mdc-card:nth-child(3) { --accent: #c62828; }

@@ -12,7 +12,6 @@ h1 {
   position: relative;
   padding-left: 12px;
 
-  // Barrinha de destaque à esquerda do título.
   &::before {
     content: '';
     position: absolute;

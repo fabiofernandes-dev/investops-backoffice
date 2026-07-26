@@ -40,7 +40,6 @@ export class DashboardComponent implements OnInit {
   readonly loading = this.store.selectSignal(selectLoading);
   readonly error = this.store.selectSignal(selectError);
 
-  // Auto-refresh (10s) persistido entre sessões.
   readonly autoRefresh = signal(localStorage.getItem('dash.autoRefresh') === 'true');
 
   constructor() {

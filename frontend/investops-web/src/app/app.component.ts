@@ -96,7 +96,6 @@ export class AppComponent {
   readonly loading = inject(LoadingService);
   private readonly router = inject(Router);
 
-  // Nome da seção atual (breadcrumb na toolbar), derivado da rota.
   readonly section = toSignal(
     this.router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
