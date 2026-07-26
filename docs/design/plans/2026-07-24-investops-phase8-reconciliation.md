@@ -1,6 +1,6 @@
 # InvestOps Backoffice — Fase 8 (Conciliação com custodiante) Implementation Plan
 
-> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+> 📜 **Documento histórico.** Fase concluída e entregue — este plano registra a execução original e **pode conter decisões posteriormente substituídas por ADRs** (as decisões atuais estão em [docs/adr/](../../adr/)). Estado atual do produto no [README — Status & roadmap](../../../README.md#status--roadmap).
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (se houver subagents) ou superpowers:executing-plans para implementar este plano. Os steps usam checkbox (`- [ ]`) para rastreio. Aplique @superpowers:test-driven-development na lógica pura e @superpowers:verification-before-completion antes de cada "verde".
 
@@ -627,9 +627,9 @@ export class ReconciliationApi {
 
 - [ ] **Step 1: Branch** `feature/reconciliation-docs` a partir de `developer` (após 8.2).
 
-- [ ] **Step 2: ADR 0007** — `docs/adr/0007-synchronous-reconciliation.md`, **seguindo o formato do [ADR 0006](../adr/0006-defer-authentication-adopt-rate-limiting.md)** (Título, Status: Aceito, Contexto, Decisão, Consequências). Registrar: a conciliação é **síncrona na API** (compara o extrato contra `portfolio_positions` numa transação), **fora** do worker/outbox — porque é leitura da posição atual, não um fluxo assíncrono; `resolve`/`ignore` são transições de estado + auditoria e **não** ajustam posição (o worker é a fonte da verdade). Alternativas consideradas (assíncrona via worker; ajuste de posição no resolve) e por que ficaram fora do MVP.
+- [ ] **Step 2: ADR 0007** — `docs/adr/0007-synchronous-reconciliation.md`, **seguindo o formato do [ADR 0006](../../adr/0006-defer-authentication-adopt-rate-limiting.md)** (Título, Status: Aceito, Contexto, Decisão, Consequências). Registrar: a conciliação é **síncrona na API** (compara o extrato contra `portfolio_positions` numa transação), **fora** do worker/outbox — porque é leitura da posição atual, não um fluxo assíncrono; `resolve`/`ignore` são transições de estado + auditoria e **não** ajustam posição (o worker é a fonte da verdade). Alternativas consideradas (assíncrona via worker; ajuste de posição no resolve) e por que ficaram fora do MVP.
 
-- [ ] **Step 3: README roadmap** — em [README.md](../../README.md) na tabela **Status & roadmap**, mudar a linha *"Conciliação com custodiante (reconciliation)"* de `🔲 planejado` para **✅**. Opcional: uma nota curta "Como usar" com um CSV de exemplo (`account_id,product_id,quantity`).
+- [ ] **Step 3: README roadmap** — em [README.md](../../../README.md) na tabela **Status & roadmap**, mudar a linha *"Conciliação com custodiante (reconciliation)"* de `🔲 planejado` para **✅**. Opcional: uma nota curta "Como usar" com um CSV de exemplo (`account_id,product_id,quantity`).
 
 - [ ] **Step 4:** commit + push + **PR para `developer`** → **PAUSA**.
 

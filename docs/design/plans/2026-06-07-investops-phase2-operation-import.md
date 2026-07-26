@@ -1,6 +1,6 @@
 # InvestOps Backoffice — Fase 2 (Importação de Operação) Implementation Plan
 
-> ✅ **Fase concluída e entregue.** Documento histórico de execução — os checkboxes registram o plano original (tudo entregue). O estado atual do produto está no [README — Status & roadmap](../../../README.md#status--roadmap).
+> 📜 **Documento histórico.** Fase concluída e entregue — este plano registra a execução original e **pode conter decisões posteriormente substituídas por ADRs** (as decisões atuais estão em [docs/adr/](../../adr/)). Estado atual do produto no [README — Status & roadmap](../../../README.md#status--roadmap).
 
 **Goal:** Implementar o primeiro fluxo de negócio — importar uma operação pela API .NET (validação, idempotência, gravação transacional de Operation+OutboxMessage+AuditLog), publicar os eventos no RabbitMQ via um Outbox Publisher, e expor a leitura (GET by id + lista paginada).
 
