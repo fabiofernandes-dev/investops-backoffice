@@ -25,7 +25,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Data de referência</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="referenceDate" placeholder="dd/mm/aaaa" />
+        <input matInput [matDatepicker]="picker" formControlName="referenceDate" appDateMask maxlength="10" placeholder="dd/mm/aaaa" />
         <mat-datepicker-toggle matIconSuffix [for]="picker" />
         <mat-datepicker #picker />
         @if (importForm.controls.referenceDate.hasError('required') && importForm.controls.referenceDate.touched) {

@@ -71,7 +71,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Data da operação</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="operationDate" placeholder="dd/mm/aaaa" />
+        <input matInput [matDatepicker]="picker" formControlName="operationDate" appDateMask maxlength="10" placeholder="dd/mm/aaaa" />
         <mat-datepicker-toggle matIconSuffix [for]="picker" />
         <mat-datepicker #picker />
         @if (form.controls.operationDate.hasError('required') && form.controls.operationDate.touched) {
