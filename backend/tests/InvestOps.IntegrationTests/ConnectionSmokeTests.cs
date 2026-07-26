@@ -1,7 +1,6 @@
 using Dapper;
 using InvestOps.Infrastructure.Persistence;
 using InvestOps.IntegrationTests.Infrastructure;
-using Xunit;
 
 namespace InvestOps.IntegrationTests;
 
