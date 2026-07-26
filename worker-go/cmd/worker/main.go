@@ -32,19 +32,16 @@ func main() {
 	processor := operations.NewProcessor(store, logger)
 	failureRecorder := operations.NewFailureRecorder(store, logger)
 
-	publisher, err := messaging.NewPublisher(pool, messaging.PublisherConfig{
+	publisher := messaging.NewPublisher(pool, messaging.PublisherConfig{
 		URL:        cfg.RabbitMQURL,
 		Exchange:   cfg.Exchange,
 		PollPeriod: cfg.OutboxPollPeriod,
 		BatchSize:  cfg.OutboxBatchSize,
 	}, logger)
-	if err != nil {
-		logger.Error("falha ao iniciar o relay de outbox", "error", err)
-		os.Exit(1)
-	}
-	defer publisher.Close()
 
+	publisherDone := make(chan struct{})
 	go func() {
+		defer close(publisherDone)
 		if err := publisher.Run(ctx); err != nil && ctx.Err() == nil {
 			logger.Error("relay encerrou com erro", "error", err)
 		}
@@ -77,5 +74,6 @@ func main() {
 		os.Exit(1)
 	}
 
+	<-publisherDone
 	logger.Info("worker encerrado")
 }

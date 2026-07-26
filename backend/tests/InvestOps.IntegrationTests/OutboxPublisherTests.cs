@@ -9,7 +9,6 @@ using InvestOps.IntegrationTests.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using RabbitMQ.Client;
-using Xunit;
 
 namespace InvestOps.IntegrationTests;
 

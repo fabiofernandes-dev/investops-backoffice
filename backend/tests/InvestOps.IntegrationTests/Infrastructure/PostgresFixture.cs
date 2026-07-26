@@ -1,7 +1,6 @@
 using InvestOps.Infrastructure.Persistence.Dapper;
 using InvestOps.Migrator;
 using Testcontainers.PostgreSql;
-using Xunit;
 
 namespace InvestOps.IntegrationTests.Infrastructure;
 

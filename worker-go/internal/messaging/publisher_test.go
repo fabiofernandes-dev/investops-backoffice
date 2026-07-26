@@ -77,10 +77,9 @@ func TestPublisher_PublishesOnlyWorkerOutbox(t *testing.T) {
 		apiID, `{"hello":"api"}`)
 	require.NoError(t, err)
 
-	publisher, err := messaging.NewPublisher(pool, messaging.PublisherConfig{
+	publisher := messaging.NewPublisher(pool, messaging.PublisherConfig{
 		URL: amqpURL, Exchange: "investops", PollPeriod: time.Second, BatchSize: 50,
 	}, observability.New())
-	require.NoError(t, err)
 	t.Cleanup(func() { _ = publisher.Close() })
 
 	count, err := publisher.PublishPending(ctx)

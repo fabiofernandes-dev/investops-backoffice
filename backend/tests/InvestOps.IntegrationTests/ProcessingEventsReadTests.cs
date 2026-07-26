@@ -4,7 +4,6 @@ using InvestOps.Application.Operations.ListProcessingEvents;
 using InvestOps.Infrastructure.Persistence;
 using InvestOps.Infrastructure.Persistence.Repositories;
 using InvestOps.IntegrationTests.Infrastructure;
-using Xunit;
 
 namespace InvestOps.IntegrationTests;
 
