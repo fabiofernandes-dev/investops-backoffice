@@ -2,25 +2,50 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    target-branch: developer
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ["*"]
 
   - package-ecosystem: nuget
     directory: /backend
+    target-branch: developer
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      backend-minor:
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: gomod
     directory: /worker-go
+    target-branch: developer
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      worker-minor:
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: gomod
     directory: /marketdata-go
+    target-branch: developer
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      marketdata-minor:
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: npm
     directory: /frontend/investops-web
+    target-branch: developer
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      frontend-minor:
+        update-types: ["minor", "patch"]
