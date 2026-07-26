@@ -28,23 +28,9 @@ func main() {
 	}
 	defer pool.Close()
 
-	consumer, err := messaging.NewConsumer(messaging.ConsumerConfig{
-		URL:         cfg.RabbitMQURL,
-		Exchange:    cfg.Exchange,
-		Queue:       cfg.Queue,
-		RoutingKey:  cfg.RoutingKey,
-		MaxAttempts: cfg.RetryMaxAttempts,
-		Backoff:     cfg.RetryBackoff,
-	}, logger)
-	if err != nil {
-		logger.Error("falha ao conectar no RabbitMQ", "error", err)
-		os.Exit(1)
-	}
-	defer consumer.Close()
-
 	store := database.NewStore(pool)
 	processor := operations.NewProcessor(store, logger)
-	consumer.SetOnExhausted(operations.NewFailureRecorder(store, logger).MarkExhausted)
+	failureRecorder := operations.NewFailureRecorder(store, logger)
 
 	publisher, err := messaging.NewPublisher(pool, messaging.PublisherConfig{
 		URL:        cfg.RabbitMQURL,
@@ -76,7 +62,17 @@ func main() {
 		return processor.Process(ctx, evt)
 	}
 
-	if err := consumer.Consume(ctx, handler); err != nil && ctx.Err() == nil {
+	consumerCfg := messaging.ConsumerConfig{
+		URL:         cfg.RabbitMQURL,
+		Exchange:    cfg.Exchange,
+		Queue:       cfg.Queue,
+		RoutingKey:  cfg.RoutingKey,
+		MaxAttempts: cfg.RetryMaxAttempts,
+		Backoff:     cfg.RetryBackoff,
+	}
+	setup := func(c *messaging.Consumer) { c.SetOnExhausted(failureRecorder.MarkExhausted) }
+
+	if err := messaging.RunConsumer(ctx, consumerCfg, logger, setup, handler, cfg.ReconnectDelay); err != nil {
 		logger.Error("consumer encerrou com erro", "error", err)
 		os.Exit(1)
 	}

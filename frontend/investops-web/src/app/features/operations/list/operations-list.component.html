@@ -121,11 +121,13 @@
     <app-empty-state message="Nenhuma operação encontrada." />
   }
 
-  <mat-paginator
-    [length]="total()"
-    [pageSize]="pageSize"
-    [pageIndex]="pageIndex"
-    [pageSizeOptions]="[10, 20, 50]"
-    (page)="onPage($event)"
-  />
+  @if (total()) {
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)"
+    />
+  }
 }

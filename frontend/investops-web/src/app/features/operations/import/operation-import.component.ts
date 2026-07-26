@@ -9,9 +9,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { formatDate } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { LookupsApi } from '../../../core/api/lookups.api';
+import { provideBrDatepicker } from '../../../core/date/br-date-adapter';
+import { DateMaskDirective } from '../../../core/date/date-mask.directive';
 import { AccountLookup, ImportOperationRequest, ProductLookup } from '../../../core/models';
 import { OperationsActions } from '../state/operations.actions';
 import { selectImportError, selectImporting } from '../state/operations.feature';
@@ -28,8 +32,11 @@ import { selectImportError, selectImporting } from '../state/operations.feature'
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule
-],
+    MatTooltipModule,
+    MatDatepickerModule,
+    DateMaskDirective,
+  ],
+  providers: provideBrDatepicker(),
   templateUrl: './operation-import.component.html',
   styleUrl: './operation-import.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,7 +61,7 @@ export class OperationImportComponent implements OnInit {
     operationType: ['Buy', Validators.required],
     quantity: [null as number | null, [Validators.required, Validators.min(0.000001)]],
     unitPrice: [null as number | null, [Validators.required, Validators.min(0.000001)]],
-    operationDate: ['', Validators.required],
+    operationDate: [null as Date | null, Validators.required],
   });
 
   ngOnInit(): void {
@@ -75,7 +82,7 @@ export class OperationImportComponent implements OnInit {
       operationType: value.operationType,
       quantity: Number(value.quantity),
       unitPrice: Number(value.unitPrice),
-      operationDate: value.operationDate,
+      operationDate: formatDate(value.operationDate!, 'yyyy-MM-dd', 'en-US'),
     };
     this.store.dispatch(OperationsActions.importOperation({ request }));
   }

@@ -4,7 +4,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +15,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { provideBrDatepicker } from '../../core/date/br-date-adapter';
+import { DateMaskDirective } from '../../core/date/date-mask.directive';
 import { DivergencesQuery } from '../../core/models';
 import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/error-state/error-state.component';
@@ -41,12 +42,13 @@ import { selectError, selectImportError, selectImporting, selectItems, selectLas
     MatTooltipModule,
     MatCardModule,
     MatDatepickerModule,
+    DateMaskDirective,
     PageHeaderComponent,
     StatusChipComponent,
     ErrorStateComponent,
     EmptyStateComponent,
   ],
-  providers: [provideNativeDateAdapter()],
+  providers: provideBrDatepicker(),
   templateUrl: './reconciliation.component.html',
   styleUrl: './reconciliation.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

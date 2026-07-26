@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 @Component({
   selector: 'app-status-chip',
   standalone: true,
-  template: `<span class="chip" [style.background]="color()">{{ status() }}</span>`,
+  template: `<span class="chip" [style.color]="color()">{{ status() }}</span>`,
   styleUrl: './status-chip.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

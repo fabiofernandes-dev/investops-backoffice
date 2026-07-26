@@ -16,6 +16,7 @@ type Config struct {
 	OutboxBatchSize  int
 	RetryMaxAttempts int
 	RetryBackoff     time.Duration
+	ReconnectDelay   time.Duration
 }
 
 func Load() Config {
@@ -29,6 +30,7 @@ func Load() Config {
 		OutboxBatchSize:  envInt("OUTBOX_BATCH_SIZE", 50),
 		RetryMaxAttempts: positiveInt(envInt("RETRY_MAX_ATTEMPTS", 3), 3),
 		RetryBackoff:     time.Duration(positiveInt(envInt("RETRY_BACKOFF_MS", 5000), 5000)) * time.Millisecond,
+		ReconnectDelay:   time.Duration(positiveInt(envInt("RABBITMQ_RECONNECT_DELAY_MS", 5000), 5000)) * time.Millisecond,
 	}
 }
 

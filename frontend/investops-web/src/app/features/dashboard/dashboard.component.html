@@ -1,4 +1,10 @@
-<app-page-header title="Dashboard" />
+<app-page-header title="Dashboard">
+  <mat-slide-toggle [checked]="autoRefresh()" (change)="autoRefresh.set($event.checked)">Auto-refresh (10s)</mat-slide-toggle>
+  <button mat-stroked-button color="primary" (click)="reload()">
+    <mat-icon>refresh</mat-icon>
+    Atualizar
+  </button>
+</app-page-header>
 
 @if (loading()) {
   <mat-progress-bar mode="indeterminate" />

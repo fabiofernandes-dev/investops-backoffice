@@ -1,6 +1,10 @@
 .toolbar {
   // M3: color="primary" não preenche mais a toolbar; aplica via system tokens.
-  background: var(--mat-sys-primary);
+  background: linear-gradient(
+    100deg,
+    var(--mat-sys-primary),
+    color-mix(in srgb, var(--mat-sys-primary) 74%, #071f4d)
+  );
   color: var(--mat-sys-on-primary);
   // O ícone do mat-icon-button tem token próprio no M3 — força para branco (on-primary).
   --mat-icon-button-icon-color: var(--mat-sys-on-primary);
@@ -8,28 +12,124 @@
   top: 0;
   z-index: 3;
   gap: 8px;
+  box-shadow: 0 2px 14px rgba(7, 22, 60, 0.28);
+}
+
+.brand-logo {
+  color: var(--mat-sys-on-primary);
+  opacity: 0.95;
 }
 
 .brand {
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.2px;
+
+  .brand-sub {
+    font-weight: 400;
+    opacity: 0.82;
+  }
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+  }
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.env-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #61e08a;
+    box-shadow: 0 0 0 3px rgba(97, 224, 138, 0.28);
+  }
 }
 
 .layout {
   height: calc(100vh - 64px);
+  background: transparent;
 }
 
 .sidenav {
-  width: 220px;
-  background: var(--mat-sys-surface-container-low);
+  width: 240px;
+  background: var(--mat-sys-surface, #fff);
   border-right: 1px solid var(--mat-sys-outline-variant);
+  padding: 8px 10px;
+
+  .nav-subheader {
+    margin: 14px 8px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: var(--mat-sys-primary);
+    opacity: 0.75;
+  }
+
+  .mat-mdc-list-item {
+    border-radius: 10px;
+    margin-bottom: 2px;
+    height: 44px;
+
+    .mdc-list-item__primary-text {
+      color: var(--mat-sys-on-surface);
+      font-weight: 500;
+    }
+
+    .mat-icon {
+      color: color-mix(in srgb, var(--mat-sys-primary) 55%, #3a4658);
+    }
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 9%, transparent);
+    }
+  }
 }
 
 .active {
-  background: var(--mat-sys-secondary-container);
-  color: var(--mat-sys-on-secondary-container);
+  background: var(--mat-sys-secondary-container) !important;
+
+  .mdc-list-item__primary-text {
+    color: var(--mat-sys-on-secondary-container) !important;
+    font-weight: 700 !important;
+  }
+
+  .mat-icon {
+    color: var(--mat-sys-primary) !important;
+  }
+}
+
+.content {
+  background: transparent;
 }
 
 .page {
   padding: 24px;
+  max-width: 1360px;
 }
