@@ -49,3 +49,13 @@ updates:
     groups:
       frontend-minor:
         update-types: ["minor", "patch"]
+    ignore:
+      # Angular 21->22 e TypeScript major são upgrades deliberados (ng update), não automáticos.
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular-devkit/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@ngrx/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
