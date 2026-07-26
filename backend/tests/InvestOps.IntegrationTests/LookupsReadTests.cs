@@ -3,7 +3,6 @@ using InvestOps.Application.Lookups;
 using InvestOps.Infrastructure.Persistence;
 using InvestOps.Infrastructure.Persistence.Repositories;
 using InvestOps.IntegrationTests.Infrastructure;
-using Xunit;
 
 namespace InvestOps.IntegrationTests;
 

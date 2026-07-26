@@ -3,7 +3,6 @@ using InvestOps.Api;
 using InvestOps.Application;
 using InvestOps.Infrastructure;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.RateLimiting;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

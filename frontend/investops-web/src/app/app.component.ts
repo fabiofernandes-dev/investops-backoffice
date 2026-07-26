@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter, map, startWith } from 'rxjs';
 import { LoadingService } from './core/state/loading.service';
 
 @Component({
@@ -27,12 +29,17 @@ import { LoadingService } from './core/state/loading.service';
       <button mat-icon-button (click)="drawer.toggle()" aria-label="Alternar menu">
         <mat-icon>menu</mat-icon>
       </button>
-      <span class="brand">InvestOps Backoffice</span>
+      <mat-icon class="brand-logo">candlestick_chart</mat-icon>
+      <span class="brand">InvestOps <span class="brand-sub">Backoffice</span></span>
+      <span class="crumb"><mat-icon>chevron_right</mat-icon>{{ section() }}</span>
+      <span class="toolbar-spacer"></span>
+      <span class="env-badge" title="Instância local"><span class="dot"></span>Ambiente local</span>
     </mat-toolbar>
 
     <mat-sidenav-container class="layout">
       <mat-sidenav #drawer mode="side" opened class="sidenav">
         <mat-nav-list>
+          <h3 matSubheader class="nav-subheader">Principal</h3>
           <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <mat-icon matListItemIcon>dashboard</mat-icon>
             <span matListItemTitle>Dashboard</span>
@@ -49,6 +56,8 @@ import { LoadingService } from './core/state/loading.service';
             <mat-icon matListItemIcon>account_balance_wallet</mat-icon>
             <span matListItemTitle>Posições</span>
           </a>
+
+          <h3 matSubheader class="nav-subheader">Controle</h3>
           <a mat-list-item routerLink="/reconciliation" routerLinkActive="active">
             <mat-icon matListItemIcon>rule</mat-icon>
             <span matListItemTitle>Conciliação</span>
@@ -57,6 +66,8 @@ import { LoadingService } from './core/state/loading.service';
             <mat-icon matListItemIcon>monitor_heart</mat-icon>
             <span matListItemTitle>Processing Monitor</span>
           </a>
+
+          <h3 matSubheader class="nav-subheader">Mercado &amp; cadastro</h3>
           <a mat-list-item routerLink="/quotes" routerLinkActive="active">
             <mat-icon matListItemIcon>trending_up</mat-icon>
             <span matListItemTitle>Cotações</span>
@@ -83,4 +94,25 @@ import { LoadingService } from './core/state/loading.service';
 })
 export class AppComponent {
   readonly loading = inject(LoadingService);
+  private readonly router = inject(Router);
+
+  readonly section = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationEnd),
+      map(() => this.sectionFor(this.router.url)),
+      startWith(this.sectionFor(this.router.url)),
+    ),
+    { initialValue: this.sectionFor(this.router.url) },
+  );
+
+  private sectionFor(url: string): string {
+    if (url.startsWith('/operations/new')) return 'Importar operação';
+    if (url.startsWith('/operations')) return 'Operações';
+    if (url.startsWith('/positions')) return 'Posições';
+    if (url.startsWith('/reconciliation')) return 'Conciliação';
+    if (url.startsWith('/processing-monitor')) return 'Processing Monitor';
+    if (url.startsWith('/quotes')) return 'Cotações';
+    if (url.startsWith('/products')) return 'Produtos';
+    return 'Dashboard';
+  }
 }

@@ -1,5 +1,4 @@
 using Testcontainers.RabbitMq;
-using Xunit;
 
 namespace InvestOps.IntegrationTests.Infrastructure;
 

@@ -1,7 +1,6 @@
 @use '@angular/material' as mat;
 @use './theme-colors' as theme;
 
-// Tema corporativo (M3): paleta custom (seed azul financeiro), densidade compacta para backoffice.
 html {
   @include mat.theme(
     (
@@ -24,12 +23,87 @@ body {
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
-  background: var(--mat-sys-surface-container-low, #f5f6fa);
+  background:
+    radial-gradient(1200px 600px at 100% -10%, color-mix(in srgb, var(--mat-sys-primary) 9%, transparent), transparent),
+    #e8ecf4;
   color: var(--mat-sys-on-surface, #1a1c1e);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1 {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.2px;
   margin: 0 0 16px;
+}
+
+.mat-mdc-card {
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 9%, var(--mat-sys-outline-variant));
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 8px 22px rgba(16, 24, 40, 0.08) !important;
+}
+
+.mat-mdc-table {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 9%, var(--mat-sys-outline-variant));
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 8px 22px rgba(16, 24, 40, 0.07);
+
+  .mat-mdc-header-row {
+    background: var(--mat-sys-surface-container, #eef1f8);
+  }
+
+  .mat-mdc-header-cell {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant, #5b6472);
+  }
+
+  .mat-mdc-row {
+    transition: background-color 0.12s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+    }
+  }
+
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  th.num .mat-sort-header-container {
+    justify-content: flex-end;
+  }
+}
+
+.mat-mdc-paginator {
+  margin-top: 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 9%, var(--mat-sys-outline-variant));
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 10px !important;
+  letter-spacing: 0.2px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mat-sys-outline-variant) transparent;
 }

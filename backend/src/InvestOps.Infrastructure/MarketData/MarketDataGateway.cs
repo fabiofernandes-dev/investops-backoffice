@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using InvestOps.Application.Abstractions;
 using InvestOps.Application.Quotes;

@@ -25,11 +25,13 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Data de referência</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="referenceDate" />
+        <input matInput [matDatepicker]="picker" formControlName="referenceDate" appDateMask maxlength="10" placeholder="dd/mm/aaaa" />
         <mat-datepicker-toggle matIconSuffix [for]="picker" />
         <mat-datepicker #picker />
         @if (importForm.controls.referenceDate.hasError('required') && importForm.controls.referenceDate.touched) {
           <mat-error>Obrigatório</mat-error>
+        } @else if (importForm.controls.referenceDate.hasError('matDatepickerParse')) {
+          <mat-error>Data inválida (use dd/mm/aaaa)</mat-error>
         }
       </mat-form-field>
 
@@ -124,5 +126,7 @@
     <app-empty-state message="Nenhuma divergência encontrada." />
   }
 
-  <mat-paginator [length]="total()" [pageSize]="pageSize" [pageIndex]="pageIndex" [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />
+  @if (total()) {
+    <mat-paginator [length]="total()" [pageSize]="pageSize" [pageIndex]="pageIndex" [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />
+  }
 }
