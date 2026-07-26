@@ -11,6 +11,20 @@
 
 mat-card {
   max-width: 780px;
+  position: relative;
+  overflow: hidden;
+  // Acento lateral + sombra um pouco mais definida: destaca o formulário do fundo.
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 12px 30px rgba(16, 24, 40, 0.1) !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--mat-sys-primary);
+  }
 }
 
 .subtitle {

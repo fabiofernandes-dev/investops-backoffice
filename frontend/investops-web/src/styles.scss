@@ -24,10 +24,11 @@ body {
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
-  // Fundo suave levemente azulado; superfícies (cards/tabelas) ficam brancas e elevadas por cima.
+  // Fundo cinza-azulado suave; superfícies (cards/tabelas) ficam brancas e elevadas por cima,
+  // com contraste suficiente para "descolar" do fundo.
   background:
-    radial-gradient(1200px 600px at 100% -10%, color-mix(in srgb, var(--mat-sys-primary) 7%, transparent), transparent),
-    var(--mat-sys-surface-container-low, #f4f6fb);
+    radial-gradient(1200px 600px at 100% -10%, color-mix(in srgb, var(--mat-sys-primary) 9%, transparent), transparent),
+    #e8ecf4;
   color: var(--mat-sys-on-surface, #1a1c1e);
   -webkit-font-smoothing: antialiased;
 }
@@ -44,10 +45,11 @@ h1 {
 // ---------------------------------------------------------------------------
 .mat-mdc-card {
   border-radius: 14px;
-  border: 1px solid var(--mat-sys-outline-variant);
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 9%, var(--mat-sys-outline-variant));
   box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 12px rgba(16, 24, 40, 0.06) !important;
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 8px 22px rgba(16, 24, 40, 0.08) !important;
 }
 
 // Envolve qualquer <table mat-table> num "cartão" arredondado e com hover de linha.
@@ -55,11 +57,11 @@ h1 {
   width: 100%;
   border-radius: 14px;
   overflow: hidden;
-  background: var(--mat-sys-surface, #fff);
-  border: 1px solid var(--mat-sys-outline-variant);
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 9%, var(--mat-sys-outline-variant));
   box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 12px rgba(16, 24, 40, 0.05);
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 8px 22px rgba(16, 24, 40, 0.07);
 
   .mat-mdc-header-row {
     background: var(--mat-sys-surface-container, #eef1f8);
